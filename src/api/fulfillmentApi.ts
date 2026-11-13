@@ -1,6 +1,6 @@
 import { BaseClient } from './baseClient';
-import type { Dataset, Row } from '../scenarios/contracts';
-export class MovementApi {
+import type { Dataset, Row } from '../support/datasets';
+export class FulfillmentApi {
   constructor(private readonly client: BaseClient) {}
   findQueue(orderNum: number, employeeId: string) {
     return this.client.post('/Erp.BO.MaterialQueueSvc/GetRowsCustomParams', {
@@ -61,4 +61,98 @@ verifyMtlQueueExists(queueRowId: string) {
     { sysRowID: queueRowId },
   );
 }
+  getQueueById(mtlQueueSeq: number) {
+    if (!Number.isInteger(mtlQueueSeq) || mtlQueueSeq <= 0) {
+      throw new Error('Material queue sequence must be a positive integer.');
+    }
+
+    return this.client.get(
+      '/Erp.BO.MaterialQueueSvc/GetByID' +
+      `?mtlQueueSeq=${mtlQueueSeq}`,
+    );
+  }
+
+  findQueueForInspection(
+  mtlQueueSeq: number,
+  employeeId: string,
+  toDate: string,
+) {
+  if (!Number.isInteger(mtlQueueSeq) || mtlQueueSeq <= 0) {
+    throw new Error('Material queue sequence must be a positive integer.');
+  }
+
+  return this.client.post(
+    '/Erp.BO.MaterialQueueSvc/GetRowsCustomParams',
+    {
+      whereClause: `MtlQueueSeq = ${mtlQueueSeq}`,
+      fromDate: '',
+      toDate,
+      fromWhse: '',
+      toWhse: '',
+      tranType: '',
+      selectedByEmpID: employeeId,
+      excludeTransStatus: '',
+      onlySelectedByEmp: false,
+      onlyUnselected: false,
+      pageSize: 0,
+      absolutePage: 1,
+    },
+  );
+}
+
+
+  getListFWB(orderNum: number) {
+    if (!Number.isInteger(orderNum) || orderNum <= 0) {
+      throw new Error('Order number must be a positive integer.');
+    }
+
+    return this.client.post(
+      '/Erp.BO.OrderAllocSvc/GetListFWB',
+      {
+        whereClause: ` OrderNum = '${orderNum}' `,
+        pageSize: '0',
+        absolutePage: '0',
+      },
+    );
+  }
+
+  mergeOrderAllocListsAndGetRows(
+    demandListDs: Record<string, unknown>,
+  ) {
+    return this.client.post(
+      '/Erp.BO.OrderAllocSvc/MergeOrderAllocListsAndGetRows',
+      {
+        ipLastDisplaySeq: '0',
+        ds1: {},
+        ds2: demandListDs,
+      },
+    );
+  }
+    getSlimOrderAlloc(ds: Record<string, unknown>) {
+    return this.client.post(
+      '/Erp.BO.OrderAllocSvc/GetSlimOrderAlloc',
+      {
+        ds,
+      },
+    );
+  }
+    checkDates(ds: Record<string, unknown>) {
+    return this.client.post(
+      '/Erp.BO.OrderAllocSvc/CheckDates',
+      {
+        ds,
+      },
+    );
+  }
+    autoAllocation(ds: Record<string, unknown>) {
+    return this.client.post(
+      '/Erp.BO.OrderAllocSvc/AutoAllocation',
+      {
+        cIPWhseList: '',
+        cWhseType: 'All',
+        ds,
+      },
+    );
+  }
+
 }

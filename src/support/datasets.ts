@@ -1,5 +1,6 @@
 import type { APIResponse } from '@playwright/test';
-import type { Dataset, Row } from './contracts';
+export type Row = Record<string, unknown>;
+export type Dataset = Record<string, unknown>;
 export function record(value: unknown, context = 'object'): Row {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error(`Expected ${context}.`);
   return value as Row;

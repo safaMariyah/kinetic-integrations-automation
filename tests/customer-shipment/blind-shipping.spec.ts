@@ -1,10 +1,9 @@
 import { test } from '@playwright/test';
 import { readFile, access } from 'node:fs/promises';
 import { createEpicorClient, readEpicorSettings } from '../../src/api/baseClient';
-import { customerShipment, type Progress } from '../../src/scenarios/customerShipment';
-import { requireShippingContracts } from '../../src/scenarios/contracts';
-import { record } from '../../src/scenarios/support';
-import { waitForQuickShip, waitForQuickShipResponse } from '../../src/scenarios/quickShip';
+import { customerShipment, type Progress } from '../../src/flows/customerShipment';
+import { record } from '../../src/support/datasets';
+import { waitForQuickShip, waitForQuickShipResponse } from '../../src/support/quickShip';
 function required(name: string): string {
   const value = process.env[name]?.trim();
   if (!value) throw new Error(`Set ${name}.`);
@@ -18,9 +17,8 @@ function number(name: string, fallback: number, allowZero = false): number {
 }
 // Independent tests: each provisions its own part, stock, order, queue and shipment.
 for (const blindShipping of [false, true]) {
-  test(`fresh customer shipment: blindShipping=${blindShipping}`, async ({}, testInfo) => {
+  test(`customer=false; shipment-level blindShipping=${blindShipping}`, async ({}, testInfo) => {
     test.setTimeout(600000);
-    const contracts = requireShippingContracts();
     const settings = readEpicorSettings();
     const directory = required('QUICKSHIP_REQUEST_DIRECTORY');
     await access(directory);
@@ -31,9 +29,9 @@ for (const blindShipping of [false, true]) {
       employeeId: required('POC_EMPLOYEE_ID'), plant: required('POC_PLANT'),
       fromWhse: required('POC_FROM_WHSE'), fromBin: required('POC_FROM_BIN'),
       toWhse: required('POC_TO_WHSE'), toBin: required('POC_TO_BIN'),
-      stockQty: number('POC_STOCK_QTY', 10), quantity: number('POC_SHIP_QTY', 8),
+      stockQty: 10, quantity: 8,
       shipVia: required('POC_SHIP_VIA_CODE'), packageCode: required('POC_PACKAGE_CODE'),
-      weight: number('POC_WEIGHT', 3), unitPrice: number('POC_UNIT_PRICE', 0, true),
+      weight: 3, unitPrice: 0,
       tariff: required('POC_TARIFF'), blindShipping,
       freightUrl: required('EPICOR_FREIGHT_URL'), workstation: required('EPICOR_WORKSTATION_ID'),
       freightTimeout: number('EPICOR_FREIGHT_TIMEOUT', 60), partExtras,
@@ -46,7 +44,7 @@ for (const blindShipping of [false, true]) {
     const session = await createEpicorClient();
     const startedAt = Date.now();
     try {
-      const result = await customerShipment(session.client, input, contracts,
+      const result = await customerShipment(session.client, input,
         (name, action) => test.step(name, action), progress);
       await test.step('Verify this run’s actual outgoing QuickShip request', async () => {
         await waitForQuickShip(directory, {

@@ -1,6 +1,6 @@
 // Reconstructed from the documented OData contract and supplied create-part test.
 import { BaseClient } from './baseClient';
-import type { CreatePartPayload } from '../data/payloadBuilders';
+import type { CreatePartPayload } from '../flows/purchasedPart';
 export class PartApi {
   constructor(private readonly client: BaseClient, private readonly company: string) {}
   createPart(payload: CreatePartPayload) { return this.client.post('/Erp.BO.PartSvc/Parts', payload); }

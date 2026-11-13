@@ -1,15 +1,19 @@
+import { FulfillmentApi } from '../api/fulfillmentApi';
 import { BaseClient } from '../api/baseClient';
 import { PartApi } from '../api/partApi';
 import { InventoryApi } from '../api/inventoryApi';
 import { SalesOrderApi } from '../api/salesOrderApi';
-import { AllocationApi } from '../api/allocationApi';
-import { MovementApi } from '../api/movementApi';
-import { ShipmentApi } from '../api/shipmentApi';
+
+
+import { ShipmentApi } from '../api/customerShipmentApi';
 import { FreightApi } from '../api/freightApi';
-import { buildPurchasedStockPart } from '../data/payloadBuilders';
-import { buildAllocationTemplateRows } from '../data/allocationPayloadBuilders';
-import type { Dataset, Row, ShippingContracts } from './contracts';
-import { json, rows, one, identity, positive, parameters, dataset, returned, changed, stringsEmpty, assertMasterSave } from './support';
+import { buildPurchasedStockPart } from '../flows/purchasedPart';
+import { buildAllocationTemplateRows } from '../flows/allocationTemplate';
+import type { Dataset, Row } from '../support/datasets';
+import * as fulfillment from './fulfillment';
+import { prepareNewShipmentQuantity } from '../api/customerShipmentApi';
+import { readFreightResult } from '../api/freightApi';
+import { json, rows, one, identity, positive, parameters, dataset, returned, changed, stringsEmpty, assertMasterSave } from '../support/datasets';
 
 export interface ScenarioInput {
   company: string; customerId: string; employeeId: string; plant: string;
@@ -27,15 +31,15 @@ export interface Progress {
 type Step = <T>(name: string, action: () => Promise<T>) => Promise<T>;
 
 export async function customerShipment(
-  client: BaseClient, input: ScenarioInput, contracts: ShippingContracts,
+  client: BaseClient, input: ScenarioInput,
   step: Step, progress: Progress,
 ): Promise<{progress: Progress; shipment: Dataset; freightRequest: Dataset}> {
   const part = new PartApi(client, input.company);
   const inv = new InventoryApi(client);
   const order = new SalesOrderApi(client);
-  const alloc = new AllocationApi(client);
-  const pick = new PickingApi(client);
-  const movement = new MovementApi(client);
+  const alloc = new FulfillmentApi(client);
+  const pick = new FulfillmentApi(client);
+  const movement = new FulfillmentApi(client);
   const ship = new ShipmentApi(client);
   const freight = new FreightApi(client);
   const run: Step = async (name, action) => {
@@ -167,7 +171,7 @@ export async function customerShipment(
     const selected = await json(movement.select(queue, input.employeeId), 'Select queue');
     queue = one(dataset(selected), 'MtlQueue');
     identity(queue, {MtlQueueSeq: progress.queueSeq, SelectedByEmpID: input.employeeId, SelectedForProcessing: true});
-    await contracts.beforeInitialize(client, queue);
+    await fulfillment.beforeInitialize(client, queue);
     if (typeof queue.SysRowID !== 'string' || !queue.SysRowID) throw new Error('Queue identity missing.');
     let ds = dataset(await json(pick.getNewIssueReturn(queue.SysRowID), 'Initialize movement'));
     identity(one(ds, 'IssueReturn'), {Company: input.company, PartNum: progress.partNum,
@@ -181,7 +185,7 @@ export async function customerShipment(
     const destBeforeRows = before.filter(r => r.WhseCode === input.toWhse && r.BinNum === input.toBin);
     // A fresh unique part must have no unexpected stock at shipping before its first movement.
     if (destBeforeRows.length) throw new Error('Unexpected preexisting destination stock for new part.');
-    ds = await contracts.verifyQueueBeforeMovement(client, queue, ds);
+    ds = await fulfillment.verifyQueueBeforeMovement(client, queue, ds);
     const prepared = await json(movement.prepare(ds), 'Prepare movement');
     if (parameters(prepared).requiresUserInput !== false) throw new Error('Movement preparation requires user input.');
     const checked = await json(movement.binTests(dataset(prepared)), 'Check movement bins');
@@ -233,7 +237,7 @@ export async function customerShipment(
     ds = dataset(await json(ship.getWhseInfo(0, input.toWhse, 'WarehouseCode', ds), 'Set shipping warehouse'));
     await json(ship.validateBinCode(input.toWhse, input.toBin), 'Validate shipping bin');
     ds = changed(ds, 'ShipDtl', {BinNum: input.toBin});
-    ds = await contracts.prepareNewShipmentQuantity(client, ds, input.quantity);
+    ds = await prepareNewShipmentQuantity(client, ds, input.quantity);
     identity(one(ds, 'ShipDtl'), {OrderNum: progress.orderNum, OrderLine: progress.orderLine,
       OrderRelNum: progress.orderRelease, PartNum: progress.partNum, WarehouseCode: input.toWhse,
       BinNum: input.toBin, OurInventoryShipQty: input.quantity});
@@ -266,7 +270,7 @@ export async function customerShipment(
     identity(one(freightRequest, 'OrderLine'), {PartNum: progress.partNum, QtyShip: input.quantity,
       QTYShipUOM: 'EA', UnitPrice: input.unitPrice, SchedBcode: input.tariff});
     const result = await json(freight.freightCarton(freightRequest, input.freightUrl, input.workstation, input.freightTimeout), 'Freight carton');
-    const freightDs = contracts.readFreightResult(result, progress.packNum!);
+    const freightDs = readFreightResult(result, progress.packNum!);
     const expectedTransaction = String(one(freightDs, 'FreightCartonResponse').TransactionNumber);
     const expectedTracking = one(freightDs, 'FreightCartonResponseTracking').TrackingNumber;
     progress.freightTransaction = expectedTransaction;

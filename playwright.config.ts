@@ -6,6 +6,6 @@ export default defineConfig({
   reporter: [['list'], ['html', {open: 'never'}], ['junit', {outputFile: 'test-results/results.xml'}]],
   projects: [
     {name: 'local', testMatch: '**/local/**/*.spec.ts'},
-    {name: 'erp-orchestration', testMatch: '**/api/customer-shipment-orchestration.spec.ts'},
+    {name: 'erp-orchestration', testMatch: '**/customer-shipment/**/*.spec.ts'},
   ],
 });

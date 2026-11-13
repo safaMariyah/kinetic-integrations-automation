@@ -1,6 +1,6 @@
 import { BaseClient } from './baseClient';
 
-type Dataset = Record<string, unknown>;
+
 
 export class FreightApi {
   constructor(private readonly client: BaseClient) {}
@@ -86,3 +86,16 @@ export class FreightApi {
   );
 }
 }
+import { json, parameters, returned, rows, one, identity, dataset, stringsEmpty, type Row, type Dataset } from '../support/datasets';
+    export function readFreightResult(body: Row, packNum: number) {
+      const result = returned(body);
+      const status = one(result, 'FreightCartonResponse');
+      identity(status, {ErrorFlag: false, ErrorStatus: 'SUCCESS'});
+      if (!String(status.TransactionNumber ?? '').trim()) throw new Error('Missing freight transaction.');
+      const tracking = rows(result, 'FreightCartonResponseTracking');
+      if (tracking.length !== 1 || tracking[0].PackID !== packNum ||
+          typeof tracking[0].TrackingNumber !== 'string' || !tracking[0].TrackingNumber.trim()) {
+        throw new Error('Freight tracking does not identify this pack.');
+      }
+      return result; // Retain BOTH tables and their original RowMod/SysRowID values.
+    }

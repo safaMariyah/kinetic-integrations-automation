@@ -1,3 +1,4 @@
+// Supported captured profile: MfgSys / CHI / zone 00 / Pickers only.
 export function buildAllocationTemplateRows(company: string) {
   // Initial template row captured from Kinetic.
   const original = {

@@ -1,7 +1,7 @@
 import { test, expect, type APIRequestContext } from '@playwright/test';
 import { BaseClient } from '../../src/api/baseClient';
-import { customerShipment, type Progress } from '../../src/scenarios/customerShipment';
-import { requireShippingContracts, type Row, type Dataset } from '../../src/scenarios/contracts';
+import { customerShipment, type Progress } from '../../src/flows/customerShipment';
+import type { Row, Dataset } from '../../src/support/datasets';
 
 for (const blindShipping of [false, true]) {
   test(`mock transport: complete fresh flow, blindShipping=${blindShipping}`, async () => {
@@ -110,7 +110,7 @@ for (const blindShipping of [false, true]) {
       fromWhse: 'CHI', fromBin: '00-00-00', toWhse: 'SHP', toBin: 'SHP-1', stockQty: 10, quantity: 8,
       shipVia: 'F92', packageCode: 'BOX', weight: 3, unitPrice: 0, tariff: '1234.56.7899', blindShipping,
       freightUrl: 'http://integration.test/service', workstation: 'PACK', freightTimeout: 60, partExtras: {}},
-      requireShippingContracts(), async (_name, action) => action(), progress);
+      async (_name, action) => action(), progress);
     expect(result.progress).toMatchObject({orderNum: 9000, packNum: 400, queueSeq: 1800, freightTransaction: '600'});
     expect(calls.filter(c => c === 'PerformMaterialMovement')).toHaveLength(1);
     expect(calls.filter(c => c === 'FreightCarton')).toHaveLength(1);

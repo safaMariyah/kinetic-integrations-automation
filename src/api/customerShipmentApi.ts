@@ -243,3 +243,8 @@ closeShipment(shipHeadRowId: string) {
     return this.client.post('/Erp.BO.CustShipSvc/ValidateBinCode', {ipWhse: warehouse, ipBinNum: bin});
   }
 }
+import { json, parameters, returned, rows, one, identity, dataset, stringsEmpty, type Row, type Dataset } from '../support/datasets';
+    export async function prepareNewShipmentQuantity(client: BaseClient, ds: Dataset, quantity: number) {
+      const line = one(ds, 'ShipDtl');
+      return dataset(await json(new ShipmentApi(client).getQtyInfo(Number(line.PackLine), quantity, 0, ds), 'Set new shipment quantity'));
+    }

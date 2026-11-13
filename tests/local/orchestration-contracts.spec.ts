@@ -2,13 +2,16 @@ import { test, expect } from '@playwright/test';
 import { mkdtemp, writeFile, rm, utimes } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { verifyQuickShip, waitForQuickShip, decodeArtifact, verifyQuickShipResponse, type QuickShipExpected } from '../../src/scenarios/quickShip';
-import { assertMasterSave } from '../../src/scenarios/support';
+import { verifyQuickShip, waitForQuickShip, decodeArtifact, verifyQuickShipResponse, type QuickShipExpected } from '../../src/support/quickShip';
+import { assertMasterSave } from '../../src/support/datasets';
 import { BaseClient } from '../../src/api/baseClient';
-import { ShipmentApi } from '../../src/api/shipmentApi';
-import { requireShippingContracts } from '../../src/scenarios/contracts';
+import { ShipmentApi } from '../../src/api/customerShipmentApi';
+import * as fulfillment from '../../src/flows/fulfillment';
+import { prepareNewShipmentQuantity } from '../../src/api/customerShipmentApi';
+import { readFreightResult } from '../../src/api/freightApi';
+const operations = {...fulfillment, prepareNewShipmentQuantity, readFreightResult};
 // Import all orchestration modules so Playwright transpiles the complete implementation.
-import { customerShipment } from '../../src/scenarios/customerShipment';
+import { customerShipment } from '../../src/flows/customerShipment';
 const expected: QuickShipExpected = {packNum: 900, orderNum: 9000, orderLine: 1,
   partNum: 'APIPOC-LOCAL', quantity: 8, unitPrice: 1, tariff: 'TEST-TARIFF',
   packageCode: 'BOX', weight: 3, blindShipping: false};
@@ -19,10 +22,6 @@ function payload(blindShipping: unknown = false) {
         productKey: 'APIPOC-LOCAL', tariff: 'TEST-TARIFF', unitOfMeasure: 'EA',
       }}]}]};
 }
-test('all shipping contracts resolve without endpoint placeholders', () => {
-  expect(typeof customerShipment).toBe('function');
-  expect(typeof requireShippingContracts().beforeInitialize).toBe('function');
-});
 test('QuickShip validates both boolean variants and rejects string false', () => {
   verifyQuickShip(payload(false), expected);
   verifyQuickShip(payload(true), {...expected, blindShipping: true});
@@ -63,7 +62,7 @@ function fakeClient(handler: (path: string, body: Record<string, unknown>) => un
   }})} as unknown as BaseClient;
 }
 test('queue checks stop on prompts or a missing queue without discarding IssueReturn state', async () => {
-  const c = requireShippingContracts();
+  const c = operations;
   const ds = {IssueReturn: [{PartNum: 'APIPOC-LOCAL'}]};
   const queue = {SysRowID: 'queue-row'};
   let calls = 0;
@@ -83,7 +82,7 @@ test('queue checks stop on prompts or a missing queue without discarding IssueRe
   await expect(c.verifyQueueBeforeMovement(fakeClient(() => ({returnObj: false})), queue, ds)).rejects.toThrow('no longer exists');
 });
 test('new-line quantity preserves zero selling quantity until save and accepts line 0', async () => {
-  const c = requireShippingContracts();
+  const c = operations;
   const fake = fakeClient((path, body) => {
     expect(path).toContain('GetQtyInfo'); expect(body.packLine).toBe(0); expect(body.displayInvQty).toBe(8);
     return {parameters: {ds: {ShipDtl: [{PackLine: 0, OurInventoryShipQty: 8, SellingInventoryShipQty: 0, RowMod: 'A'}]}}};
@@ -93,7 +92,7 @@ test('new-line quantity preserves zero selling quantity until save and accepts l
   expect(() => new ShipmentApi(fake).getQtyInfo(-1, 8, 0, {})).toThrow('nonnegative');
 });
 test('freight handoff rejects errors and mismatched packs, retaining both returned tables', () => {
-  const read = requireShippingContracts().readFreightResult;
+  const read = operations.readFreightResult;
   const ds = {FreightCartonResponse: [{ErrorFlag: false, ErrorStatus: 'SUCCESS', TransactionNumber: '552'}],
     FreightCartonResponseTracking: [{PackID: 324, TrackingNumber: 'track'}]};
   expect(read({returnObj: ds}, 324)).toBe(ds);

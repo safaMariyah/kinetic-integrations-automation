@@ -1,3 +1,30 @@
+# Customer shipment coverage
+
+Stable IDs distinguish duplicate source headings 4 and 9; original heading/step references remain in source-prose.txt.
+
+| Stable ID | Original heading | Status | Necessary evidence |
+|---|---|---|---|
+| create-shipment | original opening | Missing | Create-only stage without tracking, then freight with tracking. |
+| customer-product-code | 2 | Missing | Capture field save and correlated outgoing product code. |
+| blind-shipping | 3 | Partial | Only customer=false, shipment false/true; full truth table and live artifacts needed. |
+| ud-freight | 4 first | Missing | Capture UD round trip. |
+| ud-unfreight | 4 second | Missing | Capture unfreight and UD round trip. |
+| vat | 5 | Missing | Verify customer and ship-to VAT. |
+| rate-shop | 6 | Missing | Quote 33.06 and CO2 0.21; confirm applicability. |
+| phantom-ud-freight | 7 | Missing | Multiple-container per-case UD correlation. |
+| phantom-ud-unfreight | 9 first | Missing | Multiple-container unfreight correlation. |
+| phantom-rate-shop | 9 second | Missing | Quote 122.25 and CO2 0.83; confirm applicability. |
+
+Business ambiguities: blind-shipping JSON examples contradict requested flags; no precedence chosen. Stock/order/sample quantities differ (200/100 versus current 10/8 and sample packed quantities), as do price and tariff examples. Current zero-price POC does not satisfy all historical values. Exact quotes/CO2 above remain requirements with unresolved applicability, not nonempty checks.
+
+Prerequisites outside this refactor: UD schema creation, model regeneration, IIS restarts, publishing, and shared customer configuration. Single-container artifact matching is a current limitation, not a phantom integration rule. No other shipment families are implemented.
+
+Current local verification: baseline typecheck failed; 8/10 mocks passed. After refactor typecheck passes and 9 substantive mocks pass (one existence-only test removed). Two live variants discovered only. No live verification.
+
+## Historical supplied evidence and assumptions
+
+The following register describes supplied manual evidence and earlier package results, not new live execution. Earlier validation claims are superseded by the current results above.
+
 # Implementation evidence and remaining validation
 
 This file supersedes the earlier draft gap register. No unresolved adapter placeholders remain.

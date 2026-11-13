@@ -1,7 +1,7 @@
 import { readFile, readdir, stat } from 'node:fs/promises';
 import { join } from 'node:path';
-import { record, identity } from './support';
-import type { Row } from './contracts';
+import { record, identity } from '../support/datasets';
+import type { Row } from './datasets';
 export interface QuickShipExpected {
   packNum: number; orderNum: number; orderLine: number; partNum: string;
   quantity: number; unitPrice: number; tariff: string; packageCode: string;

@@ -133,7 +133,7 @@ export async function createEpicorClient() {
       Accept: 'application/json',
       'X-API-Key': apiKey,
     },
-    ignoreHTTPSErrors: true,
+    ignoreHTTPSErrors: false,
     failOnStatusCode: false,
     timeout: settings.timeoutMs,
   });
