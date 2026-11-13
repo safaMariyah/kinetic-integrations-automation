@@ -1,0 +1,7502 @@
+original prose script: QuickShip - Customer Shipment Entry - Verify the Create shipment when freighting the shipment through Rest API
+Step
+Installation of QuickShip and setup for Kinetic Integration is needed to run this test case. See attached installation guide
+Test Data
+None
+Expected Result
+None
+
+
+2
+Step
+Ship Codes setup in QuickShip
+On your server, open QuickShip app
+Select Authentication Type = QuickShip Native
+Select Registration code = quickshipdemo
+username = <local-user>
+password = <local-password>
+Login
+Test Data
+None
+Expected Result
+QuickShip Home page is displayed
+
+
+3
+Step
+Open Kinetic App
+Login with <local-user>/<local-password>
+Test Data
+None
+Expected Result
+Kinetic Homepage is displayed
+
+
+4
+Step
+Move to Company = EPIC06 and Workstation = Freight Service 400
+Test Data
+None
+Expected Result
+None
+
+
+5
+Step
+Active IN UOM Class
+Go to UOM Class
+Production Management/Engineering/Setup/UOM Class
+ 
+Enter Class = Length
+In the UOM List grid, click on IN record
+Active = True
+Save
+Exit UOM Class Maintenance
+Test Data
+None
+Expected Result
+None
+
+
+6
+Step
+QuickShip settings for Workstation
+Go to Workstation Maintenance
+Material Management/Shipping / Receiving/Setup/Workstation
+
+Select the workstation you are working on (PACK)
+Weight Input = Prompt for Weight
+Manifest Enabled = True
+Web Service URL = http://quickshipweb/EpicorFreightService.svc?regCode=QuickShipDemo
+Manifest/Weight Capture Point = Both
+Size UOM = IN
+Make sure weight UOM = LB
+Log manifest messages = True
+Save
+Test Data
+None
+Expected Result
+None
+
+
+7
+Step
+Setup QuickShip integration for Kinetic Company
+Go to Company configuration 
+System Setup/Company/Site Maintenance/Company Configuration
+Click on Modules button
+ In left navigation menu at the left, go to Materials tab
+Expand the Shipping receiving Card
+From the Freight Service Integration combo, select REST API Integration
+On the Quickship API URL enter = http://quickshipweb/
+-Registration code = quickshipdemo
+-username = <local-user>
+-password = <local-password>
+-Save and exit
+Test Data
+None
+Expected Result
+None
+
+
+8
+Step
+Create Purchased part
+ Go to Part
+Main menu > Material Management>Inventory Management>Setup>Part
+On the landing page, click the <Plus> icon to create a new Part
+ Set Part& Description = EP1
+Make sure Type = Purchased
+On the left navigation menu go to Part tab
+Scroll down and set Sales Unit Price = 1.00
+Save
+Test Data
+None
+Expected Result
+None
+
+
+9
+Step
+In the navigation menu at the left, go to Integrations tab
+Enter Schedule B Code = 2222.22
+Save
+Test Data
+None
+Expected Result
+None
+
+
+10
+Step
+Adjust Quantity for parts
+Go to Quantity Adjustment
+Material Management/Inventory Management/General Operations/Quantity Adjustment
+Enter Part = EP1
+Enter Bin = 00-00-00
+Enter Adjust Quantity = 200
+Select Reason = Add new Part 
+Click Adjust button
+Test Data
+None
+Expected Result
+None
+
+
+11
+Step
+Create an order for stock parts
+Go to Order entry
+Sales Management/Customer Relationship Management/General Operations/Order Entry
+
+Click the plus icon to add a new sales order
+Enter customer ECD and tab out
+Select Need By date = Today's date
+Save
+Test Data
+None
+Expected Result
+Save Order Num (####)
+
+
+12
+Step
+In the navigation menu at the left, Move to Lines > Detail tab
+Click the Plus icon to add a new line
+Enter Part = EP1 and tab out
+Enter order quantity = 100.00
+Save
+Test Data
+None
+Expected Result
+None
+
+
+13
+Step
+Go to the overflow menu and click Reserve / Allocate
+Test Data
+None
+Expected Result
+Fulfillment Workbench screen is displayed
+
+
+14
+Step
+Select the 1 line displayed corresponding to your SO Lines
+Then in overflow menu click allocate by part
+Test Data
+None
+Expected Result
+Allocation Process criteria screen opens up
+
+
+15
+Step
+Click Continue
+Test Data
+None
+Expected Result
+Ad Hoc Allocation Template Screen is displayed
+
+
+16
+Step
+Set Release to Picking = True
+Then click Continue
+Test Data
+None
+Expected Result
+Message displayed: 
+
+1 Demand record(s) allocated.
+0 Demand record(s) cross docked.
+1 Demand record(s) selected for picking.
+1 Demand record(s) submitted for picking.
+
+
+17
+Step
+Click Ok
+Test Data
+None
+Expected Result
+Message displayed: "Release for Picking
+Do you want to print the released items?"
+
+
+18
+Step
+Click No
+Exit Fulfillment Workbench screen
+Test Data
+None
+Expected Result
+None
+
+
+19
+Step
+Pick order Lines to Shipping Area
+Go to Material Request Queue
+Material Management/Advanced Material Management/General Operations/Material Request Queue
+Filter transactions from today's date 
+Select the record displayed related to part EP1 and click Select button
+Move to My Selections tab
+Click process
+Test Data
+None
+Expected Result
+WIP/Material Movement Transaction slide panel is displayed
+Make sure Part = EP1
+
+
+20
+Step
+Scroll down and make sure To Warehouse = Shipping Area and To Bin = SHP-1
+Then Click OK
+Test Data
+None
+Expected Result
+Record for part EP1 should disappear from the grid
+
+
+21
+Step
+Create a new CS Pack
+Go to Customer Shipment
+Material Management/Shipping / Receiving/General Operations/Customer Shipment Entry
+
+Click the Plus icon Create a new Pack
+Enter Order number (####) previously generated
+Select Ship Via = UPS Worldwide Expedited
+Set Ship date = Today's date
+Enter Package Code = BOX
+Save
+Test Data
+None
+Expected Result
+Save Pack Num (###)
+
+
+22
+Step
+In the left navigation menu, go to Shipment Lines / Line Details tab
+Click the Plus icon to add a New Line
+Enter Line = 1 and Release = 1
+On the From Inventory card, select Warehouse = Shipping Area and Bin = SHP-1
+Make sure Our Ship Qty = 100
+Save
+Test Data
+None
+Expected Result
+None
+
+
+23
+Step
+Go to Manifest info/Manifest information tab
+Test Data
+None
+Expected Result
+Create Shipment Checkbox should display
+
+
+24
+Step
+If Create Shipment checkbox is checked
+Test Data
+None
+Expected Result
+Send the Createshipment as "True" in Json
+
+
+25
+Step
+If Create Shipment checkbox is not checked in manifest info/manifest information
+Test Data
+None
+Expected Result
+Send the Createshipment as "false" in Json
+
+
+26
+Step
+In the left navigation menu, go back to Details tab
+Enter weight = 3.0000 LB
+Save
+Click Close button
+Test Data
+None
+Expected Result
+Pack status should change to CLOSED
+
+
+27
+Step
+Then, click Freight button
+Test Data
+None
+Expected Result
+If Create Shipment checkbox is selected
+Status should not change to Freighted
+Tracking number field shouldn't be populated
+In manifest info, Shipment Created status should display
+
+
+28
+Step
+Check pack on QuickShip > Shipments
+Open Quick ship app 
+In the QuickShip homepage, click on Shipments
+Click search button and filter shipments from yesterday date to tomorrow's date.
+Click on search
+Test Data
+None
+Expected Result
+A record for your customer shipment should be displayed Without tracking number
+
+
+29
+Step
+Check API request for pack shipment
+In your server, go to your local QuickShip installation folder (i.e. C:\inetpub\wwwroot\QuickShip)
+Click on your CarrierXMLFile folder 
+There, open the shipment request JSON file with the last creation date and time
+Test Data
+None
+Expected Result
+When Create Shipment ​is selected and freighted the pack, it should create the shipment record in quickship and send ​Createshipment as True in ​request json and status should be displayed in manifest info
+{
+  "authentication": {
+    "userid": "epicor",
+    "username": "admin",
+    "registrationId": "QuickShipDemo",
+    "workstationId": "PACK"
+  },
+  "releaseIDPrefix": "CS",
+  "shipTo": {
+    "customerCode": "12",
+    "shipToCode": "12",
+    "address": {
+      "recipientLine2": "",
+      "phone": "",
+      "companyName": "East Coast Distribution",
+      "addressLine1": "550 Main Street",
+      "addressLine2": "",
+      "addressLine3": "",
+      "city": "Hartford",
+      "district": "CT",
+      "postalCode": "06103",
+      "country": "USA",
+      "residential": false,
+      "addressVerifiedField": false
+    },
+    "taxIdentification": "",
+    "email": "",
+    "eori": ""
+  },
+  "parentCustomer": {
+    "customerCode": "12",
+    "shipToCode": "",
+    "address": {
+      "recipientLine2": "",
+      "phone": "",
+      "companyName": "East Coast Distribution",
+      "addressLine1": "550 Main Street",
+      "addressLine2": "",
+      "addressLine3": "",
+      "city": "Hartford",
+      "district": "CT",
+      "postalCode": "06103",
+      "country": "USA",
+      "residential": false,
+      "addressVerifiedField": false
+    },
+    "taxIdentification": "",
+    "email": "",
+    "eori": ""
+  },
+  "contactName": "East Coast Distribution",
+  "contactPhoneNumber": "",
+  "parentCustomerContactName": "",
+  "parentCustomerContactPhoneNumber": "",
+  "shipCode": "F92",
+  "shipDate": "2025-09-18T00:00:00+05:30",
+  "billingShipCode": "",
+  "billingPayFlag": "",
+  "billingMethod": "PREPAID_AND_ADD",
+  "billingAccount": {
+    "accountNumber": "",
+    "billingAddress": {
+      "recipientLine2": "",
+      "phone": "",
+      "companyName": "East Coast Distribution",
+      "addressLine1": "",
+      "addressLine2": "",
+      "addressLine3": "",
+      "addressLine4": "",
+      "city": "",
+      "district": "",
+      "postalCode": "",
+      "country": "",
+      "residential": false,
+      "addressVerifiedField": false
+    }
+  },
+  "orderReference": "8119",
+  "purchaseOrderReference": "",
+  "orderCurrency": "USD",
+  "baseCurrencyUOM": "USD",
+  "currencyConversionFactor": 1.0,
+  "shipmentReference": "314",
+  "shipmentServices": [
+    {
+      "serviceElementName": "COD",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "CODAddFreight",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "DeclaredValueInsurance",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "HomeDelivery",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "ResidentialDelivery",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "SaturdayDelivery",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "SaturdayPickup",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "EMailNotification",
+      "serviceElementValue": "false"
+    }
+  ],
+  "defaultCarrierServices": [
+    {
+      "serviceElementName": "EMailNotification",
+      "serviceElementValue": "false"
+    }
+  ],
+  "containers": [
+    {
+      "caseNumber": "",
+      "packCode": "314",
+      "packageDescription": "BOX",
+      "erpRefrence": "",
+      "length": 24.0,
+      "lengthSpecified": true,
+      "width": 18.0,
+      "widthSpecified": true,
+      "height": 12.0,
+      "heightSpecified": true,
+      "weight": 1.0,
+      "containerTypeCode": "BOX",
+      "containerServices": [
+        {
+          "serviceElementName": "COD",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "CODAddFreight",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "DeclaredValueInsurance",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "NonstandardContainer",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "PriorityAlert",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "SignatureRequired",
+          "serviceElementValue": "false"
+        }
+      ],
+      "hazardousInformation": {
+        "isExceptedQuantity": false,
+        "additionalHazMatInfo": ""
+      },
+      "packingDetail": [
+        {
+          "product": {
+            "productKey": "EP1",
+            "description": "EP1",
+            "tariff": "2222.22",
+            "unitOfMeasure": "EA",
+            "unitWeight": 0.0,
+            "hazmatMass": 0.0,
+            "naftaPreferenceCriterion": "",
+            "producerOfTheGood": "",
+            "netCostMethod": "NO",
+            "countryOfManufacture": "",
+            "hazmatGroupDescription": "",
+            "freightClass": "",
+            "eccn": "",
+            "netWeight": 0.00000,
+            "netWeightUom": "g",
+            "fairMarketValueUnitPrice": 0.0,
+            "lotKey": ""
+          },
+          "unitPrice": 0.0,
+          "exportUnitPrice": 0.0,
+          "qtyPacked": 1.0,
+          "orderlineNumber": 1,
+          "orderReference": "8119",
+          "orderPrice": 0.0,
+          "udFields": {}
+        }
+      ],
+      "dgAccessible": false,
+      "specialServices": {
+        "referenceInformation": "true",
+        "reference1": "",
+        "reference2": "",
+        "reference3": "",
+        "reference4": "",
+        "priorityAlert": "False",
+        "referenceNotes": ""
+      },
+      "dimensionUOM": "IN",
+      "udFields": {}
+    }
+  ],
+  "internationalInfo": {
+    "printInternationalDocs": false,
+    "xtnNumber": "",
+    "incoterms": "",
+    "ultimateConsignee": {
+      "recipientLine2": "",
+      "phone": "",
+      "companyName": "East Coast Distribution",
+      "addressLine1": "550 Main Street",
+      "addressLine2": "",
+      "addressLine3": "",
+      "city": "Hartford",
+      "district": "CT",
+      "postalCode": "06103",
+      "country": "USA",
+      "residential": false,
+      "addressVerifiedField": false
+    },
+    "reasonForExport": "Sale",
+    "routedTransaction": "0",
+    "exportCode": "OS",
+    "partiesToTransaction": false,
+    "termsLocation": ""
+  },
+  "printBOL": false,
+  "packageWeight": 1.0,
+  "isCodCollectionType": false,
+  "isSignatureRequired": false,
+  "checkBox01": false,
+  "checkBox02": false,
+  "checkBox03": false,
+  "checkBox04": false,
+  "checkBox05": false,
+  "checkBox06": false,
+  "checkBox07": false,
+  "checkBox08": false,
+  "checkBox09": false,
+  "checkBox10": false,
+  "checkBox11": false,
+  "checkBox12": false,
+  "checkBox13": false,
+  "checkBox14": false,
+  "checkBox15": false,
+  "checkBox16": false,
+  "checkBox17": false,
+  "checkBox18": false,
+  "checkBox19": false,
+  "checkBox20": false,
+  "handlingCharge": 0.0,
+  "handlingChargeFlag": false,
+  "freightApiRequest": true,
+  "customerNotes": "",
+  "shipperNotes": "",
+  "deliveryInstructions": "",
+  "udFields": {},
+  "returnShipmentLabelComment": "",
+  "createShipment": true,
+  "blindShipping": false
+}
+
+
+30
+Step
+Then, click Freight button
+Test Data
+None
+Expected Result
+Status should change to Freighted
+Tracking number field should be populated
+
+
+
+31
+Step
+Check pack on QuickShip > Shipments
+Open Quick ship app 
+In the QuickShip homepage, click on Shipments
+Click search button and filter shipments from yesterday date to tomorrow's date.
+Click on search
+Test Data
+None
+Expected Result
+A record for your customer shipment should be displayed with tracking number
+
+
+32
+Step
+Check API request for pack shipment
+In your server, go to your local QuickShip installation folder (i.e. C:\inetpub\wwwroot\QuickShip)
+Click on your CarrierXMLFile folder 
+There, open the shipment request JSON file with the last creation date and time
+Test Data
+None
+Expected Result
+If already shipment is created/not checked the create shipment, it should send as ​false in json and ​it should be freighted
+{
+  "authentication": {
+    "userid": "epicor",
+    "username": "admin",
+    "registrationId": "QuickShipDemo",
+    "workstationId": "PACK"
+  },
+  "releaseIDPrefix": "CS",
+  "shipTo": {
+    "customerCode": "12",
+    "shipToCode": "12",
+    "address": {
+      "recipientLine2": "",
+      "phone": "",
+      "companyName": "East Coast Distribution",
+      "addressLine1": "550 Main Street",
+      "addressLine2": "",
+      "addressLine3": "",
+      "city": "Hartford",
+      "district": "CT",
+      "postalCode": "06103",
+      "country": "USA",
+      "residential": false,
+      "addressVerifiedField": false
+    },
+    "taxIdentification": "",
+    "email": "",
+    "eori": ""
+  },
+  "parentCustomer": {
+    "customerCode": "12",
+    "shipToCode": "",
+    "address": {
+      "recipientLine2": "",
+      "phone": "",
+      "companyName": "East Coast Distribution",
+      "addressLine1": "550 Main Street",
+      "addressLine2": "",
+      "addressLine3": "",
+      "city": "Hartford",
+      "district": "CT",
+      "postalCode": "06103",
+      "country": "USA",
+      "residential": false,
+      "addressVerifiedField": false
+    },
+    "taxIdentification": "",
+    "email": "",
+    "eori": ""
+  },
+  "contactName": "East Coast Distribution",
+  "contactPhoneNumber": "",
+  "parentCustomerContactName": "",
+  "parentCustomerContactPhoneNumber": "",
+  "shipCode": "F92",
+  "shipDate": "2025-09-18T00:00:00+05:30",
+  "billingShipCode": "",
+  "billingPayFlag": "",
+  "billingMethod": "PREPAID_AND_ADD",
+  "billingAccount": {
+    "accountNumber": "",
+    "billingAddress": {
+      "recipientLine2": "",
+      "phone": "",
+      "companyName": "East Coast Distribution",
+      "addressLine1": "",
+      "addressLine2": "",
+      "addressLine3": "",
+      "addressLine4": "",
+      "city": "",
+      "district": "",
+      "postalCode": "",
+      "country": "",
+      "residential": false,
+      "addressVerifiedField": false
+    }
+  },
+  "orderReference": "8119",
+  "purchaseOrderReference": "",
+  "orderCurrency": "USD",
+  "baseCurrencyUOM": "USD",
+  "currencyConversionFactor": 1.0,
+  "shipmentReference": "314",
+  "shipmentServices": [
+    {
+      "serviceElementName": "COD",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "CODAddFreight",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "DeclaredValueInsurance",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "HomeDelivery",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "ResidentialDelivery",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "SaturdayDelivery",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "SaturdayPickup",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "EMailNotification",
+      "serviceElementValue": "false"
+    }
+  ],
+  "defaultCarrierServices": [
+    {
+      "serviceElementName": "EMailNotification",
+      "serviceElementValue": "false"
+    }
+  ],
+  "containers": [
+    {
+      "caseNumber": "",
+      "packCode": "314",
+      "packageDescription": "BOX",
+      "erpRefrence": "",
+      "length": 24.0,
+      "lengthSpecified": true,
+      "width": 18.0,
+      "widthSpecified": true,
+      "height": 12.0,
+      "heightSpecified": true,
+      "weight": 1.0,
+      "containerTypeCode": "BOX",
+      "containerServices": [
+        {
+          "serviceElementName": "COD",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "CODAddFreight",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "DeclaredValueInsurance",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "NonstandardContainer",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "PriorityAlert",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "SignatureRequired",
+          "serviceElementValue": "false"
+        }
+      ],
+      "hazardousInformation": {
+        "isExceptedQuantity": false,
+        "additionalHazMatInfo": ""
+      },
+      "packingDetail": [
+        {
+          "product": {
+            "productKey": "EP1",
+            "description": "EP1",
+            "tariff": "2222.22",
+            "unitOfMeasure": "EA",
+            "unitWeight": 0.0,
+            "hazmatMass": 0.0,
+            "naftaPreferenceCriterion": "",
+            "producerOfTheGood": "",
+            "netCostMethod": "NO",
+            "countryOfManufacture": "",
+            "hazmatGroupDescription": "",
+            "freightClass": "",
+            "eccn": "",
+            "netWeight": 0.00000,
+            "netWeightUom": "g",
+            "fairMarketValueUnitPrice": 0.0,
+            "lotKey": ""
+          },
+          "unitPrice": 0.0,
+          "exportUnitPrice": 0.0,
+          "qtyPacked": 1.0,
+          "orderlineNumber": 1,
+          "orderReference": "8119",
+          "orderPrice": 0.0,
+          "udFields": {}
+        }
+      ],
+      "dgAccessible": false,
+      "specialServices": {
+        "referenceInformation": "true",
+        "reference1": "",
+        "reference2": "",
+        "reference3": "",
+        "reference4": "",
+        "priorityAlert": "False",
+        "referenceNotes": ""
+      },
+      "dimensionUOM": "IN",
+      "udFields": {}
+    }
+  ],
+  "internationalInfo": {
+    "printInternationalDocs": false,
+    "xtnNumber": "",
+    "incoterms": "",
+    "ultimateConsignee": {
+      "recipientLine2": "",
+      "phone": "",
+      "companyName": "East Coast Distribution",
+      "addressLine1": "550 Main Street",
+      "addressLine2": "",
+      "addressLine3": "",
+      "city": "Hartford",
+      "district": "CT",
+      "postalCode": "06103",
+      "country": "USA",
+      "residential": false,
+      "addressVerifiedField": false
+    },
+    "reasonForExport": "Sale",
+    "routedTransaction": "0",
+    "exportCode": "OS",
+    "partiesToTransaction": false,
+    "termsLocation": ""
+  },
+  "printBOL": false,
+  "packageWeight": 1.0,
+  "isCodCollectionType": false,
+  "isSignatureRequired": false,
+  "checkBox01": false,
+  "checkBox02": false,
+  "checkBox03": false,
+  "checkBox04": false,
+  "checkBox05": false,
+  "checkBox06": false,
+  "checkBox07": false,
+  "checkBox08": false,
+  "checkBox09": false,
+  "checkBox10": false,
+  "checkBox11": false,
+  "checkBox12": false,
+  "checkBox13": false,
+  "checkBox14": false,
+  "checkBox15": false,
+  "checkBox16": false,
+  "checkBox17": false,
+  "checkBox18": false,
+  "checkBox19": false,
+  "checkBox20": false,
+  "handlingCharge": 0.0,
+  "handlingChargeFlag": false,
+  "freightApiRequest": true,
+  "customerNotes": "",
+  "shipperNotes": "",
+  "deliveryInstructions": "",
+  "udFields": {},
+  "returnShipmentLabelComment": "",
+  "createShipment": false,
+  "blindShipping": false
+}
+----------------------------------------------------------------------------------------------------
+other test scripts:
+
+2. QuickShip - Customer Shipment Entry - Verify the customer Product Code new field while freighting the shipment through REST API
+
+
+Step
+Installation of QuickShip and setup for Kinetic Integration is needed to run this test case. See attached installation guide
+Test Data
+None
+Expected Result
+None
+
+
+2
+Step
+Ship Codes setup in QuickShip
+On your server, open QuickShip app
+Select Authentication Type = QuickShip Native
+Select Registration code = quickshipdemo
+username = <local-user>
+password = <local-password>
+Login
+Test Data
+None
+Expected Result
+QuickShip Home page is displayed
+
+
+3
+Step
+Open Kinetic App
+Login with <local-user>/<local-password>
+Test Data
+None
+Expected Result
+Kinetic Homepage is displayed
+
+
+4
+Step
+Move to Company = EPIC06 and Workstation = Freight Service 400
+Test Data
+None
+Expected Result
+None
+
+
+5
+Step
+Active IN UOM Class
+Go to UOM Class
+Production Management/Engineering/Setup/UOM Class
+ 
+Enter Class = Length
+In the UOM List grid, click on IN record
+Active = True
+Save
+Exit UOM Class Maintenance
+Test Data
+None
+Expected Result
+None
+
+
+6
+Step
+QuickShip settings for Workstation
+Go to Workstation Maintenance
+Material Management/Shipping / Receiving/Setup/Workstation
+
+Select the workstation you are working on (PACK)
+Weight Input = Prompt for Weight
+Manifest Enabled = True
+Web Service URL = http://quickshipweb/EpicorFreightService.svc?regCode=QuickShipDemo
+Manifest/Weight Capture Point = Both
+Size UOM = IN
+Make sure weight UOM = LB
+Log manifest messages = True
+Save
+Test Data
+None
+Expected Result
+None
+
+
+7
+Step
+Setup QuickShip integration for Kinetic Company
+Go to Company configuration 
+System Setup/Company/Site Maintenance/Company Configuration
+Click on Modules button
+ In left navigation menu at the left, go to Materials tab
+Expand the Shipping receiving Card
+From the Freight Service Integration combo, select REST API Integration
+On the Quickship API URL enter = http://quickshipweb/
+-Registration code = quickshipdemo
+-username = <local-user>
+-password = <local-password>
+-Save and exit
+Test Data
+None
+Expected Result
+None
+
+
+8
+Step
+Create Purchased part
+ Go to Part
+Main menu > Material Management>Inventory Management>Setup>Part
+On the landing page, click the <Plus> icon to create a new Part
+ Set Part& Description = EP1
+Make sure Type = Purchased
+On the left navigation menu go to Part tab
+Scroll down and set Sales Unit Price = 1.00
+Save
+Test Data
+None
+Expected Result
+None
+
+
+9
+Step
+In the navigation menu at the left, go to Integrations tab
+Enter Schedule B Code = 2222.22
+Save
+Test Data
+None
+Expected Result
+None
+
+
+10
+Step
+Adjust Quantity for parts
+Go to Quantity Adjustment
+Material Management/Inventory Management/General Operations/Quantity Adjustment
+Enter Part = EP1
+Enter Bin = 00-00-00
+Enter Adjust Quantity = 200
+Select Reason = Add new Part 
+Click Adjust button
+Test Data
+None
+Expected Result
+None
+
+
+11
+Step
+Create an order for stock parts
+Go to Order entry
+Sales Management/Customer Relationship Management/General Operations/Order Entry
+
+Click the plus icon to add a new sales order
+Enter customer ECD and tab out
+Select Need By date = Today's date
+Save
+Test Data
+None
+Expected Result
+Save Order Num (####)
+
+
+12
+Step
+In the navigation menu at the left, Move to Lines > Detail tab
+Click the Plus icon to add a new line
+Enter Part = EP1 and tab out
+Enter order quantity = 100.00
+Select the customer part (customer part should be created in part cross reference screen)
+Save
+Test Data
+None
+Expected Result
+None
+
+
+13
+Step
+Go to the overflow menu and click Reserve / Allocate
+Test Data
+None
+Expected Result
+Fulfillment Workbench screen is displayed
+
+
+14
+Step
+Select the 1 line displayed corresponding to your SO Lines
+Then in overflow menu click allocate by part
+Test Data
+None
+Expected Result
+Allocation Process criteria screen opens up
+
+
+15
+Step
+Click Continue
+Test Data
+None
+Expected Result
+Ad Hoc Allocation Template Screen is displayed
+
+
+16
+Step
+Set Release to Picking = True
+Then click Continue
+Test Data
+None
+Expected Result
+Message displayed: 
+
+1 Demand record(s) allocated.
+0 Demand record(s) cross docked.
+1 Demand record(s) selected for picking.
+1 Demand record(s) submitted for picking.
+
+
+17
+Step
+Click Ok
+Test Data
+None
+Expected Result
+Message displayed: "Release for Picking
+Do you want to print the released items?"
+
+
+18
+Step
+Click No
+Exit Fulfillment Workbench screen
+Test Data
+None
+Expected Result
+None
+
+
+19
+Step
+Pick order Lines to Shipping Area
+Go to Material Request Queue
+Material Management/Advanced Material Management/General Operations/Material Request Queue
+Filter transactions from today's date 
+Select the record displayed related to part EP1 and click Select button
+Move to My Selections tab
+Click process
+Test Data
+None
+Expected Result
+WIP/Material Movement Transaction slide panel is displayed
+Make sure Part = EP1
+
+
+20
+Step
+Scroll down and make sure To Warehouse = Shipping Area and To Bin = SHP-1
+Then Click OK
+Test Data
+None
+Expected Result
+Record for part EP1 should disappear from the grid
+
+
+21
+Step
+Create a new CS Pack
+Go to Customer Shipment
+Material Management/Shipping / Receiving/General Operations/Customer Shipment Entry
+
+Click the Plus icon Create a new Pack
+Enter Order number (####) previously generated
+Select Ship Via = FedEx Ground
+Set Ship date = Today's date
+Enter Package Code = BOX
+Save
+Test Data
+None
+Expected Result
+Save Pack Num (###)
+
+
+22
+Step
+In the left navigation menu, go to Shipment Lines / Line Details tab
+Click the Plus icon to add a New Line
+Enter Line = 1 and Release = 1
+On the From Inventory card, select Warehouse = Shipping Area and Bin = SHP-1
+Make sure Our Ship Qty = 100
+Make sure customer part is fetched from Order 
+Save
+Test Data
+None
+Expected Result
+None
+
+
+23
+Step
+In the left navigation menu, go back to Details tab
+Enter weight = 3.0000 LB
+Save
+Click Close button
+Test Data
+None
+Expected Result
+Pack status should change to CLOSED
+
+
+24
+Step
+Then, click Freight button
+Test Data
+None
+Expected Result
+Status should change to Freighted
+Tracking number field should be populated
+
+
+25
+Step
+Check pack on QuickShip > Shipments
+Open Quick ship app 
+In the QuickShip homepage, click on Shipments
+Click search button and filter shipments from yesterday date to tomorrow's date.
+Click on search
+Test Data
+None
+Expected Result
+A record for your Customer shipment should be displayed 
+
+
+26
+Step
+Check API request for pack shipment
+In your server, go to your local QuickShip installation folder (i.e. C:\inetpub\wwwroot\QuickShip)
+Click on your CarrierXMLFile folder 
+There, open the shipment request JSON file with the last creation date and time
+Test Data
+None
+Expected Result
+If customer part is selected in shipment line, the should send to the quickship in request json under packing detail
+{
+  "authentication": {
+    "userid": "epicor",
+    "username": "admin",
+    "registrationId": "QuickShipDemo",
+    "workstationId": "PACK"
+  },
+  "releaseIDPrefix": "CS",
+  "shipTo": {
+    "customerCode": "12",
+    "shipToCode": "EDA-A",
+    "address": {
+      "recipientLine2": "",
+      "phone": "",
+      "companyName": "East Coast Distribution",
+      "addressLine1": "225 West State",
+      "addressLine2": "",
+      "addressLine3": "",
+      "city": "Albany",
+      "district": "NY",
+      "postalCode": "12211",
+      "country": "USA",
+      "residential": false,
+      "addressVerifiedField": false
+    },
+    "taxIdentification": "",
+    "email": "",
+    "eori": ""
+  },
+  "parentCustomer": {
+    "customerCode": "12",
+    "shipToCode": "",
+    "address": {
+      "recipientLine2": "",
+      "phone": "654654654654",
+      "companyName": "East Coast Distribution",
+      "addressLine1": "550 Main Street",
+      "addressLine2": "",
+      "addressLine3": "",
+      "city": "Hartford",
+      "district": "CT",
+      "postalCode": "06103",
+      "country": "USA",
+      "residential": false,
+      "addressVerifiedField": false
+    },
+    "taxIdentification": "",
+    "email": "",
+    "vat": "",
+    "eori": ""
+  },
+  "contactName": "East Coast Distribution",
+  "contactPhoneNumber": "654654654654",
+  "parentCustomerContactName": "",
+  "parentCustomerContactPhoneNumber": "654654654654",
+  "shipCode": "F92",
+  "shipDate": "2025-10-20T00:00:00+05:30",
+  "billingShipCode": "",
+  "billingPayFlag": "",
+  "billingMethod": "PREPAID_AND_ADD",
+  "billingAccount": {
+    "accountNumber": "",
+    "billingAddress": {
+      "recipientLine2": "",
+      "phone": "",
+      "companyName": "East Coast Distribution",
+      "addressLine1": "",
+      "addressLine2": "",
+      "addressLine3": "",
+      "addressLine4": "",
+      "city": "",
+      "district": "",
+      "postalCode": "",
+      "country": "",
+      "residential": false,
+      "addressVerifiedField": false
+    }
+  },
+  "orderReference": "8129",
+  "purchaseOrderReference": "",
+  "orderCurrency": "USD",
+  "baseCurrencyUOM": "USD",
+  "currencyConversionFactor": 1.0,
+  "shipmentReference": "326",
+  "shipmentServices": [
+    {
+      "serviceElementName": "COD",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "CODAddFreight",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "DeclaredValueInsurance",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "HomeDelivery",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "ResidentialDelivery",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "SaturdayDelivery",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "SaturdayPickup",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "EMailNotification",
+      "serviceElementValue": "false"
+    }
+  ],
+  "defaultCarrierServices": [
+    {
+      "serviceElementName": "EMailNotification",
+      "serviceElementValue": "false"
+    }
+  ],
+  "containers": [
+    {
+      "caseNumber": "",
+      "packCode": "326",
+      "packageDescription": "BOX",
+      "erpRefrence": "",
+      "length": 24.0,
+      "lengthSpecified": true,
+      "width": 18.0,
+      "widthSpecified": true,
+      "height": 12.0,
+      "heightSpecified": true,
+      "weight": 1.0,
+      "containerTypeCode": "BOX",
+      "containerServices": [
+        {
+          "serviceElementName": "COD",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "CODAddFreight",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "DeclaredValueInsurance",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "NonstandardContainer",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "PriorityAlert",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "SignatureRequired",
+          "serviceElementValue": "false"
+        }
+      ],
+      "hazardousInformation": {
+        "isExceptedQuantity": false,
+        "additionalHazMatInfo": ""
+      },
+      "packingDetail": [
+        {
+          "product": {
+            "productKey": "EP1",
+            "description": "EP1",
+            "tariff": "2222.22",
+            "unitOfMeasure": "EA",
+            "unitWeight": 0.0,
+            "hazmatMass": 0.0,
+            "naftaPreferenceCriterion": "",
+            "producerOfTheGood": "",
+            "netCostMethod": "NO",
+            "countryOfManufacture": "",
+            "hazmatGroupDescription": "",
+            "freightClass": "",
+            "eccn": "",
+            "netWeight": 0.00000,
+            "netWeightUom": "g",
+            "fairMarketValueUnitPrice": 0.0,
+            "lotKey": ""
+          },
+          "unitPrice": 0.0,
+          "exportUnitPrice": 0.0,
+          "qtyPacked": 1.0,
+          "orderlineNumber": 1,
+          "orderReference": "8129",
+          "orderPrice": 0.0,
+          "customerProductCode": "EP1Testing",
+          "udFields": {}
+        }
+      ],
+      "dgAccessible": false,
+      "specialServices": {
+        "referenceInformation": "true",
+        "reference1": "",
+        "reference2": "",
+        "reference3": "",
+        "reference4": "",
+        "priorityAlert": "False",
+        "referenceNotes": ""
+      },
+      "dimensionUOM": "IN",
+      "udFields": {}
+    }
+  ],
+  "internationalInfo": {
+    "printInternationalDocs": false,
+    "xtnNumber": "",
+    "incoterms": "",
+    "ultimateConsignee": {
+      "recipientLine2": "",
+      "phone": "",
+      "companyName": "East Coast Distribution",
+      "addressLine1": "225 West State",
+      "addressLine2": "",
+      "addressLine3": "",
+      "city": "Albany",
+      "district": "NY",
+      "postalCode": "12211",
+      "country": "USA",
+      "residential": false,
+      "addressVerifiedField": false
+    },
+    "reasonForExport": "Sale",
+    "routedTransaction": "0",
+    "exportCode": "OS",
+    "partiesToTransaction": false,
+    "termsLocation": ""
+  },
+  "printBOL": false,
+  "packageWeight": 1.0,
+  "isCodCollectionType": false,
+  "isSignatureRequired": false,
+  "checkBox01": false,
+  "checkBox02": false,
+  "checkBox03": false,
+  "checkBox04": false,
+  "checkBox05": false,
+  "checkBox06": false,
+  "checkBox07": false,
+  "checkBox08": false,
+  "checkBox09": false,
+  "checkBox10": false,
+  "checkBox11": false,
+  "checkBox12": false,
+  "checkBox13": false,
+  "checkBox14": false,
+  "checkBox15": false,
+  "checkBox16": false,
+  "checkBox17": false,
+  "checkBox18": false,
+  "checkBox19": false,
+  "checkBox20": false,
+  "handlingCharge": 0.0,
+  "handlingChargeFlag": false,
+  "freightApiRequest": true,
+  "customerNotes": "",
+  "shipperNotes": "",
+  "deliveryInstructions": "",
+  "udFields": {},
+  "returnShipmentLabelComment": "",
+  "createShipment": false,
+  "blindShipping": false
+}
+
+3. QuickShip - Customer Shipment Entry - Verify the blind shipment status while freighting the shipment
+1
+Step
+Installation of QuickShip and setup for Kinetic Integration is needed to run this test case. See attached installation guide
+Test Data
+None
+Expected Result
+None
+
+
+2
+Step
+Ship Codes setup in QuickShip
+On your server, open QuickShip app
+Select Authentication Type = QuickShip Native
+Select Registration code = quickshipdemo
+username = <local-user>
+password = <local-password>
+Login
+Test Data
+None
+Expected Result
+QuickShip Home page is displayed
+
+
+3
+Step
+Open Kinetic App
+Login with <local-user>/<local-password>
+Test Data
+None
+Expected Result
+Kinetic Homepage is displayed
+
+
+4
+Step
+Move to Company = EPIC06 and Workstation = Freight Service 400
+Test Data
+None
+Expected Result
+None
+
+
+5
+Step
+Active IN UOM Class
+Go to UOM Class
+Production Management/Engineering/Setup/UOM Class
+ 
+Enter Class = Length
+In the UOM List grid, click on IN record
+Active = True
+Save
+Exit UOM Class Maintenance
+Test Data
+None
+Expected Result
+None
+
+
+6
+Step
+QuickShip settings for Workstation
+Go to Workstation Maintenance
+Material Management/Shipping / Receiving/Setup/Workstation
+
+Select the workstation you are working on (PACK)
+Weight Input = Prompt for Weight
+Manifest Enabled = True
+Web Service URL = http://quickshipweb/EpicorFreightService.svc?regCode=QuickShipDemo
+Manifest/Weight Capture Point = Both
+Size UOM = IN
+Make sure weight UOM = LB
+Log manifest messages = True
+Save
+Test Data
+None
+Expected Result
+None
+
+
+7
+Step
+Setup QuickShip integration for Kinetic Company
+Go to Company configuration 
+System Setup/Company/Site Maintenance/Company Configuration
+Click on Modules button
+ In left navigation menu at the left, go to Materials tab
+Expand the Shipping receiving Card
+From the Freight Service Integration combo, select REST API Integration
+On the Quickship API URL enter = http://quickshipweb/
+-Registration code = quickshipdemo
+-username = <local-user>
+-password = <local-password>
+-Save and exit
+Test Data
+None
+Expected Result
+None
+
+
+8
+Step
+Create Purchased part
+ Go to Part
+Main menu > Material Management>Inventory Management>Setup>Part
+On the landing page, click the <Plus> icon to create a new Part
+ Set Part& Description = EP1
+Make sure Type = Purchased
+On the left navigation menu go to Part tab
+Scroll down and set Sales Unit Price = 1.00
+Save
+Test Data
+None
+Expected Result
+None
+
+
+9
+Step
+In the navigation menu at the left, go to Integrations tab
+Enter Schedule B Code = 2222.22
+Save
+Test Data
+None
+Expected Result
+None
+
+
+10
+Step
+Adjust Quantity for parts
+Go to Quantity Adjustment
+Material Management/Inventory Management/General Operations/Quantity Adjustment
+Enter Part = EP1
+Enter Bin = 00-00-00
+Enter Adjust Quantity = 200
+Select Reason = Add new Part 
+Click Adjust button
+Test Data
+None
+Expected Result
+None
+
+
+11
+Step
+Create an order for stock parts
+Go to Order entry
+Sales Management/Customer Relationship Management/General Operations/Order Entry
+
+Click the plus icon to add a new sales order
+Enter customer ECD and tab out
+Select Need By date = Today's date
+Save
+Test Data
+None
+Expected Result
+Save Order Num (####)
+
+
+12
+Step
+In the navigation menu at the left, Move to Lines > Detail tab
+Click the Plus icon to add a new line
+Enter Part = EP1 and tab out
+Enter order quantity = 100.00
+Save
+Test Data
+None
+Expected Result
+None
+
+
+13
+Step
+Go to the overflow menu and click Reserve / Allocate
+Test Data
+None
+Expected Result
+Fulfillment Workbench screen is displayed
+
+
+14
+Step
+Select the 1 line displayed corresponding to your SO Lines
+Then in overflow menu click allocate by part
+Test Data
+None
+Expected Result
+Allocation Process criteria screen opens up
+
+
+15
+Step
+Click Continue
+Test Data
+None
+Expected Result
+Ad Hoc Allocation Template Screen is displayed
+
+
+16
+Step
+Set Release to Picking = True
+Then click Continue
+Test Data
+None
+Expected Result
+Message displayed: 
+
+1 Demand record(s) allocated.
+0 Demand record(s) cross docked.
+1 Demand record(s) selected for picking.
+1 Demand record(s) submitted for picking.
+
+
+17
+Step
+Click Ok
+Test Data
+None
+Expected Result
+Message displayed: "Release for Picking
+Do you want to print the released items?"
+
+
+18
+Step
+Click No
+Exit Fulfillment Workbench screen
+Test Data
+None
+Expected Result
+None
+
+
+19
+Step
+Pick order Lines to Shipping Area
+Go to Material Request Queue
+Material Management/Advanced Material Management/General Operations/Material Request Queue
+Filter transactions from today's date 
+Select the record displayed related to part EP1 and click Select button
+Move to My Selections tab
+Click process
+Test Data
+None
+Expected Result
+WIP/Material Movement Transaction slide panel is displayed
+Make sure Part = EP1
+
+
+20
+Step
+Scroll down and make sure To Warehouse = Shipping Area and To Bin = SHP-1
+Then Click OK
+Test Data
+None
+Expected Result
+Record for part EP1 should disappear from the grid
+
+
+21
+Step
+Create a new CS Pack
+Go to Customer Shipment
+Material Management/Shipping / Receiving/General Operations/Customer Shipment Entry
+
+Click the Plus icon Create a new Pack
+Enter Order number (####) previously generated
+Select Ship Via = UPS Worldwide Expedited
+Set Ship date = Today's date
+Enter Package Code = BOX
+Save
+Test Data
+None
+Expected Result
+Save Pack Num (###)
+
+
+22
+Step
+In the left navigation menu, go to Shipment Lines / Line Details tab
+Click the Plus icon to add a New Line
+Enter Line = 1 and Release = 1
+On the From Inventory card, select Warehouse = Shipping Area and Bin = SHP-1
+Make sure Our Ship Qty = 100
+Save
+Test Data
+None
+Expected Result
+None
+
+
+23
+Step
+Go to Manifest info tab
+Test Data
+None
+Expected Result
+Use Blind Shipping Checkbox should display
+
+
+24
+Step
+If Use Blind Shipping checkbox is checked
+Test Data
+None
+Expected Result
+Send the Blind shipment as "True" in Json
+
+
+25
+Step
+If Use Blind Shipping checkbox is not checked in manifest , check it is in the customer header ,
+If Use Blind Shipping checkbox is checked in customer header
+Test Data
+None
+Expected Result
+Send the Blind shipment as "True" in Json
+
+
+26
+Step
+Use Blind Shipping checkbox is not checked in eithe manifest info and customer header
+Test Data
+None
+Expected Result
+Send the Blind shipment as "false" in json
+
+
+27
+Step
+In the left navigation menu, go back to Details tab
+Enter weight = 3.0000 LB
+Save
+Click Close button
+Test Data
+None
+Expected Result
+Pack status should change to CLOSED
+
+
+28
+Step
+Then, click Freight button
+Test Data
+None
+Expected Result
+Status should change to Freighted
+Tracking number field should be populated
+
+
+29
+Step
+Check pack on QuickShip > Shipments
+Open Quick ship app 
+In the QuickShip homepage, click on Shipments
+Click search button and filter shipments from yesterday date to tomorrow's date.
+Click on search
+Test Data
+None
+Expected Result
+A record for your Customer shipment should be displayed 
+
+
+30
+Step
+Check API request for pack shipment
+In your server, go to your local QuickShip installation folder (i.e. C:\inetpub\wwwroot\QuickShip)
+Click on your CarrierXMLFile folder 
+There, open the shipment request JSON file with the last creation date and time
+Test Data
+None
+Expected Result
+If Use Blind Shipping checkbox is checked ​in manifest info in customer shipment and not in customer screen
+{
+  "authentication": {
+    "userid": "epicor",
+    "username": "admin",
+    "registrationId": "QuickShipDemo",
+    "workstationId": "PACK"
+  },
+  "releaseIDPrefix": "CS",
+  "shipTo": {
+    "customerCode": "12",
+    "shipToCode": "12",
+    "address": {
+      "recipientLine2": "",
+      "phone": "9872438632",
+      "companyName": "East Coast Distribution",
+      "addressLine1": "550 Main Street",
+      "addressLine2": "",
+      "addressLine3": "",
+      "city": "Hartford",
+      "district": "CT",
+      "postalCode": "06103",
+      "country": "USA",
+      "residential": false,
+      "addressVerifiedField": false
+    },
+    "taxIdentification": "",
+    "email": "",
+    "eori": ""
+  },
+  "parentCustomer": {
+    "customerCode": "12",
+    "shipToCode": "",
+    "address": {
+      "recipientLine2": "",
+      "phone": "9872438632",
+      "companyName": "East Coast Distribution",
+      "addressLine1": "550 Main Street",
+      "addressLine2": "",
+      "addressLine3": "",
+      "city": "Hartford",
+      "district": "CT",
+      "postalCode": "06103",
+      "country": "USA",
+      "residential": false,
+      "addressVerifiedField": false
+    },
+    "taxIdentification": "",
+    "email": "",
+    "eori": ""
+  },
+  "contactName": "East Coast Distribution",
+  "contactPhoneNumber": "9872438632",
+  "parentCustomerContactName": "",
+  "parentCustomerContactPhoneNumber": "9872438632",
+  "shipCode": "F92",
+  "shipDate": "2025-09-02T00:00:00+05:30",
+  "billingShipCode": "",
+  "billingPayFlag": "",
+  "billingMethod": "PREPAID_AND_ADD",
+  "billingAccount": {
+    "accountNumber": "",
+    "billingAddress": {
+      "recipientLine2": "",
+      "phone": "",
+      "companyName": "East Coast Distribution",
+      "addressLine1": "",
+      "addressLine2": "",
+      "addressLine3": "",
+      "addressLine4": "",
+      "city": "",
+      "district": "",
+      "postalCode": "",
+      "country": "",
+      "residential": false,
+      "addressVerifiedField": false
+    }
+  },
+  "orderReference": "8120",
+  "purchaseOrderReference": "",
+  "orderCurrency": "USD",
+  "baseCurrencyUOM": "USD",
+  "currencyConversionFactor": 1.0,
+  "shipmentReference": "316",
+  "shipmentServices": [
+    {
+      "serviceElementName": "COD",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "CODAddFreight",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "DeclaredValueInsurance",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "HomeDelivery",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "ResidentialDelivery",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "SaturdayDelivery",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "SaturdayPickup",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "EMailNotification",
+      "serviceElementValue": "false"
+    }
+  ],
+  "defaultCarrierServices": [
+    {
+      "serviceElementName": "EMailNotification",
+      "serviceElementValue": "false"
+    }
+  ],
+  "containers": [
+    {
+      "caseNumber": "",
+      "packCode": "316",
+      "packageDescription": "BOX",
+      "erpRefrence": "",
+      "length": 24.0,
+      "lengthSpecified": true,
+      "width": 18.0,
+      "widthSpecified": true,
+      "height": 12.0,
+      "heightSpecified": true,
+      "weight": 1.0,
+      "containerTypeCode": "BOX",
+      "containerServices": [
+        {
+          "serviceElementName": "COD",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "CODAddFreight",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "DeclaredValueInsurance",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "NonstandardContainer",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "PriorityAlert",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "SignatureRequired",
+          "serviceElementValue": "false"
+        }
+      ],
+      "hazardousInformation": {
+        "isExceptedQuantity": false,
+        "additionalHazMatInfo": ""
+      },
+      "packingDetail": [
+        {
+          "product": {
+            "productKey": "EP1",
+            "description": "EP1",
+            "tariff": "2222.22",
+            "unitOfMeasure": "EA",
+            "unitWeight": 0.0,
+            "hazmatMass": 0.0,
+            "naftaPreferenceCriterion": "",
+            "producerOfTheGood": "",
+            "netCostMethod": "NO",
+            "countryOfManufacture": "",
+            "hazmatGroupDescription": "",
+            "freightClass": "",
+            "eccn": "",
+            "netWeight": 0.00000,
+            "netWeightUom": "g",
+            "fairMarketValueUnitPrice": 0.0,
+            "lotKey": ""
+          },
+          "unitPrice": 1.0,
+          "exportUnitPrice": 0.0,
+          "qtyPacked": 1.0,
+          "orderlineNumber": 1,
+          "orderReference": "8120",
+          "orderPrice": 1.0,
+          "udFields": {}
+        }
+      ],
+      "dgAccessible": false,
+      "specialServices": {
+        "referenceInformation": "true",
+        "reference1": "",
+        "reference2": "",
+        "reference3": "",
+        "reference4": "",
+        "priorityAlert": "False",
+        "referenceNotes": ""
+      },
+      "dimensionUOM": "IN",
+      "udFields": {}
+    }
+  ],
+  "internationalInfo": {
+    "printInternationalDocs": false,
+    "xtnNumber": "",
+    "incoterms": "",
+    "ultimateConsignee": {
+      "recipientLine2": "",
+      "phone": "9872438632",
+      "companyName": "East Coast Distribution",
+      "addressLine1": "550 Main Street",
+      "addressLine2": "",
+      "addressLine3": "",
+      "city": "Hartford",
+      "district": "CT",
+      "postalCode": "06103",
+      "country": "USA",
+      "residential": false,
+      "addressVerifiedField": false
+    },
+    "reasonForExport": "Sale",
+    "routedTransaction": "0",
+    "exportCode": "OS",
+    "partiesToTransaction": false,
+    "termsLocation": ""
+  },
+  "printBOL": false,
+  "packageWeight": 1.0,
+  "isCodCollectionType": false,
+  "isSignatureRequired": false,
+  "checkBox01": false,
+  "checkBox02": false,
+  "checkBox03": false,
+  "checkBox04": false,
+  "checkBox05": false,
+  "checkBox06": false,
+  "checkBox07": false,
+  "checkBox08": false,
+  "checkBox09": false,
+  "checkBox10": false,
+  "checkBox11": false,
+  "checkBox12": false,
+  "checkBox13": false,
+  "checkBox14": false,
+  "checkBox15": false,
+  "checkBox16": false,
+  "checkBox17": false,
+  "checkBox18": false,
+  "checkBox19": false,
+  "checkBox20": false,
+  "handlingCharge": 0.0,
+  "handlingChargeFlag": false,
+  "freightApiRequest": true,
+  "customerNotes": "",
+  "shipperNotes": "",
+  "deliveryInstructions": "",
+  "udFields": {},
+  "returnShipmentLabelComment": "",
+  "createShipment": false,
+  "blindShipping": true
+}
+
+
+31
+Step
+None
+Test Data
+None
+Expected Result
+If Use Blind Shipping checkbox is not checked in manifest info in customer screen and not checked in customer shipment screen
+{
+  "authentication": {
+    "userid": "epicor",
+    "username": "admin",
+    "registrationId": "QuickShipDemo",
+    "workstationId": "PACK"
+  },
+  "releaseIDPrefix": "CS",
+  "shipTo": {
+    "customerCode": "12",
+    "shipToCode": "12",
+    "address": {
+      "recipientLine2": "",
+      "phone": "9872438632",
+      "companyName": "East Coast Distribution",
+      "addressLine1": "550 Main Street",
+      "addressLine2": "",
+      "addressLine3": "",
+      "city": "Hartford",
+      "district": "CT",
+      "postalCode": "06103",
+      "country": "USA",
+      "residential": false,
+      "addressVerifiedField": false
+    },
+    "taxIdentification": "",
+    "email": "",
+    "eori": ""
+  },
+  "parentCustomer": {
+    "customerCode": "12",
+    "shipToCode": "",
+    "address": {
+      "recipientLine2": "",
+      "phone": "9872438632",
+      "companyName": "East Coast Distribution",
+      "addressLine1": "550 Main Street",
+      "addressLine2": "",
+      "addressLine3": "",
+      "city": "Hartford",
+      "district": "CT",
+      "postalCode": "06103",
+      "country": "USA",
+      "residential": false,
+      "addressVerifiedField": false
+    },
+    "taxIdentification": "",
+    "email": "",
+    "eori": ""
+  },
+  "contactName": "East Coast Distribution",
+  "contactPhoneNumber": "9872438632",
+  "parentCustomerContactName": "",
+  "parentCustomerContactPhoneNumber": "9872438632",
+  "shipCode": "F92",
+  "shipDate": "2025-09-02T00:00:00+05:30",
+  "billingShipCode": "",
+  "billingPayFlag": "",
+  "billingMethod": "PREPAID_AND_ADD",
+  "billingAccount": {
+    "accountNumber": "",
+    "billingAddress": {
+      "recipientLine2": "",
+      "phone": "",
+      "companyName": "East Coast Distribution",
+      "addressLine1": "",
+      "addressLine2": "",
+      "addressLine3": "",
+      "addressLine4": "",
+      "city": "",
+      "district": "",
+      "postalCode": "",
+      "country": "",
+      "residential": false,
+      "addressVerifiedField": false
+    }
+  },
+  "orderReference": "8120",
+  "purchaseOrderReference": "",
+  "orderCurrency": "USD",
+  "baseCurrencyUOM": "USD",
+  "currencyConversionFactor": 1.0,
+  "shipmentReference": "316",
+  "shipmentServices": [
+    {
+      "serviceElementName": "COD",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "CODAddFreight",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "DeclaredValueInsurance",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "HomeDelivery",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "ResidentialDelivery",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "SaturdayDelivery",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "SaturdayPickup",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "EMailNotification",
+      "serviceElementValue": "false"
+    }
+  ],
+  "defaultCarrierServices": [
+    {
+      "serviceElementName": "EMailNotification",
+      "serviceElementValue": "false"
+    }
+  ],
+  "containers": [
+    {
+      "caseNumber": "",
+      "packCode": "316",
+      "packageDescription": "BOX",
+      "erpRefrence": "",
+      "length": 24.0,
+      "lengthSpecified": true,
+      "width": 18.0,
+      "widthSpecified": true,
+      "height": 12.0,
+      "heightSpecified": true,
+      "weight": 1.0,
+      "containerTypeCode": "BOX",
+      "containerServices": [
+        {
+          "serviceElementName": "COD",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "CODAddFreight",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "DeclaredValueInsurance",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "NonstandardContainer",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "PriorityAlert",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "SignatureRequired",
+          "serviceElementValue": "false"
+        }
+      ],
+      "hazardousInformation": {
+        "isExceptedQuantity": false,
+        "additionalHazMatInfo": ""
+      },
+      "packingDetail": [
+        {
+          "product": {
+            "productKey": "EP1",
+            "description": "EP1",
+            "tariff": "2222.22",
+            "unitOfMeasure": "EA",
+            "unitWeight": 0.0,
+            "hazmatMass": 0.0,
+            "naftaPreferenceCriterion": "",
+            "producerOfTheGood": "",
+            "netCostMethod": "NO",
+            "countryOfManufacture": "",
+            "hazmatGroupDescription": "",
+            "freightClass": "",
+            "eccn": "",
+            "netWeight": 0.00000,
+            "netWeightUom": "g",
+            "fairMarketValueUnitPrice": 0.0,
+            "lotKey": ""
+          },
+          "unitPrice": 1.0,
+          "exportUnitPrice": 0.0,
+          "qtyPacked": 1.0,
+          "orderlineNumber": 1,
+          "orderReference": "8120",
+          "orderPrice": 1.0,
+          "udFields": {}
+        }
+      ],
+      "dgAccessible": false,
+      "specialServices": {
+        "referenceInformation": "true",
+        "reference1": "",
+        "reference2": "",
+        "reference3": "",
+        "reference4": "",
+        "priorityAlert": "False",
+        "referenceNotes": ""
+      },
+      "dimensionUOM": "IN",
+      "udFields": {}
+    }
+  ],
+  "internationalInfo": {
+    "printInternationalDocs": false,
+    "xtnNumber": "",
+    "incoterms": "",
+    "ultimateConsignee": {
+      "recipientLine2": "",
+      "phone": "9872438632",
+      "companyName": "East Coast Distribution",
+      "addressLine1": "550 Main Street",
+      "addressLine2": "",
+      "addressLine3": "",
+      "city": "Hartford",
+      "district": "CT",
+      "postalCode": "06103",
+      "country": "USA",
+      "residential": false,
+      "addressVerifiedField": false
+    },
+    "reasonForExport": "Sale",
+    "routedTransaction": "0",
+    "exportCode": "OS",
+    "partiesToTransaction": false,
+    "termsLocation": ""
+  },
+  "printBOL": false,
+  "packageWeight": 1.0,
+  "isCodCollectionType": false,
+  "isSignatureRequired": false,
+  "checkBox01": false,
+  "checkBox02": false,
+  "checkBox03": false,
+  "checkBox04": false,
+  "checkBox05": false,
+  "checkBox06": false,
+  "checkBox07": false,
+  "checkBox08": false,
+  "checkBox09": false,
+  "checkBox10": false,
+  "checkBox11": false,
+  "checkBox12": false,
+  "checkBox13": false,
+  "checkBox14": false,
+  "checkBox15": false,
+  "checkBox16": false,
+  "checkBox17": false,
+  "checkBox18": false,
+  "checkBox19": false,
+  "checkBox20": false,
+  "handlingCharge": 0.0,
+  "handlingChargeFlag": false,
+  "freightApiRequest": true,
+  "customerNotes": "",
+  "shipperNotes": "",
+  "deliveryInstructions": "",
+  "udFields": {},
+  "returnShipmentLabelComment": "",
+  "createShipment": false,
+  "blindShipping": false
+}
+
+
+32
+Step
+None
+Test Data
+None
+Expected Result
+If Use Blind Shipping checkbox is checked in manifest info in customer screen and also checked in customer shipment screen
+{
+  "authentication": {
+    "userid": "epicor",
+    "username": "admin",
+    "registrationId": "QuickShipDemo",
+    "workstationId": "PACK"
+  },
+  "releaseIDPrefix": "CS",
+  "shipTo": {
+    "customerCode": "12",
+    "shipToCode": "12",
+    "address": {
+      "recipientLine2": "",
+      "phone": "9872438632",
+      "companyName": "East Coast Distribution",
+      "addressLine1": "550 Main Street",
+      "addressLine2": "",
+      "addressLine3": "",
+      "city": "Hartford",
+      "district": "CT",
+      "postalCode": "06103",
+      "country": "USA",
+      "residential": false,
+      "addressVerifiedField": false
+    },
+    "taxIdentification": "",
+    "email": "",
+    "eori": ""
+  },
+  "parentCustomer": {
+    "customerCode": "12",
+    "shipToCode": "",
+    "address": {
+      "recipientLine2": "",
+      "phone": "9872438632",
+      "companyName": "East Coast Distribution",
+      "addressLine1": "550 Main Street",
+      "addressLine2": "",
+      "addressLine3": "",
+      "city": "Hartford",
+      "district": "CT",
+      "postalCode": "06103",
+      "country": "USA",
+      "residential": false,
+      "addressVerifiedField": false
+    },
+    "taxIdentification": "",
+    "email": "",
+    "eori": ""
+  },
+  "contactName": "East Coast Distribution",
+  "contactPhoneNumber": "9872438632",
+  "parentCustomerContactName": "",
+  "parentCustomerContactPhoneNumber": "9872438632",
+  "shipCode": "F92",
+  "shipDate": "2025-09-02T00:00:00+05:30",
+  "billingShipCode": "",
+  "billingPayFlag": "",
+  "billingMethod": "PREPAID_AND_ADD",
+  "billingAccount": {
+    "accountNumber": "",
+    "billingAddress": {
+      "recipientLine2": "",
+      "phone": "",
+      "companyName": "East Coast Distribution",
+      "addressLine1": "",
+      "addressLine2": "",
+      "addressLine3": "",
+      "addressLine4": "",
+      "city": "",
+      "district": "",
+      "postalCode": "",
+      "country": "",
+      "residential": false,
+      "addressVerifiedField": false
+    }
+  },
+  "orderReference": "8120",
+  "purchaseOrderReference": "",
+  "orderCurrency": "USD",
+  "baseCurrencyUOM": "USD",
+  "currencyConversionFactor": 1.0,
+  "shipmentReference": "316",
+  "shipmentServices": [
+    {
+      "serviceElementName": "COD",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "CODAddFreight",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "DeclaredValueInsurance",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "HomeDelivery",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "ResidentialDelivery",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "SaturdayDelivery",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "SaturdayPickup",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "EMailNotification",
+      "serviceElementValue": "false"
+    }
+  ],
+  "defaultCarrierServices": [
+    {
+      "serviceElementName": "EMailNotification",
+      "serviceElementValue": "false"
+    }
+  ],
+  "containers": [
+    {
+      "caseNumber": "",
+      "packCode": "316",
+      "packageDescription": "BOX",
+      "erpRefrence": "",
+      "length": 24.0,
+      "lengthSpecified": true,
+      "width": 18.0,
+      "widthSpecified": true,
+      "height": 12.0,
+      "heightSpecified": true,
+      "weight": 1.0,
+      "containerTypeCode": "BOX",
+      "containerServices": [
+        {
+          "serviceElementName": "COD",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "CODAddFreight",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "DeclaredValueInsurance",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "NonstandardContainer",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "PriorityAlert",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "SignatureRequired",
+          "serviceElementValue": "false"
+        }
+      ],
+      "hazardousInformation": {
+        "isExceptedQuantity": false,
+        "additionalHazMatInfo": ""
+      },
+      "packingDetail": [
+        {
+          "product": {
+            "productKey": "EP1",
+            "description": "EP1",
+            "tariff": "2222.22",
+            "unitOfMeasure": "EA",
+            "unitWeight": 0.0,
+            "hazmatMass": 0.0,
+            "naftaPreferenceCriterion": "",
+            "producerOfTheGood": "",
+            "netCostMethod": "NO",
+            "countryOfManufacture": "",
+            "hazmatGroupDescription": "",
+            "freightClass": "",
+            "eccn": "",
+            "netWeight": 0.00000,
+            "netWeightUom": "g",
+            "fairMarketValueUnitPrice": 0.0,
+            "lotKey": ""
+          },
+          "unitPrice": 1.0,
+          "exportUnitPrice": 0.0,
+          "qtyPacked": 1.0,
+          "orderlineNumber": 1,
+          "orderReference": "8120",
+          "orderPrice": 1.0,
+          "udFields": {}
+        }
+      ],
+      "dgAccessible": false,
+      "specialServices": {
+        "referenceInformation": "true",
+        "reference1": "",
+        "reference2": "",
+        "reference3": "",
+        "reference4": "",
+        "priorityAlert": "False",
+        "referenceNotes": ""
+      },
+      "dimensionUOM": "IN",
+      "udFields": {}
+    }
+  ],
+  "internationalInfo": {
+    "printInternationalDocs": false,
+    "xtnNumber": "",
+    "incoterms": "",
+    "ultimateConsignee": {
+      "recipientLine2": "",
+      "phone": "9872438632",
+      "companyName": "East Coast Distribution",
+      "addressLine1": "550 Main Street",
+      "addressLine2": "",
+      "addressLine3": "",
+      "city": "Hartford",
+      "district": "CT",
+      "postalCode": "06103",
+      "country": "USA",
+      "residential": false,
+      "addressVerifiedField": false
+    },
+    "reasonForExport": "Sale",
+    "routedTransaction": "0",
+    "exportCode": "OS",
+    "partiesToTransaction": false,
+    "termsLocation": ""
+  },
+  "printBOL": false,
+  "packageWeight": 1.0,
+  "isCodCollectionType": false,
+  "isSignatureRequired": false,
+  "checkBox01": false,
+  "checkBox02": false,
+  "checkBox03": false,
+  "checkBox04": false,
+  "checkBox05": false,
+  "checkBox06": false,
+  "checkBox07": false,
+  "checkBox08": false,
+  "checkBox09": false,
+  "checkBox10": false,
+  "checkBox11": false,
+  "checkBox12": false,
+  "checkBox13": false,
+  "checkBox14": false,
+  "checkBox15": false,
+  "checkBox16": false,
+  "checkBox17": false,
+  "checkBox18": false,
+  "checkBox19": false,
+  "checkBox20": false,
+  "handlingCharge": 0.0,
+  "handlingChargeFlag": false,
+  "freightApiRequest": true,
+  "customerNotes": "",
+  "shipperNotes": "",
+  "deliveryInstructions": "",
+  "udFields": {},
+  "returnShipmentLabelComment": "",
+  "createShipment": false,
+  "blindShipping": false
+}
+
+
+33
+Step
+None
+Test Data
+None
+Expected Result
+If Use Blind Shipping checkbox is not checked in manifest info in customer shipment and checked in customer screen
+{
+  "authentication": {
+    "userid": "epicor",
+    "username": "admin",
+    "registrationId": "QuickShipDemo",
+    "workstationId": "PACK"
+  },
+  "releaseIDPrefix": "CS",
+  "shipTo": {
+    "customerCode": "12",
+    "shipToCode": "12",
+    "address": {
+      "recipientLine2": "",
+      "phone": "9872438632",
+      "companyName": "East Coast Distribution",
+      "addressLine1": "550 Main Street",
+      "addressLine2": "",
+      "addressLine3": "",
+      "city": "Hartford",
+      "district": "CT",
+      "postalCode": "06103",
+      "country": "USA",
+      "residential": false,
+      "addressVerifiedField": false
+    },
+    "taxIdentification": "",
+    "email": "",
+    "eori": ""
+  },
+  "parentCustomer": {
+    "customerCode": "12",
+    "shipToCode": "",
+    "address": {
+      "recipientLine2": "",
+      "phone": "9872438632",
+      "companyName": "East Coast Distribution",
+      "addressLine1": "550 Main Street",
+      "addressLine2": "",
+      "addressLine3": "",
+      "city": "Hartford",
+      "district": "CT",
+      "postalCode": "06103",
+      "country": "USA",
+      "residential": false,
+      "addressVerifiedField": false
+    },
+    "taxIdentification": "",
+    "email": "",
+    "eori": ""
+  },
+  "contactName": "East Coast Distribution",
+  "contactPhoneNumber": "9872438632",
+  "parentCustomerContactName": "",
+  "parentCustomerContactPhoneNumber": "9872438632",
+  "shipCode": "F92",
+  "shipDate": "2025-09-02T00:00:00+05:30",
+  "billingShipCode": "",
+  "billingPayFlag": "",
+  "billingMethod": "PREPAID_AND_ADD",
+  "billingAccount": {
+    "accountNumber": "",
+    "billingAddress": {
+      "recipientLine2": "",
+      "phone": "",
+      "companyName": "East Coast Distribution",
+      "addressLine1": "",
+      "addressLine2": "",
+      "addressLine3": "",
+      "addressLine4": "",
+      "city": "",
+      "district": "",
+      "postalCode": "",
+      "country": "",
+      "residential": false,
+      "addressVerifiedField": false
+    }
+  },
+  "orderReference": "8120",
+  "purchaseOrderReference": "",
+  "orderCurrency": "USD",
+  "baseCurrencyUOM": "USD",
+  "currencyConversionFactor": 1.0,
+  "shipmentReference": "316",
+  "shipmentServices": [
+    {
+      "serviceElementName": "COD",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "CODAddFreight",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "DeclaredValueInsurance",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "HomeDelivery",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "ResidentialDelivery",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "SaturdayDelivery",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "SaturdayPickup",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "EMailNotification",
+      "serviceElementValue": "false"
+    }
+  ],
+  "defaultCarrierServices": [
+    {
+      "serviceElementName": "EMailNotification",
+      "serviceElementValue": "false"
+    }
+  ],
+  "containers": [
+    {
+      "caseNumber": "",
+      "packCode": "316",
+      "packageDescription": "BOX",
+      "erpRefrence": "",
+      "length": 24.0,
+      "lengthSpecified": true,
+      "width": 18.0,
+      "widthSpecified": true,
+      "height": 12.0,
+      "heightSpecified": true,
+      "weight": 1.0,
+      "containerTypeCode": "BOX",
+      "containerServices": [
+        {
+          "serviceElementName": "COD",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "CODAddFreight",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "DeclaredValueInsurance",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "NonstandardContainer",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "PriorityAlert",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "SignatureRequired",
+          "serviceElementValue": "false"
+        }
+      ],
+      "hazardousInformation": {
+        "isExceptedQuantity": false,
+        "additionalHazMatInfo": ""
+      },
+      "packingDetail": [
+        {
+          "product": {
+            "productKey": "EP1",
+            "description": "EP1",
+            "tariff": "2222.22",
+            "unitOfMeasure": "EA",
+            "unitWeight": 0.0,
+            "hazmatMass": 0.0,
+            "naftaPreferenceCriterion": "",
+            "producerOfTheGood": "",
+            "netCostMethod": "NO",
+            "countryOfManufacture": "",
+            "hazmatGroupDescription": "",
+            "freightClass": "",
+            "eccn": "",
+            "netWeight": 0.00000,
+            "netWeightUom": "g",
+            "fairMarketValueUnitPrice": 0.0,
+            "lotKey": ""
+          },
+          "unitPrice": 1.0,
+          "exportUnitPrice": 0.0,
+          "qtyPacked": 1.0,
+          "orderlineNumber": 1,
+          "orderReference": "8120",
+          "orderPrice": 1.0,
+          "udFields": {}
+        }
+      ],
+      "dgAccessible": false,
+      "specialServices": {
+        "referenceInformation": "true",
+        "reference1": "",
+        "reference2": "",
+        "reference3": "",
+        "reference4": "",
+        "priorityAlert": "False",
+        "referenceNotes": ""
+      },
+      "dimensionUOM": "IN",
+      "udFields": {}
+    }
+  ],
+  "internationalInfo": {
+    "printInternationalDocs": false,
+    "xtnNumber": "",
+    "incoterms": "",
+    "ultimateConsignee": {
+      "recipientLine2": "",
+      "phone": "9872438632",
+      "companyName": "East Coast Distribution",
+      "addressLine1": "550 Main Street",
+      "addressLine2": "",
+      "addressLine3": "",
+      "city": "Hartford",
+      "district": "CT",
+      "postalCode": "06103",
+      "country": "USA",
+      "residential": false,
+      "addressVerifiedField": false
+    },
+    "reasonForExport": "Sale",
+    "routedTransaction": "0",
+    "exportCode": "OS",
+    "partiesToTransaction": false,
+    "termsLocation": ""
+  },
+  "printBOL": false,
+  "packageWeight": 1.0,
+  "isCodCollectionType": false,
+  "isSignatureRequired": false,
+  "checkBox01": false,
+  "checkBox02": false,
+  "checkBox03": false,
+  "checkBox04": false,
+  "checkBox05": false,
+  "checkBox06": false,
+  "checkBox07": false,
+  "checkBox08": false,
+  "checkBox09": false,
+  "checkBox10": false,
+  "checkBox11": false,
+  "checkBox12": false,
+  "checkBox13": false,
+  "checkBox14": false,
+  "checkBox15": false,
+  "checkBox16": false,
+  "checkBox17": false,
+  "checkBox18": false,
+  "checkBox19": false,
+  "checkBox20": false,
+  "handlingCharge": 0.0,
+  "handlingChargeFlag": false,
+  "freightApiRequest": true,
+  "customerNotes": "",
+  "shipperNotes": "",
+  "deliveryInstructions": "",
+  "udFields": {},
+  "returnShipmentLabelComment": "",
+  "createShipment": false,
+  "blindShipping": false
+}
+
+4. QuickShip - Customer Shipment Entry - Verify the Bidirectional response of UD fields from quickship through REST API
+Step
+Installation of QuickShip and setup for Kinetic Integration is needed to run this test case. See attached installation guide
+Test Data
+None
+Expected Result
+None
+
+
+2
+Step
+Ship Codes setup in QuickShip
+On your server, open QuickShip app
+Select Authentication Type = QuickShip Native
+Select Registration code = quickshipdemo
+username = <local-user>
+password = <local-password>
+Login
+Test Data
+None
+Expected Result
+QuickShip Home page is displayed
+
+
+3
+Step
+Go to Setup
+Select Rest API Data Mapping
+Click on Add Response Data Mapping
+Add the Source field and Target Field= ShipHead_Test
+Save
+Test Data
+None
+Expected Result
+
+
+
+4
+Step
+Open Kinetic App
+Login with <local-user>/<local-password>
+Test Data
+None
+Expected Result
+Kinetic Homepage is displayed
+
+
+5
+Step
+Move to Company = EPIC06 and Workstation = Freight Service 400
+Test Data
+None
+Expected Result
+None
+
+
+6
+Step
+Active IN UOM Class
+Go to UOM Class
+Production Management/Engineering/Setup/UOM Class
+ 
+Enter Class = Length
+In the UOM List grid, click on IN record
+Active = True
+Save
+Exit UOM Class Maintenance
+Test Data
+None
+Expected Result
+None
+
+
+7
+Step
+QuickShip settings for Workstation
+Go to Workstation Maintenance
+Material Management/Shipping / Receiving/Setup/Workstation
+
+Select the workstation you are working on (PACK)
+Weight Input = Prompt for Weight
+Manifest Enabled = True
+Web Service URL = http://quickshipweb/EpicorFreightService.svc?regCode=QuickShipDemo
+Manifest/Weight Capture Point = Both
+Size UOM = IN
+Make sure weight UOM = LB
+Log manifest messages = True
+Save
+Test Data
+None
+Expected Result
+None
+
+
+8
+Step
+Setup QuickShip integration for Kinetic Company
+Go to Company configuration 
+System Setup/Company/Site Maintenance/Company Configuration
+Click on Modules button
+ In left navigation menu at the left, go to Materials tab
+Expand the Shipping receiving Card
+From the Freight Service Integration combo, select REST API Integration
+On the Quickship API URL enter = http://quickshipweb/
+-Registration code = quickshipdemo
+-username = <local-user>
+-password = <local-password>
+-Save and exit
+Test Data
+None
+Expected Result
+None
+
+
+9
+Step
+Create UD field column in User Defined column Maintenance
+​
+Click on New
+Select the table ShipHead.
+Click on save.
+Click on New in column
+Enter Column name and Label
+Save.
+Test Data
+None
+Expected Result
+
+
+
+10
+Step
+Regenerate DataModel from admin console
+Verify the Table and Data model is in sync in UD Column maintenance
+If it is not synced DO IIS restart
+Test Data
+None
+Expected Result
+Regenerate datamodel should be completed.
+Table and Data Model should be in sync
+
+
+11
+Step
+Add New Field in Customer Shipment Entry
+Go to Customer Shipment
+Material Management/Shipping / Receiving/General Operations/Customer Shipment Entry
+Click on New
+Click application studio from action
+Select Details
+Click on edit
+Search text box and drag under Pack
+Add the data binding
+Give any label name 
+Save
+Publish
+Test Data
+None
+Expected Result
+
+
+
+12
+Step
+Create Purchased part
+ Go to Part
+Main menu > Material Management>Inventory Management>Setup>Part
+On the landing page, click the <Plus> icon to create a new Part
+ Set Part& Description = EP1
+Make sure Type = Purchased
+On the left navigation menu go to Part tab
+Scroll down and set Sales Unit Price = 1.00
+Save
+Test Data
+None
+Expected Result
+None
+
+
+13
+Step
+In the navigation menu at the left, go to Integrations tab
+Enter Schedule B Code = 2222.22
+Save
+Test Data
+None
+Expected Result
+None
+
+
+14
+Step
+Adjust Quantity for parts
+Go to Quantity Adjustment
+Material Management/Inventory Management/General Operations/Quantity Adjustment
+Enter Part = EP1
+Enter Bin = 00-00-00
+Enter Adjust Quantity = 200
+Select Reason = Add new Part 
+Click Adjust button
+Test Data
+None
+Expected Result
+None
+
+
+15
+Step
+Create an order for stock parts
+Go to Order entry
+Sales Management/Customer Relationship Management/General Operations/Order Entry
+
+Click the plus icon to add a new sales order
+Enter customer ECD and tab out
+Select Need By date = Today's date
+Save
+Test Data
+None
+Expected Result
+Save Order Num (####)
+
+
+16
+Step
+In the navigation menu at the left, Move to Lines > Detail tab
+Click the Plus icon to add a new line
+Enter Part = EP1 and tab out
+Enter order quantity = 100.00
+Select the customer part (customer part should be created in part cross reference screen)
+Save
+Test Data
+None
+Expected Result
+None
+
+
+17
+Step
+Go to the overflow menu and click Reserve / Allocate
+Test Data
+None
+Expected Result
+Fulfillment Workbench screen is displayed
+
+
+18
+Step
+Select the 1 line displayed corresponding to your SO Lines
+Then in overflow menu click allocate by part
+Test Data
+None
+Expected Result
+Allocation Process criteria screen opens up
+
+
+19
+Step
+Click Continue
+Test Data
+None
+Expected Result
+Ad Hoc Allocation Template Screen is displayed
+
+
+20
+Step
+Set Release to Picking = True
+Then click Continue
+Test Data
+None
+Expected Result
+Message displayed: 
+
+1 Demand record(s) allocated.
+0 Demand record(s) cross docked.
+1 Demand record(s) selected for picking.
+1 Demand record(s) submitted for picking.
+
+
+21
+Step
+Click Ok
+Test Data
+None
+Expected Result
+Message displayed: "Release for Picking
+Do you want to print the released items?"
+
+
+22
+Step
+Click No
+Exit Fulfillment Workbench screen
+Test Data
+None
+Expected Result
+None
+
+
+23
+Step
+Pick order Lines to Shipping Area
+Go to Material Request Queue
+Material Management/Advanced Material Management/General Operations/Material Request Queue
+Filter transactions from today's date 
+Select the record displayed related to part EP1 and click Select button
+Move to My Selections tab
+Click process
+Test Data
+None
+Expected Result
+WIP/Material Movement Transaction slide panel is displayed
+Make sure Part = EP1
+
+
+24
+Step
+Scroll down and make sure To Warehouse = Shipping Area and To Bin = SHP-1
+Then Click OK
+Test Data
+None
+Expected Result
+Record for part EP1 should disappear from the grid
+
+
+25
+Step
+Create a new CS Pack
+Go to Customer Shipment
+Material Management/Shipping / Receiving/General Operations/Customer Shipment Entry
+
+Click the Plus icon Create a new Pack
+Enter Order number (####) previously generated
+Select Ship Via = FedEx Ground
+Set Ship date = Today's date
+Enter Package Code = BOX
+Save
+Test Data
+None
+Expected Result
+Save Pack Num (###)
+
+
+26
+Step
+In the left navigation menu, go to Shipment Lines / Line Details tab
+Click the Plus icon to add a New Line
+Enter Line = 1 and Release = 1
+On the From Inventory card, select Warehouse = Shipping Area and Bin = SHP-1
+Make sure Our Ship Qty = 100
+Make sure customer part is fetched from Order 
+Save
+Test Data
+None
+Expected Result
+None
+
+
+27
+Step
+In the left navigation menu, go back to Details tab
+Enter weight = 3.0000 LB
+Save
+Click Close button
+Test Data
+None
+Expected Result
+Pack status should change to CLOSED
+
+
+28
+Step
+Then, click Freight button
+Test Data
+None
+Expected Result
+Status should change to Freighted
+Tracking number field should be populated
+New UD Field should get the value
+
+
+29
+Step
+Check pack on QuickShip > Shipments
+Open Quick ship app 
+In the QuickShip homepage, click on Shipments
+Click search button and filter shipments from yesterday date to tomorrow's date.
+Click on search
+Test Data
+None
+Expected Result
+A record for your Customer shipment should be displayed 
+
+
+30
+Step
+Check API request for pack shipment
+In your server, go to your local QuickShip installation folder (i.e. C:\inetpub\wwwroot\QuickShip)
+Click on your CarrierXMLFile folder 
+There, open the shipment response JSON file with the last creation date and time
+Test Data
+None
+Expected Result
+Response should have UD field column and value
+"{\"CarrierBolNumber\":null,
+\"EstimatedCarbonEmission\":\"0.192763784508\",
+\"ReturnStatus\":\"SUCCESS\",
+\"ReturnMessage\":\"120900 User Id and Shipper Number combination is not qualified to receive negotiated rates \\n \",
+\"ShipmentNumber\":\"607\",
+\"TotalFreightCharges\":64.91,
+\"ActualShipcode\":\"UPS\",
+\"ReturnedContainers\":[{\"PackID\":\"320\",
+\"CaseNum\":\"\",
+\"ContainerId\":\"637\",
+\"BillingWeight\":0.0,
+\"FreightChargeSpecified\":false,
+\"BillingFreightChargeSpecified\":false,
+\"TrackingNumber\":\"1ZXXXXXXXXXXXXXXXX\",\"UdFields\":{}}]
+,\"TotalBilledFreightCharges\":71.401000,
+\"UdFields\":{\"ShipHead_Test\":\"seal123\",
+\"Masterpack.TEST1\":\"UPS® Shipping API\"},
+\"Carrier\":\"UPS® Shipping API\",
+\"CarrierService\":\"UPS Ground\"}"
+
+4. QuickShip - Customer Shipment Entry - Verify the Bidirectional Unfreight response of UD fields from quickship through REST API
+Step
+Installation of QuickShip and setup for Kinetic Integration is needed to run this test case. See attached installation guide
+Test Data
+None
+Expected Result
+None
+
+
+2
+Step
+Ship Codes setup in QuickShip
+On your server, open QuickShip app
+Select Authentication Type = QuickShip Native
+Select Registration code = quickshipdemo
+username = <local-user>
+password = <local-password>
+Login
+Test Data
+None
+Expected Result
+QuickShip Home page is displayed
+
+
+3
+Step
+Go to Setup
+Select Rest API Data Mapping
+Click on Add Response Data Mapping
+Add the Source field and Target Field= ShipHead_Test
+Save
+Test Data
+None
+Expected Result
+
+
+
+4
+Step
+Open Kinetic App
+Login with <local-user>/<local-password>
+Test Data
+None
+Expected Result
+Kinetic Homepage is displayed
+
+
+5
+Step
+Move to Company = EPIC06 and Workstation = Freight Service 400
+Test Data
+None
+Expected Result
+None
+
+
+6
+Step
+Active IN UOM Class
+Go to UOM Class
+Production Management/Engineering/Setup/UOM Class
+ 
+Enter Class = Length
+In the UOM List grid, click on IN record
+Active = True
+Save
+Exit UOM Class Maintenance
+Test Data
+None
+Expected Result
+None
+
+
+7
+Step
+QuickShip settings for Workstation
+Go to Workstation Maintenance
+Material Management/Shipping / Receiving/Setup/Workstation
+
+Select the workstation you are working on (PACK)
+Weight Input = Prompt for Weight
+Manifest Enabled = True
+Web Service URL = http://quickshipweb/EpicorFreightService.svc?regCode=QuickShipDemo
+Manifest/Weight Capture Point = Both
+Size UOM = IN
+Make sure weight UOM = LB
+Log manifest messages = True
+Save
+Test Data
+None
+Expected Result
+None
+
+
+8
+Step
+Setup QuickShip integration for Kinetic Company
+Go to Company configuration 
+System Setup/Company/Site Maintenance/Company Configuration
+Click on Modules button
+ In left navigation menu at the left, go to Materials tab
+Expand the Shipping receiving Card
+From the Freight Service Integration combo, select REST API Integration
+On the Quickship API URL enter = http://quickshipweb/
+-Registration code = quickshipdemo
+-username = <local-user>
+-password = <local-password>
+-Save and exit
+Test Data
+None
+Expected Result
+None
+
+
+9
+Step
+Create UD field column in User Defined column Maintenance
+​
+Click on New
+Select the table ShipHead.
+Click on save.
+Click on New in column
+Enter Column name and Label
+Save.
+Test Data
+None
+Expected Result
+
+
+
+10
+Step
+Regenerate DataModel from admin console
+Verify the Table and Data model is in sync in UD Column maintenance
+If it is not synced DO IIS restart
+Test Data
+None
+Expected Result
+Regenerate datamodel should be completed.
+Table and Data Model should be in sync
+
+
+11
+Step
+Add New Field in Customer Shipment Entry
+Go to Customer Shipment
+Material Management/Shipping / Receiving/General Operations/Customer Shipment Entry
+Click on New
+Click application studio from action
+Select Details
+Click on edit
+Search text box and drag under Pack
+Add the data binding
+Give any label name 
+Save
+Publish
+Test Data
+None
+Expected Result
+
+
+
+12
+Step
+Create Purchased part
+ Go to Part
+Main menu > Material Management>Inventory Management>Setup>Part
+On the landing page, click the <Plus> icon to create a new Part
+ Set Part& Description = EP1
+Make sure Type = Purchased
+On the left navigation menu go to Part tab
+Scroll down and set Sales Unit Price = 1.00
+Save
+Test Data
+None
+Expected Result
+None
+
+
+13
+Step
+In the navigation menu at the left, go to Integrations tab
+Enter Schedule B Code = 2222.22
+Save
+Test Data
+None
+Expected Result
+None
+
+
+14
+Step
+Adjust Quantity for parts
+Go to Quantity Adjustment
+Material Management/Inventory Management/General Operations/Quantity Adjustment
+Enter Part = EP1
+Enter Bin = 00-00-00
+Enter Adjust Quantity = 200
+Select Reason = Add new Part 
+Click Adjust button
+Test Data
+None
+Expected Result
+None
+
+
+15
+Step
+Create an order for stock parts
+Go to Order entry
+Sales Management/Customer Relationship Management/General Operations/Order Entry
+
+Click the plus icon to add a new sales order
+Enter customer ECD and tab out
+Select Need By date = Today's date
+Save
+Test Data
+None
+Expected Result
+Save Order Num (####)
+
+
+16
+Step
+In the navigation menu at the left, Move to Lines > Detail tab
+Click the Plus icon to add a new line
+Enter Part = EP1 and tab out
+Enter order quantity = 100.00
+Select the customer part (customer part should be created in part cross reference screen)
+Save
+Test Data
+None
+Expected Result
+None
+
+
+17
+Step
+Go to the overflow menu and click Reserve / Allocate
+Test Data
+None
+Expected Result
+Fulfillment Workbench screen is displayed
+
+
+18
+Step
+Select the 1 line displayed corresponding to your SO Lines
+Then in overflow menu click allocate by part
+Test Data
+None
+Expected Result
+Allocation Process criteria screen opens up
+
+
+19
+Step
+Click Continue
+Test Data
+None
+Expected Result
+Ad Hoc Allocation Template Screen is displayed
+
+
+20
+Step
+Set Release to Picking = True
+Then click Continue
+Test Data
+None
+Expected Result
+Message displayed: 
+
+1 Demand record(s) allocated.
+0 Demand record(s) cross docked.
+1 Demand record(s) selected for picking.
+1 Demand record(s) submitted for picking.
+
+
+21
+Step
+Click Ok
+Test Data
+None
+Expected Result
+Message displayed: "Release for Picking
+Do you want to print the released items?"
+
+
+22
+Step
+Click No
+Exit Fulfillment Workbench screen
+Test Data
+None
+Expected Result
+None
+
+
+23
+Step
+Pick order Lines to Shipping Area
+Go to Material Request Queue
+Material Management/Advanced Material Management/General Operations/Material Request Queue
+Filter transactions from today's date 
+Select the record displayed related to part EP1 and click Select button
+Move to My Selections tab
+Click process
+Test Data
+None
+Expected Result
+WIP/Material Movement Transaction slide panel is displayed
+Make sure Part = EP1
+
+
+24
+Step
+Scroll down and make sure To Warehouse = Shipping Area and To Bin = SHP-1
+Then Click OK
+Test Data
+None
+Expected Result
+Record for part EP1 should disappear from the grid
+
+
+25
+Step
+Create a new CS Pack
+Go to Customer Shipment
+Material Management/Shipping / Receiving/General Operations/Customer Shipment Entry
+
+Click the Plus icon Create a new Pack
+Enter Order number (####) previously generated
+Select Ship Via = FedEx Ground
+Set Ship date = Today's date
+Enter Package Code = BOX
+Save
+Test Data
+None
+Expected Result
+Save Pack Num (###)
+
+
+26
+Step
+In the left navigation menu, go to Shipment Lines / Line Details tab
+Click the Plus icon to add a New Line
+Enter Line = 1 and Release = 1
+On the From Inventory card, select Warehouse = Shipping Area and Bin = SHP-1
+Make sure Our Ship Qty = 100
+Make sure customer part is fetched from Order 
+Save
+Test Data
+None
+Expected Result
+None
+
+
+27
+Step
+In the left navigation menu, go back to Details tab
+Enter weight = 3.0000 LB
+Save
+Click Close button
+Test Data
+None
+Expected Result
+Pack status should change to CLOSED
+
+
+28
+Step
+Then, click Freight button
+Test Data
+None
+Expected Result
+Status should change to Freighted
+Tracking number field should be populated
+New UD Field should get the value
+
+
+29
+Step
+Check pack on QuickShip > Shipments
+Open Quick ship app 
+In the QuickShip homepage, click on Shipments
+Click search button and filter shipments from yesterday date to tomorrow's date.
+Click on search
+Test Data
+None
+Expected Result
+A record for your Customer shipment should be displayed 
+
+
+30
+Step
+Check API request for pack shipment
+In your server, go to your local QuickShip installation folder (i.e. C:\inetpub\wwwroot\QuickShip)
+Click on your CarrierXMLFile folder 
+There, open the shipment response JSON file with the last creation date and time
+Test Data
+None
+Expected Result
+Response should have UD field column and value
+"{\"CarrierBolNumber\":null,
+\"EstimatedCarbonEmission\":\"0.192763784508\",
+\"ReturnStatus\":\"SUCCESS\",
+\"ReturnMessage\":\"120900 User Id and Shipper Number combination is not qualified to receive negotiated rates \\n \",
+\"ShipmentNumber\":\"607\",
+\"TotalFreightCharges\":64.91,
+\"ActualShipcode\":\"UPS\",
+\"ReturnedContainers\":[{\"PackID\":\"320\",
+\"CaseNum\":\"\",
+\"ContainerId\":\"637\",
+\"BillingWeight\":0.0,
+\"FreightChargeSpecified\":false,
+\"BillingFreightChargeSpecified\":false,
+\"TrackingNumber\":\"1ZXXXXXXXXXXXXXXXX\",\"UdFields\":{}}]
+,\"TotalBilledFreightCharges\":71.401000,
+\"UdFields\":{\"ShipHead_Test\":\"seal123\",
+\"Masterpack.TEST1\":\"UPS® Shipping API\"},
+\"Carrier\":\"UPS® Shipping API\",
+\"CarrierService\":\"UPS Ground\"}"
+
+
+31
+Step
+Click on Unfreight
+Test Data
+None
+Expected Result
+New UD Field should get cleared the value
+
+5. QuickShip - Customer Shipment Entry - Verify the Customer VAT Number in Customer master and Customer Shipto Details while freighting the shipment through REST API
+Step
+Installation of QuickShip and setup for Kinetic Integration is needed to run this test case. See attached installation guide
+Test Data
+None
+Expected Result
+None
+
+
+2
+Step
+Ship Codes setup in QuickShip
+On your server, open QuickShip app
+Select Authentication Type = QuickShip Native
+Select Registration code = quickshipdemo
+username = <local-user>
+password = <local-password>
+Login
+Test Data
+None
+Expected Result
+QuickShip Home page is displayed
+
+
+3
+Step
+Open Kinetic App
+Login with <local-user>/<local-password>
+Test Data
+None
+Expected Result
+Kinetic Homepage is displayed
+
+
+4
+Step
+Move to Company = EPIC06 and Workstation = Freight Service 400
+Test Data
+None
+Expected Result
+None
+
+
+5
+Step
+Active IN UOM Class
+Go to UOM Class
+Production Management/Engineering/Setup/UOM Class
+ 
+Enter Class = Length
+In the UOM List grid, click on IN record
+Active = True
+Save
+Exit UOM Class Maintenance
+Test Data
+None
+Expected Result
+None
+
+
+6
+Step
+QuickShip settings for Workstation
+Go to Workstation Maintenance
+Material Management/Shipping / Receiving/Setup/Workstation
+
+Select the workstation you are working on (PACK)
+Weight Input = Prompt for Weight
+Manifest Enabled = True
+Web Service URL = http://quickshipweb/EpicorFreightService.svc?regCode=QuickShipDemo
+Manifest/Weight Capture Point = Both
+Size UOM = IN
+Make sure weight UOM = LB
+Log manifest messages = True
+Save
+Test Data
+None
+Expected Result
+None
+
+
+7
+Step
+Setup QuickShip integration for Kinetic Company
+Go to Company configuration 
+System Setup/Company/Site Maintenance/Company Configuration
+Click on Modules button
+ In left navigation menu at the left, go to Materials tab
+Expand the Shipping receiving Card
+From the Freight Service Integration combo, select REST API Integration
+On the Quickship API URL enter = http://quickshipweb/
+-Registration code = quickshipdemo
+-username = <local-user>
+-password = <local-password>
+-Save and exit
+Test Data
+None
+Expected Result
+None
+
+
+8
+Step
+Create Purchased part
+ Go to Part
+Main menu > Material Management>Inventory Management>Setup>Part
+On the landing page, click the <Plus> icon to create a new Part
+ Set Part& Description = EP1
+Make sure Type = Purchased
+On the left navigation menu go to Part tab
+Scroll down and set Sales Unit Price = 1.00
+Save
+Test Data
+None
+Expected Result
+None
+
+
+9
+Step
+In the navigation menu at the left, go to Integrations tab
+Enter Schedule B Code = 2222.22
+Save
+Test Data
+None
+Expected Result
+None
+
+
+10
+Step
+Adjust Quantity for parts
+Go to Quantity Adjustment
+Material Management/Inventory Management/General Operations/Quantity Adjustment
+Enter Part = EP1
+Enter Bin = 00-00-00
+Enter Adjust Quantity = 200
+Select Reason = Add new Part 
+Click Adjust button
+Test Data
+None
+Expected Result
+None
+
+
+11
+Step
+Verify the VAT number in customer master and ship to details in customer screen
+Go to Customer
+
+Search for the customer ECD
+Navigate to Billing 
+Verify the field and enter the VAT ID and save
+Navigate to Ship to Detail
+Verify the field and enter the VAT ID and save
+
+
+Test Data
+None
+Expected Result
+VAT ID should be displayed in billing and ship to details
+
+
+12
+Step
+Create an order for stock parts
+Go to Order entry
+Sales Management/Customer Relationship Management/General Operations/Order Entry
+
+Click the plus icon to add a new sales order
+Enter customer ECD which has VAT number in master and ship to details and tab out
+Select Need By date = Today's date
+Save
+Test Data
+None
+Expected Result
+Save Order Num (####)
+
+
+13
+Step
+In the navigation menu at the left, Move to Lines > Detail tab
+Click the Plus icon to add a new line
+Enter Part = EP1 and tab out
+Enter order quantity = 100.00
+Save
+Test Data
+None
+Expected Result
+None
+
+
+14
+Step
+Go to the overflow menu and click Reserve / Allocate
+Test Data
+None
+Expected Result
+Fulfillment Workbench screen is displayed
+
+
+15
+Step
+Select the 1 line displayed corresponding to your SO Lines
+Then in overflow menu click allocate by part
+Test Data
+None
+Expected Result
+Allocation Process criteria screen opens up
+
+
+16
+Step
+Click Continue
+Test Data
+None
+Expected Result
+Ad Hoc Allocation Template Screen is displayed
+
+
+17
+Step
+Set Release to Picking = True
+Then click Continue
+Test Data
+None
+Expected Result
+Message displayed: 
+
+1 Demand record(s) allocated.
+0 Demand record(s) cross docked.
+1 Demand record(s) selected for picking.
+1 Demand record(s) submitted for picking.
+
+
+18
+Step
+Click Ok
+Test Data
+None
+Expected Result
+Message displayed: "Release for Picking
+Do you want to print the released items?"
+
+
+19
+Step
+Click No
+Exit Fulfillment Workbench screen
+Test Data
+None
+Expected Result
+None
+
+
+20
+Step
+Pick order Lines to Shipping Area
+Go to Material Request Queue
+Material Management/Advanced Material Management/General Operations/Material Request Queue
+Filter transactions from today's date 
+Select the record displayed related to part EP1 and click Select button
+Move to My Selections tab
+Click process
+Test Data
+None
+Expected Result
+WIP/Material Movement Transaction slide panel is displayed
+Make sure Part = EP1
+
+
+21
+Step
+Scroll down and make sure To Warehouse = Shipping Area and To Bin = SHP-1
+Then Click OK
+Test Data
+None
+Expected Result
+Record for part EP1 should disappear from the grid
+
+
+22
+Step
+Create a new CS Pack
+Go to Customer Shipment
+Material Management/Shipping / Receiving/General Operations/Customer Shipment Entry
+
+Click the Plus icon Create a new Pack
+Enter Order number (####) previously generated
+Select Ship Via = FedEx Ground
+Set Ship date = Today's date
+Enter Package Code = BOX
+Save
+Test Data
+None
+Expected Result
+Save Pack Num (###)
+
+
+23
+Step
+In the left navigation menu, go to Shipment Lines / Line Details tab
+Click the Plus icon to add a New Line
+Enter Line = 1 and Release = 1
+On the From Inventory card, select Warehouse = Shipping Area and Bin = SHP-1
+Make sure Our Ship Qty = 100
+Make sure customer part is fetched from Order 
+Save
+Test Data
+None
+Expected Result
+None
+
+
+24
+Step
+In the left navigation menu, go back to Details tab
+Enter weight = 3.0000 LB
+Save
+Click Close button
+Test Data
+None
+Expected Result
+Pack status should change to CLOSED
+
+
+25
+Step
+Then, click Freight button
+Test Data
+None
+Expected Result
+Status should change to Freighted
+Tracking number field should be populated
+
+
+26
+Step
+Check pack on QuickShip > Shipments
+Open Quick ship app 
+In the QuickShip homepage, click on Shipments
+Click search button and filter shipments from yesterday date to tomorrow's date.
+Click on search
+Test Data
+None
+Expected Result
+A record for your Customer shipment should be displayed 
+
+
+27
+Step
+Check API request for pack shipment
+In your server, go to your local QuickShip installation folder (i.e. C:\inetpub\wwwroot\QuickShip)
+Click on your CarrierXMLFile folder 
+There, open the shipment request JSON file with the last creation date and time
+Test Data
+None
+Expected Result
+If Customer has VAT ID in billing and shipto details, it should send to Quickship through API request json file
+{
+  "authentication": {
+    "userid": "epicor",
+    "username": "admin",
+    "registrationId": "QuickShipDemo",
+    "workstationId": "PACK"
+  },
+  "releaseIDPrefix": "CS",
+  "shipTo": {
+    "customerCode": "12",
+    "shipToCode": "EDA-A",
+    "address": {
+      "recipientLine2": "",
+      "phone": "",
+      "companyName": "East Coast Distribution",
+      "addressLine1": "225 West State",
+      "addressLine2": "",
+      "addressLine3": "",
+      "city": "Albany",
+      "district": "NY",
+      "postalCode": "12211",
+      "country": "USA",
+      "residential": false,
+      "addressVerifiedField": false
+    },
+    "taxIdentification": "",
+    "email": "",
+    "vat": "SHIPTOVAT",
+    "eori": ""
+  },
+  "parentCustomer": {
+    "customerCode": "12",
+    "shipToCode": "",
+    "address": {
+      "recipientLine2": "",
+      "phone": "7656576676",
+      "companyName": "East Coast Distribution",
+      "addressLine1": "550 Main Street",
+      "addressLine2": "",
+      "addressLine3": "",
+      "city": "Hartford",
+      "district": "CT",
+      "postalCode": "06103",
+      "country": "USA",
+      "residential": false,
+      "addressVerifiedField": false
+    },
+    "taxIdentification": "",
+    "email": "",
+    "vat": "BillingVAT",
+    "eori": ""
+  },
+  "contactName": "East Coast Distribution",
+  "contactPhoneNumber": "7656576676",
+  "parentCustomerContactName": "",
+  "parentCustomerContactPhoneNumber": "7656576676",
+  "shipCode": "F92",
+  "shipDate": "2025-10-23T00:00:00+05:30",
+  "billingShipCode": "",
+  "billingPayFlag": "",
+  "billingMethod": "PREPAID_AND_ADD",
+  "billingAccount": {
+    "accountNumber": "",
+    "billingAddress": {
+      "recipientLine2": "",
+      "phone": "",
+      "companyName": "East Coast Distribution",
+      "addressLine1": "",
+      "addressLine2": "",
+      "addressLine3": "",
+      "addressLine4": "",
+      "city": "",
+      "district": "",
+      "postalCode": "",
+      "country": "",
+      "residential": false,
+      "addressVerifiedField": false
+    }
+  },
+  "orderReference": "8118",
+  "purchaseOrderReference": "",
+  "orderCurrency": "USD",
+  "baseCurrencyUOM": "USD",
+  "currencyConversionFactor": 1.0,
+  "shipmentReference": "314",
+  "shipmentServices": [
+    {
+      "serviceElementName": "COD",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "CODAddFreight",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "DeclaredValueInsurance",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "HomeDelivery",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "ResidentialDelivery",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "SaturdayDelivery",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "SaturdayPickup",
+      "serviceElementValue": "false"
+    },
+    {
+      "serviceElementName": "EMailNotification",
+      "serviceElementValue": "false"
+    }
+  ],
+  "defaultCarrierServices": [
+    {
+      "serviceElementName": "EMailNotification",
+      "serviceElementValue": "false"
+    }
+  ],
+  "containers": [
+    {
+      "caseNumber": "",
+      "packCode": "314",
+      "packageDescription": "BOX",
+      "erpRefrence": "",
+      "length": 24.0,
+      "lengthSpecified": true,
+      "width": 18.0,
+      "widthSpecified": true,
+      "height": 12.0,
+      "heightSpecified": true,
+      "weight": 1.0,
+      "containerTypeCode": "BOX",
+      "containerServices": [
+        {
+          "serviceElementName": "COD",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "CODAddFreight",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "DeclaredValueInsurance",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "NonstandardContainer",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "PriorityAlert",
+          "serviceElementValue": "false"
+        },
+        {
+          "serviceElementName": "SignatureRequired",
+          "serviceElementValue": "false"
+        }
+      ],
+      "hazardousInformation": {
+        "isExceptedQuantity": false,
+        "additionalHazMatInfo": ""
+      },
+      "packingDetail": [
+        {
+          "product": {
+            "productKey": "M1",
+            "description": "M1",
+            "tariff": "2222.22",
+            "unitOfMeasure": "EA",
+            "unitWeight": 0.0,
+            "hazmatMass": 0.0,
+            "naftaPreferenceCriterion": "",
+            "producerOfTheGood": "",
+            "netCostMethod": "NO",
+            "countryOfManufacture": "",
+            "hazmatGroupDescription": "",
+            "freightClass": "",
+            "eccn": "",
+            "netWeight": 0.00000,
+            "netWeightUom": "g",
+            "fairMarketValueUnitPrice": 0.0,
+            "lotKey": ""
+          },
+          "unitPrice": 0.0,
+          "exportUnitPrice": 0.0,
+          "qtyPacked": 1.0,
+          "orderlineNumber": 1,
+          "orderReference": "8118",
+          "orderPrice": 0.0,
+          "customerProductCode": "",
+          "udFields": {}
+        }
+      ],
+      "dgAccessible": false,
+      "specialServices": {
+        "referenceInformation": "true",
+        "reference1": "",
+        "reference2": "",
+        "reference3": "",
+        "reference4": "",
+        "priorityAlert": "False",
+        "referenceNotes": ""
+      },
+      "dimensionUOM": "IN",
+      "udFields": {}
+    }
+  ],
+  "internationalInfo": {
+    "printInternationalDocs": false,
+    "xtnNumber": "",
+    "incoterms": "",
+    "ultimateConsignee": {
+      "recipientLine2": "",
+      "phone": "",
+      "companyName": "East Coast Distribution",
+      "addressLine1": "225 West State",
+      "addressLine2": "",
+      "addressLine3": "",
+      "city": "Albany",
+      "district": "NY",
+      "postalCode": "12211",
+      "country": "USA",
+      "residential": false,
+      "addressVerifiedField": false
+    },
+    "reasonForExport": "Sale",
+    "routedTransaction": "0",
+    "exportCode": "OS",
+    "partiesToTransaction": false,
+    "termsLocation": ""
+  },
+  "printBOL": false,
+  "packageWeight": 1.0,
+  "isCodCollectionType": false,
+  "isSignatureRequired": false,
+  "checkBox01": false,
+  "checkBox02": false,
+  "checkBox03": false,
+  "checkBox04": false,
+  "checkBox05": false,
+  "checkBox06": false,
+  "checkBox07": false,
+  "checkBox08": false,
+  "checkBox09": false,
+  "checkBox10": false,
+  "checkBox11": false,
+  "checkBox12": false,
+  "checkBox13": false,
+  "checkBox14": false,
+  "checkBox15": false,
+  "checkBox16": false,
+  "checkBox17": false,
+  "checkBox18": false,
+  "checkBox19": false,
+  "checkBox20": false,
+  "handlingCharge": 0.0,
+  "handlingChargeFlag": false,
+  "freightApiRequest": true,
+  "customerNotes": "",
+  "shipperNotes": "",
+  "deliveryInstructions": "",
+  "udFields": {},
+  "returnShipmentLabelComment": "",
+  "createShipment": false,
+  "blindShipping": false
+}
+
+6. QuickShip - Customer Shipment Entry - Verify the rate shopping through REST API
+Step
+Installation of QuickShip and setup for Kinetic Integration is needed to run this test case. See attached installation guide
+Test Data
+None
+Expected Result
+None
+
+
+2
+Step
+Ship Codes setup in QuickShip
+On your server, open QuickShip app
+Select Authentication Type = QuickShip Native
+Select Registration code = quickshipdemo
+username = <local-user>
+password = <local-password>
+Login
+Test Data
+None
+Expected Result
+QuickShip Home page is displayed
+
+
+3
+Step
+Open Kinetic App
+Login with <local-user>/<local-password>
+Test Data
+None
+Expected Result
+Kinetic Homepage is displayed
+
+
+4
+Step
+Move to Company = EPIC06 and Workstation = Freight Service 400
+Test Data
+None
+Expected Result
+None
+
+
+5
+Step
+Active IN UOM Class
+Go to UOM Class
+Production Management/Engineering/Setup/UOM Class
+ 
+Enter Class = Length
+In the UOM List grid, click on IN record
+Active = True
+Save
+Exit UOM Class Maintenance
+Test Data
+None
+Expected Result
+None
+
+
+6
+Step
+QuickShip settings for Workstation
+Go to Workstation Maintenance
+Material Management/Shipping / Receiving/Setup/Workstation
+
+Select the workstation you are working on (PACK)
+Weight Input = Prompt for Weight
+Manifest Enabled = True
+Web Service URL = http://quickshipweb/EpicorFreightService.svc?regCode=QuickShipDemo
+Manifest/Weight Capture Point = Both
+Size UOM = IN
+Make sure weight UOM = LB
+Log manifest messages = True
+Save
+Test Data
+None
+Expected Result
+None
+
+
+7
+Step
+Setup QuickShip integration for Kinetic Company
+Go to Company configuration 
+System Setup/Company/Site Maintenance/Company Configuration
+Click on Modules button
+ In left navigation menu at the left, go to Materials tab
+Expand the Shipping receiving Card
+From the Freight Service Integration combo, select REST API Integration
+On the Quickship API URL enter = http://quickshipweb/
+-Registration code = quickshipdemo
+-username = <local-user>
+-password = <local-password>
+-Save and exit
+Test Data
+None
+Expected Result
+None
+
+
+8
+Step
+Setup QuickShip integration for Kinetic Company
+Go to Site configuration 
+Go to Shipping Receiving
+Enable Rate Shopping
+Enter the Url http:s//quickshipweb/dist?regCode=QuickShipDemo
+Test Data
+None
+Expected Result
+None
+
+
+9
+Step
+Create Purchased part
+ Go to Part
+Main menu > Material Management>Inventory Management>Setup>Part
+On the landing page, click the <Plus> icon to create a new Part
+ Set Part& Description = EP1
+Make sure Type = Purchased
+On the left navigation menu go to Part tab
+Scroll down and set Sales Unit Price = 1.00
+Save
+Test Data
+None
+Expected Result
+None
+
+
+10
+Step
+In the navigation menu at the left, go to Integrations tab
+Enter Schedule B Code = 2222.22
+Save
+Search for the unit net weight
+Enter Unit net weight =10
+Test Data
+None
+Expected Result
+None
+
+
+11
+Step
+Adjust Quantity for parts
+Go to Quantity Adjustment
+Material Management/Inventory Management/General Operations/Quantity Adjustment
+Enter Part = EP1
+Enter Bin = 00-00-00
+Enter Adjust Quantity = 200
+Select Reason = Add new Part 
+Click Adjust button
+Test Data
+None
+Expected Result
+None
+
+
+12
+Step
+Create an order for stock parts
+Go to Order entry
+Sales Management/Customer Relationship Management/General Operations/Order Entry
+
+Click the plus icon to add a new sales order
+Enter customer ECD and tab out
+Select Need By date = Today's date
+Save
+Test Data
+None
+Expected Result
+Save Order Num (####)
+
+
+13
+Step
+In the navigation menu at the left, Move to Lines > Detail tab
+Click the Plus icon to add a new line
+Enter Part = EP1 and tab out
+Enter order quantity = 1
+Save
+Test Data
+None
+Expected Result
+None
+
+
+14
+Step
+Go to the overflow menu and click Reserve / Allocate
+Test Data
+None
+Expected Result
+Fulfillment Workbench screen is displayed
+
+
+15
+Step
+Select the 1 line displayed corresponding to your SO Lines
+Then in overflow menu click allocate by part
+Test Data
+None
+Expected Result
+Allocation Process criteria screen opens up
+
+
+16
+Step
+Click Continue
+Test Data
+None
+Expected Result
+Ad Hoc Allocation Template Screen is displayed
+
+
+17
+Step
+Set Release to Picking = True
+Then click Continue
+Test Data
+None
+Expected Result
+Message displayed: 
+
+1 Demand record(s) allocated.
+0 Demand record(s) cross docked.
+1 Demand record(s) selected for picking.
+1 Demand record(s) submitted for picking.
+
+
+18
+Step
+Click Ok
+Test Data
+None
+Expected Result
+Message displayed: "Release for Picking
+Do you want to print the released items?"
+
+
+19
+Step
+Click No
+Exit Fulfillment Workbench screen
+Test Data
+None
+Expected Result
+None
+
+
+20
+Step
+Pick order Lines to Shipping Area
+Go to Material Request Queue
+Material Management/Advanced Material Management/General Operations/Material Request Queue
+Filter transactions from today's date 
+Select the record displayed related to part EP1 and click Select button
+Move to My Selections tab
+Click process
+Test Data
+None
+Expected Result
+WIP/Material Movement Transaction slide panel is displayed
+Make sure Part = EP1
+
+
+21
+Step
+Scroll down and make sure To Warehouse = Shipping Area and To Bin = SHP-1
+Then Click OK
+Test Data
+None
+Expected Result
+Record for part EP1 should disappear from the grid
+
+
+22
+Step
+Create a new CS Pack
+Go to Customer Shipment
+Material Management/Shipping / Receiving/General Operations/Customer Shipment Entry
+
+Click the Plus icon Create a new Pack
+Enter Order number (####) previously generated
+Select Ship Via = FedEx Ground
+Set Ship date = Today's date
+Enter Package Code = BOX
+Save
+Test Data
+None
+Expected Result
+Save Pack Num (###)
+
+
+23
+Step
+In the left navigation menu, go to Shipment Lines / Line Details tab
+Click the Plus icon to add a New Line
+Enter Line = 1 and Release = 1
+On the From Inventory card, select Warehouse = Shipping Area and Bin = SHP-1
+Make sure Our Ship Qty = 100
+Save
+Test Data
+None
+Expected Result
+None
+
+
+24
+Step
+In the left navigation menu, go back to Details tab
+Click on Rate Shopping button
+Test Data
+None
+Expected Result
+It should redirect to the quickship rate shopping screen.
+
+
+
+25
+Step
+Click on Rate Shop
+Select the Ship Code = F92
+Select the include Quoted Freight
+Note down the freight charge, CO2 and delivery date
+Test Data
+None
+Expected Result
+Freight charge = 33.06
+CO2=0.21
+
+
+26
+Step
+Click on submit 
+Test Data
+None
+Expected Result
+It should be Succesfully submitted
+
+
+27
+Step
+Go back to customer shipment screen
+Verify the Rate Shop Carrier, Rate shop carrier service and miscellaneous charges
+Test Data
+None
+Expected Result
+
+
+
+
+28
+Step
+Search and verify the billing type
+Test Data
+None
+Expected Result
+Billing type should be = Shipper
+
+
+
+29
+Step
+Check API request for pack shipment
+In your server, go to your local QuickShip installation folder (i.e. C:\EpicorData\Companies\EPIC06\Log)
+There, open the RateShop request JSON file with the last creation date and time
+Test Data
+None
+Expected Result
+Rate shopping json
+{
+"PrintingDocument": null,
+"Authentication": {
+"Userid": "epicor",
+"Username": "admin",
+"RegistrationId": "QuickShipDemo",
+"WorkstationId": "PACK",
+"CompanyName": "EPIC06"
+},
+"ReleaseIdPrefix": "CS",
+"ShipTo": {
+"CustomerCode": "2",
+"ShipToCode": "001",
+"Address": {
+"RecipientLine2": "",
+"Phone": "608-555-5678",
+"CompanyName": "Addison, INC",
+"AddressLine1": "215 Martin Luther King, Jr. Blvd",
+"AddressLine2": "Door 2",
+"AddressLine3": "",
+"AddressLine4": null,
+"City": "Madison",
+"District": "WI",
+"PostalCode": "53703",
+"Country": "USA",
+"Residential": false
+},
+"TaxIdentification": "",
+"Email": "",
+"Eori": "",
+"VAT": ""
+},
+"ParentCustomer": {
+"CustomerCode": "2",
+"ShipToCode": "",
+"Address": {
+"RecipientLine2": "",
+"Phone": "",
+"CompanyName": "Addison, INC",
+"AddressLine1": "210 Martin Luther King, Jr. Blvd",
+"AddressLine2": "",
+"AddressLine3": "",
+"AddressLine4": null,
+"City": "Madison",
+"District": "WI",
+"PostalCode": "53703",
+"Country": "USA",
+"Residential": false
+},
+"TaxIdentification": "VAT",
+"Email": "",
+"Eori": "",
+"VAT": ""
+},
+"ContactName": "Addison, INC",
+"ContactPhoneNumber": "608-555-5678",
+"ParentCustomerContactName": "Lonnie Smith",
+"ParentCustomerContactPhoneNumber": "",
+"ShipCode": "F92",
+"ShipDate": "2026-10-30T00:00:00-07:00",
+"BillingShipCode": "",
+"BillingPayFlag": "SHIP",
+"BillingMethod": "PREPAID",
+"BillingAccount": {
+"AccountNumber": "",
+"BillingAddress": {
+"RecipientLine2": "",
+"Phone": "",
+"CompanyName": "Addison, INC",
+"AddressLine1": "",
+"AddressLine2": "",
+"AddressLine3": "",
+"AddressLine4": "",
+"City": "",
+"District": "",
+"PostalCode": "",
+"Country": "",
+"Residential": false
+}
+},
+"OrderReference": "8119",
+"PurchaseOrderReference": "",
+"OrderCurrency": "USD",
+"BaseCurrencyUom": "USD",
+"CurrencyConversionFactor": 1.0000000000,
+"ShipmentReference": "321",
+"ShipmentServices": null,
+"DefaultCarrierServices": "",
+"containers": [
+{
+"CaseNumber": "",
+"PackCode": "321",
+"PackageDescription": "BOX",
+"ErpRefrence": "",
+"Length": 0.0,
+"LengthSpecified": true,
+"Width": 0.0,
+"WidthSpecified": true,
+"Height": 0.0,
+"HeightSpecified": true,
+"Weight": 0.0,
+"ContainerTypeCode": "BOX",
+"ContainerServices": null,
+"HazardousInformation": {
+"isExceptedQuantity": false,
+"additionalHazMatInfo": ""
+},
+"PackingDetail": [
+{
+"Product": {
+"ProductKey": "SM",
+"Description": "SM",
+"Tariff": "1234.56.78.9101",
+"UnitOfMeasure": "EA",
+"UnitWeightSpecified": false,
+"HazmatMass": 0,
+"NaftaPreferenceCriterion": "",
+"ProducerOfTheGood": "",
+"NetCostMethod": 0,
+"CountryOfManufacture": "",
+"HazmatGroupDescription": "",
+"FreightClass": "",
+"Eccn": "",
+"NetWeight": 10.0,
+"NetWeightUom": "g",
+"FairMarketValueUnitPrice": 0.0,
+"LotKey": ""
+},
+"CustomerProductCode": "",
+"UnitPrice": 0.0,
+"UnitPriceSpecified": true,
+"ExportUnitPriceSpecified": false,
+"QtyPacked": 10.0,
+"OrderlineNumber": 1,
+"OrderReference": "8119",
+"OrderPrice": 0.0,
+"udFields": {}
+}
+],
+"DgAccessible": false,
+"DimensionUOM": "",
+"specialServices": {
+"ReferenceInformation": "true",
+"Reference1": "",
+"Reference2": "",
+"Reference3": "",
+"Reference4": "",
+"PriorityAlert": "False",
+"ReferenceNotes": ""
+},
+"udFields": {}
+}
+],
+"internationalInfo": {
+"printInternationalDocs": false,
+"ultimateConsignee": {
+"recipientLine2": "",
+"phone": "608-555-5678",
+"companyName": "Addison, INC",
+"addressLine1": "215 Martin Luther King, Jr. Blvd",
+"addressLine2": "Door 2",
+"addressLine3": "",
+"addressLine4": null,
+"city": "Madison",
+"district": "WI",
+"postalCode": "53703",
+"country": "USA"
+},
+"freightForwarder": null,
+"termsLocation": "",
+"incoterms": "",
+"xtnNumber": ""
+},
+"PackageWeight": 0.0,
+"codCollectionType": null,
+"IsCodCollectionType": false,
+"ReturnShipmentLabelComment": "",
+"IsSignatureRequired": false,
+"CheckBox01": false,
+"CheckBox02": false,
+"CheckBox03": false,
+"CheckBox04": false,
+"CheckBox05": false,
+"CheckBox06": false,
+"CheckBox07": false,
+"CheckBox08": false,
+"CheckBox09": false,
+"CheckBox10": false,
+"CheckBox11": false,
+"CheckBox12": false,
+"CheckBox13": false,
+"CheckBox14": false,
+"CheckBox15": false,
+"CheckBox16": false,
+"CheckBox17": false,
+"CheckBox18": false,
+"CheckBox19": false,
+"CheckBox20": false,
+"CarrierOptionLevels": null,
+"HomeDelivery": null,
+"HandlingCharge": 0.0,
+"HandlingChargeFlag": false,
+"FreightApiRequest": false,
+"NumberOfPieces": null,
+"customerNotes": "",
+"shipperNotes": "",
+"deliveryInstructions": "",
+"udFields": {},
+"BlindShipping": false,
+"createShipment": false
+}
+
+
+30
+Step
+In the left navigation menu, go back to Details tab
+Enter weight = 3.0000 LB
+Save
+Click Close button
+Test Data
+None
+Expected Result
+Pack status should change to CLOSED
+
+
+31
+Step
+Then, click Freight button
+Test Data
+None
+Expected Result
+Status should change to Freighted
+Tracking number field should be populate
+CO2 should be 0.21
+
+
+32
+Step
+Check pack on QuickShip > Shipments
+Open Quick ship app 
+In the QuickShip homepage, click on Shipments
+Click search button and filter shipments from yesterday date to tomorrow's date.
+Click on search
+Test Data
+None
+Expected Result
+A record for your Customer shipment should be displayed 
+
+
+33
+Step
+Check API request for pack shipment
+In your server, go to your local QuickShip installation folder (i.e. C:\inetpub\wwwroot\QuickShip)
+Click on your CarrierXMLFile folder 
+There, open the shipment request JSON file with the last creation date and time
+Test Data
+None
+Expected Result
+{
+"authentication": {
+"userid": "epicor",
+"username": "admin",
+"registrationId": "QuickShipDemo",
+"workstationId": "PACK"
+},
+"releaseIDPrefix": "CS",
+"shipTo": {
+"customerCode": "2",
+"shipToCode": "001",
+"address": {
+"recipientLine2": "",
+"phone": "608-555-5678",
+"companyName": "Addison, INC",
+"addressLine1": "215 Martin Luther King, Jr. Blvd",
+"addressLine2": "Door 2",
+"addressLine3": "",
+"city": "Madison",
+"district": "WI",
+"postalCode": "53703",
+"country": "USA",
+"residential": false,
+"addressVerifiedField": false
+},
+"taxIdentification": "",
+"email": "",
+"vat": "",
+"eori": ""
+},
+"parentCustomer": {
+"customerCode": "2",
+"shipToCode": "",
+"address": {
+"recipientLine2": "",
+"phone": "",
+"companyName": "Addison, INC",
+"addressLine1": "210 Martin Luther King, Jr. Blvd",
+"addressLine2": "",
+"addressLine3": "",
+"city": "Madison",
+"district": "WI",
+"postalCode": "53703",
+"country": "USA",
+"residential": false,
+"addressVerifiedField": false
+},
+"taxIdentification": "VAT",
+"email": "",
+"vat": "",
+"eori": ""
+},
+"contactName": "Addison, INC",
+"contactPhoneNumber": "608-555-5678",
+"parentCustomerContactName": "Lonnie Smith",
+"parentCustomerContactPhoneNumber": "",
+"shipCode": "F92",
+"shipDate": "2026-10-30T00:00:00-07:00",
+"billingShipCode": "",
+"billingPayFlag": "SHIP",
+"billingMethod": "PREPAID",
+"billingAccount": {
+"accountNumber": "",
+"billingAddress": {
+"recipientLine2": "",
+"phone": "",
+"companyName": "Addison, INC",
+"addressLine1": "",
+"addressLine2": "",
+"addressLine3": "",
+"addressLine4": "",
+"city": "",
+"district": "",
+"postalCode": "",
+"country": "",
+"residential": false,
+"addressVerifiedField": false
+}
+},
+"orderReference": "8119",
+"purchaseOrderReference": "",
+"orderCurrency": "USD",
+"baseCurrencyUOM": "USD",
+"currencyConversionFactor": 1.0,
+"shipmentReference": "321",
+"shipmentServices": [
+{
+"serviceElementName": "COD",
+"serviceElementValue": "false"
+},
+{
+"serviceElementName": "CODAddFreight",
+"serviceElementValue": "false"
+},
+{
+"serviceElementName": "DeclaredValueInsurance",
+"serviceElementValue": "false"
+},
+{
+"serviceElementName": "HomeDelivery",
+"serviceElementValue": "false"
+},
+{
+"serviceElementName": "ResidentialDelivery",
+"serviceElementValue": "false"
+},
+{
+"serviceElementName": "SaturdayDelivery",
+"serviceElementValue": "false"
+},
+{
+"serviceElementName": "SaturdayPickup",
+"serviceElementValue": "false"
+},
+{
+"serviceElementName": "EMailNotification",
+"serviceElementValue": "false"
+}
+],
+"defaultCarrierServices": [
+{
+"serviceElementName": "EMailNotification",
+"serviceElementValue": "false"
+}
+],
+"containers": [
+{
+"caseNumber": "",
+"packCode": "321",
+"packageDescription": "BOX",
+"erpRefrence": "",
+"length": 24.0,
+"lengthSpecified": true,
+"width": 18.0,
+"widthSpecified": true,
+"height": 12.0,
+"heightSpecified": true,
+"weight": 10.0,
+"containerTypeCode": "BOX",
+"containerServices": [
+{
+"serviceElementName": "COD",
+"serviceElementValue": "false"
+},
+{
+"serviceElementName": "CODAddFreight",
+"serviceElementValue": "false"
+},
+{
+"serviceElementName": "DeclaredValueInsurance",
+"serviceElementValue": "false"
+},
+{
+"serviceElementName": "NonstandardContainer",
+"serviceElementValue": "false"
+},
+{
+"serviceElementName": "PriorityAlert",
+"serviceElementValue": "false"
+},
+{
+"serviceElementName": "SignatureRequired",
+"serviceElementValue": "false"
+}
+],
+"hazardousInformation": {
+"isExceptedQuantity": false,
+"additionalHazMatInfo": ""
+},
+"packingDetail": [
+{
+"product": {
+"productKey": "SM",
+"description": "SM",
+"tariff": "1234.56.78.9101",
+"unitOfMeasure": "EA",
+"unitWeight": 0.0,
+"hazmatMass": 0.0,
+"naftaPreferenceCriterion": "",
+"producerOfTheGood": "",
+"netCostMethod": "NO",
+"countryOfManufacture": "",
+"hazmatGroupDescription": "",
+"freightClass": "",
+"eccn": "",
+"netWeight": 0.02200,
+"netWeightUom": "g",
+"fairMarketValueUnitPrice": 0.0,
+"lotKey": ""
+},
+"unitPrice": 0.0,
+"exportUnitPrice": 0.0,
+"qtyPacked": 10.0,
+"orderlineNumber": 1,
+"orderReference": "8119",
+"orderPrice": 0.0,
+"customerProductCode": "",
+"udFields": {}
+}
+],
+"dgAccessible": false,
+"specialServices": {
+"referenceInformation": "true",
+"reference1": "",
+"reference2": "",
+"reference3": "",
+"reference4": "",
+"priorityAlert": "False",
+"referenceNotes": ""
+},
+"dimensionUOM": "IN",
+"udFields": {}
+}
+],
+"internationalInfo": {
+"printInternationalDocs": false,
+"xtnNumber": "",
+"incoterms": "",
+"ultimateConsignee": {
+"recipientLine2": "",
+"phone": "608-555-5678",
+"companyName": "Addison, INC",
+"addressLine1": "215 Martin Luther King, Jr. Blvd",
+"addressLine2": "Door 2",
+"addressLine3": "",
+"city": "Madison",
+"district": "WI",
+"postalCode": "53703",
+"country": "USA",
+"residential": false,
+"addressVerifiedField": false
+},
+"reasonForExport": "Sale",
+"routedTransaction": "0",
+"exportCode": "OS",
+"partiesToTransaction": false,
+"termsLocation": ""
+},
+"printBOL": false,
+"packageWeight": 10.0,
+"isCodCollectionType": false,
+"isSignatureRequired": false,
+"checkBox01": false,
+"checkBox02": false,
+"checkBox03": false,
+"checkBox04": false,
+"checkBox05": false,
+"checkBox06": false,
+"checkBox07": false,
+"checkBox08": false,
+"checkBox09": false,
+"checkBox10": false,
+"checkBox11": false,
+"checkBox12": false,
+"checkBox13": false,
+"checkBox14": false,
+"checkBox15": false,
+"checkBox16": false,
+"checkBox17": false,
+"checkBox18": false,
+"checkBox19": false,
+"checkBox20": false,
+"handlingCharge": 0.0,
+"handlingChargeFlag": false,
+"freightApiRequest": true,
+"customerNotes": "",
+"shipperNotes": "",
+"deliveryInstructions": "",
+"udFields": {},
+"returnShipmentLabelComment": "",
+"createShipment": false,
+"blindShipping": false
+}
+
+7. QuickShip - Customer Shipment Entry/phantom pack - Verify the Bidirectional response of UD fields from quickship through REST API
+Step
+Installation of QuickShip and setup for Kinetic Integration is needed to run this test case. See attached installation guide
+Test Data
+None
+Expected Result
+None
+
+
+2
+Step
+Ship Codes setup in QuickShip
+On your server, open QuickShip app
+Select Authentication Type = QuickShip Native
+Select Registration code = quickshipdemo
+username = <local-user>
+password = <local-password>
+Login
+Test Data
+None
+Expected Result
+QuickShip Home page is displayed
+
+
+3
+Step
+Go to Setup
+Select Rest API Data Mapping
+Click on Add Response Data Mapping
+Add the Source field and Target Field = CartonTrkDtl_Test
+Save
+Test Data
+None
+Expected Result
+
+
+
+4
+Step
+Open Kinetic App
+Login with <local-user>/<local-password>
+Test Data
+None
+Expected Result
+Kinetic Homepage is displayed
+
+
+5
+Step
+Move to Company = EPIC06 and Workstation = Freight Service 400
+Test Data
+None
+Expected Result
+None
+
+
+6
+Step
+Active IN UOM Class
+Go to UOM Class
+Production Management/Engineering/Setup/UOM Class
+ 
+Enter Class = Length
+In the UOM List grid, click on IN record
+Active = True
+Save
+Exit UOM Class Maintenance
+Test Data
+None
+Expected Result
+None
+
+
+7
+Step
+QuickShip settings for Workstation
+Go to Workstation Maintenance
+Material Management/Shipping / Receiving/Setup/Workstation
+
+Select the workstation you are working on (PACK)
+Weight Input = Prompt for Weight
+Manifest Enabled = True
+Web Service URL = http://quickshipweb/EpicorFreightService.svc?regCode=QuickShipDemo
+Manifest/Weight Capture Point = Both
+Size UOM = IN
+Make sure weight UOM = LB
+Log manifest messages = True
+Save
+Test Data
+None
+Expected Result
+None
+
+
+8
+Step
+Setup QuickShip integration for Kinetic Company
+Go to Company configuration 
+System Setup/Company/Site Maintenance/Company Configuration
+Click on Modules button
+ In left navigation menu at the left, go to Materials tab
+Expand the Shipping receiving Card
+From the Freight Service Integration combo, select REST API Integration
+On the Quickship API URL enter = http://quickshipweb/
+-Registration code = quickshipdemo
+-username = <local-user>
+-password = <local-password>
+-Save and exit
+Test Data
+None
+Expected Result
+None
+
+
+9
+Step
+Create UD field column in User Defined column Maintenance
+​
+Click on New
+Select the CartonTrkDtl table.
+Click on save.
+Click on New in column
+Enter Column name and Label
+Save.
+Test Data
+None
+Expected Result
+
+
+
+10
+Step
+Regenerate DataModel from admin console
+Verify the Table and Data model is in sync in UD Column maintenance
+If it is not synced DO IIS restart
+Test Data
+None
+Expected Result
+Regenerate datamodel should be completed.
+Table and Data Model should be in sync
+
+
+11
+Step
+Add New Field in Customer Shipment Entry
+Go to Customer Shipment
+Material Management/Shipping / Receiving/General Operations/Customer Shipment Entry
+Click on New
+Click application studio from action
+Select Manifest Info
+Click on edit.
+Select the Phantom Creation Options and expand
+Search text box and drag under Pack
+Add the data binding
+Give any label name 
+Save
+Publish
+Test Data
+None
+Expected Result
+
+
+
+12
+Step
+Create Purchased part
+ Go to Part
+Main menu > Material Management>Inventory Management>Setup>Part
+On the landing page, click the <Plus> icon to create a new Part
+ Set Part& Description = EP1
+Make sure Type = Purchased
+On the left navigation menu go to Part tab
+Scroll down and set Sales Unit Price = 1.00
+Save
+Test Data
+None
+Expected Result
+None
+
+
+13
+Step
+In the navigation menu at the left, go to Integrations tab
+Enter Schedule B Code = 2222.22
+Save
+Test Data
+None
+Expected Result
+None
+
+
+14
+Step
+Adjust Quantity for parts
+Go to Quantity Adjustment
+Material Management/Inventory Management/General Operations/Quantity Adjustment
+Enter Part = EP1
+Enter Bin = 00-00-00
+Enter Adjust Quantity = 200
+Select Reason = Add new Part 
+Click Adjust button
+Test Data
+None
+Expected Result
+None
+
+
+15
+Step
+Create an order for stock parts
+Go to Order entry
+Sales Management/Customer Relationship Management/General Operations/Order Entry
+
+Click the plus icon to add a new sales order
+Enter customer ECD and tab out
+Select Need By date = Today's date
+Save
+Test Data
+None
+Expected Result
+Save Order Num (####)
+
+
+16
+Step
+In the navigation menu at the left, Move to Lines > Detail tab
+Click the Plus icon to add a new line
+Enter Part = EP1 and tab out
+Enter order quantity = 100.00
+Select the customer part (customer part should be created in part cross reference screen)
+Save
+Test Data
+None
+Expected Result
+None
+
+
+17
+Step
+Go to the overflow menu and click Reserve / Allocate
+Test Data
+None
+Expected Result
+Fulfillment Workbench screen is displayed
+
+
+18
+Step
+Select the 1 line displayed corresponding to your SO Lines
+Then in overflow menu click allocate by part
+Test Data
+None
+Expected Result
+Allocation Process criteria screen opens up
+
+
+19
+Step
+Click Continue
+Test Data
+None
+Expected Result
+Ad Hoc Allocation Template Screen is displayed
+
+
+20
+Step
+Set Release to Picking = True
+Then click Continue
+Test Data
+None
+Expected Result
+Message displayed: 
+
+1 Demand record(s) allocated.
+0 Demand record(s) cross docked.
+1 Demand record(s) selected for picking.
+1 Demand record(s) submitted for picking.
+
+
+21
+Step
+Click Ok
+Test Data
+None
+Expected Result
+Message displayed: "Release for Picking
+Do you want to print the released items?"
+
+
+22
+Step
+Click No
+Exit Fulfillment Workbench screen
+Test Data
+None
+Expected Result
+None
+
+
+23
+Step
+Pick order Lines to Shipping Area
+Go to Material Request Queue
+Material Management/Advanced Material Management/General Operations/Material Request Queue
+Filter transactions from today's date 
+Select the record displayed related to part EP1 and click Select button
+Move to My Selections tab
+Click process
+Test Data
+None
+Expected Result
+WIP/Material Movement Transaction slide panel is displayed
+Make sure Part = EP1
+
+
+24
+Step
+Scroll down and make sure To Warehouse = Shipping Area and To Bin = SHP-1
+Then Click OK
+Test Data
+None
+Expected Result
+Record for part EP1 should disappear from the grid
+
+
+25
+Step
+Create a new CS Pack
+Go to Customer Shipment
+Material Management/Shipping / Receiving/General Operations/Customer Shipment Entry
+
+Click the Plus icon Create a new Pack
+Enter Order number (####) previously generated
+Select Ship Via = FedEx Ground
+Set Ship date = Today's date
+Enter Package Code = BOX
+Save
+Test Data
+None
+Expected Result
+Save Pack Num (###)
+
+
+26
+Step
+In the left navigation menu, go to Shipment Lines / Line Details tab
+Click the Plus icon to add a New Line
+Enter Line = 1 and Release = 1
+On the From Inventory card, select Warehouse = Shipping Area and Bin = SHP-1
+Make sure Our Ship Qty = 100
+Make sure customer part is fetched from Order 
+Save
+Test Data
+None
+Expected Result
+None
+
+
+27
+Step
+In the left navigation menu, go back to Details tab
+Enter weight = 3.0000 LB
+Save
+Click Close button
+Test Data
+None
+Expected Result
+Pack status should change to CLOSED
+
+
+28
+Step
+Move to Manifest Info
+Move to Phantom Creation Option
+Check the Phanton Pack
+Enter the Number of Cases To Create
+Enter Package Code = BOX
+Click on create cases and save
+Test Data
+None
+Expected Result
+Phantom Creation should be saved
+
+
+29
+Step
+Then, click Freight button
+Test Data
+None
+Expected Result
+Status should change to Freighted
+Tracking number field should be populated
+New UD Field should get the value
+
+
+
+30
+Step
+Check pack on QuickShip > Shipments
+Open Quick ship app 
+In the QuickShip homepage, click on Shipments
+Click search button and filter shipments from yesterday date to tomorrow's date.
+Click on search
+Test Data
+None
+Expected Result
+A record for your Customer shipment should be displayed 
+
+
+31
+Step
+Check API request for pack shipment
+In your server, go to your local QuickShip installation folder (i.e. C:\inetpub\wwwroot\QuickShip)
+Click on your CarrierXMLFile folder 
+There, open the shipment response JSON file with the last creation date and time
+Test Data
+None
+Expected Result
+Response should have UD field column and value
+"{\"CarrierBolNumber\":null,
+\"EstimatedCarbonEmission\":\"0.193262736115\",
+\"ReturnStatus\":\"SUCCESS\",
+\"ReturnMessage\":\"Success \\n \",
+\"ShipmentNumber\":\"617\",
+\"TotalFreightCharges\":113.04,
+\"ActualShipcode\":\"F92\",
+\"ReturnedContainers\":[{\"PackID\":\"329-1\",
+\"CaseNum\":\"329-1\",
+\"ContainerId\":\"649\",
+\"BillingWeight\":0.0,
+\"FreightChargeSpecified\":false,
+\"BillingFreightChargeSpecified\":false,
+\"TrackingNumber\":\"794641363609\",
+\"UdFields\":{\"CartonTrkDtl_Test\":\"794641363609\",
+\"MasterPackDtl_TEST\":\"794641363609\"}},{\"PackID\":\"329-2\",
+\"CaseNum\":\"329-2\",
+\"ContainerId\":\"650\",
+\"BillingWeight\":0.0,
+\"FreightChargeSpecified\":false,
+\"BillingFreightChargeSpecified\":false,
+\"TrackingNumber\":\"794641363610\",
+\"UdFields\":{\"CartonTrkDtl_Test\":\"794641363610\",
+\"MasterPackDtl_TEST\":\"794641363610\"}}],
+\"TotalBilledFreightCharges\":119.822400,
+\"UdFields\":{\"ShipHead_Test\":null,
+\"MasterPack_TEST\":\"FedEx\"},
+"Carrier\":\"FedEx\",
+\"CarrierService\":\"FedEx Ground®\"}"
+
+
+
+9. QuickShip - Customer Shipment Entry/phantom pack - Verify the Bidirectional unfrieght response of UD fields from quickship through REST API
+Step
+Installation of QuickShip and setup for Kinetic Integration is needed to run this test case. See attached installation guide
+Test Data
+None
+Expected Result
+None
+
+
+2
+Step
+Ship Codes setup in QuickShip
+On your server, open QuickShip app
+Select Authentication Type = QuickShip Native
+Select Registration code = quickshipdemo
+username = <local-user>
+password = <local-password>
+Login
+Test Data
+None
+Expected Result
+QuickShip Home page is displayed
+
+
+3
+Step
+Go to Setup
+Select Rest API Data Mapping
+Click on Add Response Data Mapping
+Add the Source field and Target Field = CartonTrkDtl_Test
+Save
+Test Data
+None
+Expected Result
+
+
+
+4
+Step
+Open Kinetic App
+Login with <local-user>/<local-password>
+Test Data
+None
+Expected Result
+Kinetic Homepage is displayed
+
+
+5
+Step
+Move to Company = EPIC06 and Workstation = Freight Service 400
+Test Data
+None
+Expected Result
+None
+
+
+6
+Step
+Active IN UOM Class
+Go to UOM Class
+Production Management/Engineering/Setup/UOM Class
+ 
+Enter Class = Length
+In the UOM List grid, click on IN record
+Active = True
+Save
+Exit UOM Class Maintenance
+Test Data
+None
+Expected Result
+None
+
+
+7
+Step
+QuickShip settings for Workstation
+Go to Workstation Maintenance
+Material Management/Shipping / Receiving/Setup/Workstation
+
+Select the workstation you are working on (PACK)
+Weight Input = Prompt for Weight
+Manifest Enabled = True
+Web Service URL = http://quickshipweb/EpicorFreightService.svc?regCode=QuickShipDemo
+Manifest/Weight Capture Point = Both
+Size UOM = IN
+Make sure weight UOM = LB
+Log manifest messages = True
+Save
+Test Data
+None
+Expected Result
+None
+
+
+8
+Step
+Setup QuickShip integration for Kinetic Company
+Go to Company configuration 
+System Setup/Company/Site Maintenance/Company Configuration
+Click on Modules button
+ In left navigation menu at the left, go to Materials tab
+Expand the Shipping receiving Card
+From the Freight Service Integration combo, select REST API Integration
+On the Quickship API URL enter = http://quickshipweb/
+-Registration code = quickshipdemo
+-username = <local-user>
+-password = <local-password>
+-Save and exit
+Test Data
+None
+Expected Result
+None
+
+
+9
+Step
+Create UD field column in User Defined column Maintenance
+​
+Click on New
+Select the CartonTrkDtl table.
+Click on save.
+Click on New in column
+Enter Column name and Label
+Save.
+Test Data
+None
+Expected Result
+
+
+
+10
+Step
+Regenerate DataModel from admin console
+Verify the Table and Data model is in sync in UD Column maintenance
+If it is not synced DO IIS restart
+Test Data
+None
+Expected Result
+Regenerate datamodel should be completed.
+Table and Data Model should be in sync
+
+
+11
+Step
+Add New Field in Customer Shipment Entry
+Go to Customer Shipment
+Material Management/Shipping / Receiving/General Operations/Customer Shipment Entry
+Click on New
+Click application studio from action
+Select Manifest Info
+Click on edit.
+Select the Phantom Creation Options and expand
+Search text box and drag under Pack
+Add the data binding
+Give any label name 
+Save
+Publish
+Test Data
+None
+Expected Result
+
+
+
+12
+Step
+Create Purchased part
+ Go to Part
+Main menu > Material Management>Inventory Management>Setup>Part
+On the landing page, click the <Plus> icon to create a new Part
+ Set Part& Description = EP1
+Make sure Type = Purchased
+On the left navigation menu go to Part tab
+Scroll down and set Sales Unit Price = 1.00
+Save
+Test Data
+None
+Expected Result
+None
+
+
+13
+Step
+In the navigation menu at the left, go to Integrations tab
+Enter Schedule B Code = 2222.22
+Save
+Test Data
+None
+Expected Result
+None
+
+
+14
+Step
+Adjust Quantity for parts
+Go to Quantity Adjustment
+Material Management/Inventory Management/General Operations/Quantity Adjustment
+Enter Part = EP1
+Enter Bin = 00-00-00
+Enter Adjust Quantity = 200
+Select Reason = Add new Part 
+Click Adjust button
+Test Data
+None
+Expected Result
+None
+
+
+15
+Step
+Create an order for stock parts
+Go to Order entry
+Sales Management/Customer Relationship Management/General Operations/Order Entry
+
+Click the plus icon to add a new sales order
+Enter customer ECD and tab out
+Select Need By date = Today's date
+Save
+Test Data
+None
+Expected Result
+Save Order Num (####)
+
+
+16
+Step
+In the navigation menu at the left, Move to Lines > Detail tab
+Click the Plus icon to add a new line
+Enter Part = EP1 and tab out
+Enter order quantity = 100.00
+Select the customer part (customer part should be created in part cross reference screen)
+Save
+Test Data
+None
+Expected Result
+None
+
+
+17
+Step
+Go to the overflow menu and click Reserve / Allocate
+Test Data
+None
+Expected Result
+Fulfillment Workbench screen is displayed
+
+
+18
+Step
+Select the 1 line displayed corresponding to your SO Lines
+Then in overflow menu click allocate by part
+Test Data
+None
+Expected Result
+Allocation Process criteria screen opens up
+
+
+19
+Step
+Click Continue
+Test Data
+None
+Expected Result
+Ad Hoc Allocation Template Screen is displayed
+
+
+20
+Step
+Set Release to Picking = True
+Then click Continue
+Test Data
+None
+Expected Result
+Message displayed: 
+
+1 Demand record(s) allocated.
+0 Demand record(s) cross docked.
+1 Demand record(s) selected for picking.
+1 Demand record(s) submitted for picking.
+
+
+21
+Step
+Click Ok
+Test Data
+None
+Expected Result
+Message displayed: "Release for Picking
+Do you want to print the released items?"
+
+
+22
+Step
+Click No
+Exit Fulfillment Workbench screen
+Test Data
+None
+Expected Result
+None
+
+
+23
+Step
+Pick order Lines to Shipping Area
+Go to Material Request Queue
+Material Management/Advanced Material Management/General Operations/Material Request Queue
+Filter transactions from today's date 
+Select the record displayed related to part EP1 and click Select button
+Move to My Selections tab
+Click process
+Test Data
+None
+Expected Result
+WIP/Material Movement Transaction slide panel is displayed
+Make sure Part = EP1
+
+
+24
+Step
+Scroll down and make sure To Warehouse = Shipping Area and To Bin = SHP-1
+Then Click OK
+Test Data
+None
+Expected Result
+Record for part EP1 should disappear from the grid
+
+
+25
+Step
+Create a new CS Pack
+Go to Customer Shipment
+Material Management/Shipping / Receiving/General Operations/Customer Shipment Entry
+
+Click the Plus icon Create a new Pack
+Enter Order number (####) previously generated
+Select Ship Via = FedEx Ground
+Set Ship date = Today's date
+Enter Package Code = BOX
+Save
+Test Data
+None
+Expected Result
+Save Pack Num (###)
+
+
+26
+Step
+In the left navigation menu, go to Shipment Lines / Line Details tab
+Click the Plus icon to add a New Line
+Enter Line = 1 and Release = 1
+On the From Inventory card, select Warehouse = Shipping Area and Bin = SHP-1
+Make sure Our Ship Qty = 100
+Make sure customer part is fetched from Order 
+Save
+Test Data
+None
+Expected Result
+None
+
+
+27
+Step
+In the left navigation menu, go back to Details tab
+Enter weight = 3.0000 LB
+Save
+Click Close button
+Test Data
+None
+Expected Result
+Pack status should change to CLOSED
+
+
+28
+Step
+Move to Manifest Info
+Move to Phantom Creation Option
+Check the Phanton Pack
+Enter the Number of Cases To Create
+Enter Package Code = BOX
+Click on create cases and save
+Test Data
+None
+Expected Result
+Phantom Creation should be saved
+
+
+29
+Step
+Then, click Freight button
+Test Data
+None
+Expected Result
+Status should change to Freighted
+Tracking number field should be populated
+New UD Field should get the value
+
+
+
+30
+Step
+Check pack on QuickShip > Shipments
+Open Quick ship app 
+In the QuickShip homepage, click on Shipments
+Click search button and filter shipments from yesterday date to tomorrow's date.
+Click on search
+Test Data
+None
+Expected Result
+A record for your Customer shipment should be displayed 
+
+
+31
+Step
+Check API request for pack shipment
+In your server, go to your local QuickShip installation folder (i.e. C:\inetpub\wwwroot\QuickShip)
+Click on your CarrierXMLFile folder 
+There, open the shipment response JSON file with the last creation date and time
+Test Data
+None
+Expected Result
+Response should have UD field column and value
+"{\"CarrierBolNumber\":null,
+\"EstimatedCarbonEmission\":\"0.193262736115\",
+\"ReturnStatus\":\"SUCCESS\",
+\"ReturnMessage\":\"Success \\n \",
+\"ShipmentNumber\":\"617\",
+\"TotalFreightCharges\":113.04,
+\"ActualShipcode\":\"F92\",
+\"ReturnedContainers\":[{\"PackID\":\"329-1\",
+\"CaseNum\":\"329-1\",
+\"ContainerId\":\"649\",
+\"BillingWeight\":0.0,
+\"FreightChargeSpecified\":false,
+\"BillingFreightChargeSpecified\":false,
+\"TrackingNumber\":\"794641363609\",
+\"UdFields\":{\"CartonTrkDtl_Test\":\"794641363609\",
+\"MasterPackDtl_TEST\":\"794641363609\"}},{\"PackID\":\"329-2\",
+\"CaseNum\":\"329-2\",
+\"ContainerId\":\"650\",
+\"BillingWeight\":0.0,
+\"FreightChargeSpecified\":false,
+\"BillingFreightChargeSpecified\":false,
+\"TrackingNumber\":\"794641363610\",
+\"UdFields\":{\"CartonTrkDtl_Test\":\"794641363610\",
+\"MasterPackDtl_TEST\":\"794641363610\"}}],
+\"TotalBilledFreightCharges\":119.822400,
+\"UdFields\":{\"ShipHead_Test\":null,
+\"MasterPack_TEST\":\"FedEx\"},
+"Carrier\":\"FedEx\",
+\"CarrierService\":\"FedEx Ground®\"}"
+
+
+32
+Step
+Click on Unfreight button
+Test Data
+None
+Expected Result
+New UD Field should get cleared the value
+
+
+
+9. QuickShip - Customer Shipment Entry/phantom pack - Verify the rate shopping through REST API
+Step
+Installation of QuickShip and setup for Kinetic Integration is needed to run this test case. See attached installation guide
+Test Data
+None
+Expected Result
+None
+
+
+2
+Step
+Ship Codes setup in QuickShip
+On your server, open QuickShip app
+Select Authentication Type = QuickShip Native
+Select Registration code = quickshipdemo
+username = <local-user>
+password = <local-password>
+Login
+Test Data
+None
+Expected Result
+QuickShip Home page is displayed
+
+
+3
+Step
+Open Kinetic App
+Login with <local-user>/<local-password>
+Test Data
+None
+Expected Result
+Kinetic Homepage is displayed
+
+
+4
+Step
+Move to Company = EPIC06 and Workstation = Freight Service 400
+Test Data
+None
+Expected Result
+None
+
+
+5
+Step
+Active IN UOM Class
+Go to UOM Class
+Production Management/Engineering/Setup/UOM Class
+ 
+Enter Class = Length
+In the UOM List grid, click on IN record
+Active = True
+Save
+Exit UOM Class Maintenance
+Test Data
+None
+Expected Result
+None
+
+
+6
+Step
+QuickShip settings for Workstation
+Go to Workstation Maintenance
+Material Management/Shipping / Receiving/Setup/Workstation
+
+Select the workstation you are working on (PACK)
+Weight Input = Prompt for Weight
+Manifest Enabled = True
+Web Service URL = http://quickshipweb/EpicorFreightService.svc?regCode=QuickShipDemo
+Manifest/Weight Capture Point = Both
+Size UOM = IN
+Make sure weight UOM = LB
+Log manifest messages = True
+Save
+Test Data
+None
+Expected Result
+None
+
+
+7
+Step
+Setup QuickShip integration for Kinetic Company
+Go to Company configuration 
+System Setup/Company/Site Maintenance/Company Configuration
+Click on Modules button
+ In left navigation menu at the left, go to Materials tab
+Expand the Shipping receiving Card
+From the Freight Service Integration combo, select REST API Integration
+On the Quickship API URL enter = http://quickshipweb/
+-Registration code = quickshipdemo
+-username = <local-user>
+-password = <local-password>
+-Save and exit
+Test Data
+None
+Expected Result
+None
+
+
+8
+Step
+Setup QuickShip integration for Kinetic Company
+Go to Site configuration 
+Go to Shipping Receiving
+Enable Rate Shopping
+Enter the Url http:s//quickshipweb/dist?regCode=QuickShipDemo
+Save
+Test Data
+None
+Expected Result
+None
+
+
+9
+Step
+Create Purchased part
+ Go to Part
+Main menu > Material Management>Inventory Management>Setup>Part
+On the landing page, click the <Plus> icon to create a new Part
+ Set Part& Description = SM
+Make sure Type = Purchased
+On the left navigation menu go to Part tab
+Scroll down and set Sales Unit Price = 1.00
+Save
+Test Data
+None
+Expected Result
+None
+
+
+10
+Step
+In the navigation menu at the left, go to Integrations tab
+Enter Schedule B Code = 2222.22
+Save
+Search for the unit net weight
+Enter Unit net weight =10
+save
+Test Data
+None
+Expected Result
+None
+
+
+11
+Step
+Adjust Quantity for parts
+Go to Quantity Adjustment
+Material Management/Inventory Management/General Operations/Quantity Adjustment
+Enter Part = SM
+Enter Bin = 00-00-00
+Enter Adjust Quantity = 200
+Select Reason = Add new Part 
+Click Adjust button
+Test Data
+None
+Expected Result
+None
+
+
+12
+Step
+Create an order for stock parts
+Go to Order entry
+Sales Management/Customer Relationship Management/General Operations/Order Entry
+
+Click the plus icon to add a new sales order
+Enter customer ECD and tab out
+Select Need By date = Today's date
+Save
+Test Data
+None
+Expected Result
+Save Order Num (####)
+
+
+13
+Step
+In the navigation menu at the left, Move to Lines > Detail tab
+Click the Plus icon to add a new line
+Enter Part = SM and tab out
+Enter order quantity = 1
+Select the customer part (customer part should be created in part cross reference screen)
+Save
+Test Data
+None
+Expected Result
+None
+
+
+14
+Step
+Go to the overflow menu and click Reserve / Allocate
+Test Data
+None
+Expected Result
+Fulfillment Workbench screen is displayed
+
+
+15
+Step
+Select the 1 line displayed corresponding to your SO Lines
+Then in overflow menu click allocate by part
+Test Data
+None
+Expected Result
+Allocation Process criteria screen opens up
+
+
+16
+Step
+Click Continue
+Test Data
+None
+Expected Result
+Ad Hoc Allocation Template Screen is displayed
+
+
+17
+Step
+Set Release to Picking = True
+Then click Continue
+Test Data
+None
+Expected Result
+Message displayed: 
+
+1 Demand record(s) allocated.
+0 Demand record(s) cross docked.
+1 Demand record(s) selected for picking.
+1 Demand record(s) submitted for picking.
+
+
+18
+Step
+Click Ok
+Test Data
+None
+Expected Result
+Message displayed: "Release for Picking
+Do you want to print the released items?"
+
+
+19
+Step
+Click No
+Exit Fulfillment Workbench screen
+Test Data
+None
+Expected Result
+None
+
+
+20
+Step
+Pick order Lines to Shipping Area
+Go to Material Request Queue
+Material Management/Advanced Material Management/General Operations/Material Request Queue
+Filter transactions from today's date 
+Select the record displayed related to part SM and click Select button
+Move to My Selections tab
+Click process
+Test Data
+None
+Expected Result
+WIP/Material Movement Transaction slide panel is displayed
+Make sure Part = EP1
+
+
+21
+Step
+Scroll down and make sure To Warehouse = Shipping Area and To Bin = SHP-1
+Then Click OK
+Test Data
+None
+Expected Result
+Record for part EP1 should disappear from the grid
+
+
+22
+Step
+Create a new CS Pack
+Go to Customer Shipment
+Material Management/Shipping / Receiving/General Operations/Customer Shipment Entry
+
+Click the Plus icon Create a new Pack
+Enter Order number (####) previously generated
+Select Ship Via = UPS Ground
+Set Ship date = Today's date
+Enter Package Code = BOX
+Save
+Test Data
+None
+Expected Result
+Save Pack Num (###)
+
+
+23
+Step
+In the left navigation menu, go to Shipment Lines / Line Details tab
+Click the Plus icon to add a New Line
+Enter Line = 1 and Release = 1
+On the From Inventory card, select Warehouse = Shipping Area and Bin = SHP-1
+Make sure Our Ship Qty = 100
+Make sure customer part is fetched from Order 
+Save
+Test Data
+None
+Expected Result
+None
+
+
+24
+Step
+In the left navigation menu, go back to Details tab
+Enter weight = 3.0000 LB
+Save
+Click Close button
+Test Data
+None
+Expected Result
+Pack status should change to CLOSED
+
+
+25
+Step
+Move to Manifest Info
+Move to Phantom Creation Option
+Check the Phanton Pack
+Enter the Number of Cases To Create = 3
+Enter Package Code = BOX
+Click on create cases and save
+Test Data
+None
+Expected Result
+Phantom Creation should be saved
+
+
+26
+Step
+In the left navigation menu, go back to Details tab
+Click on Rate Shopping button
+Test Data
+None
+Expected Result
+It should redirect to the quickship rate shopping screen and with 3 container
+
+
+
+27
+Step
+Click on Rate Shop
+Select the Ship Code = UPS
+Select the include Quoted Freight
+Note down the freight charge, CO2 and delivery date
+Test Data
+None
+Expected Result
+Freight charge = ​122.25
+CO2=0.83
+
+
+28
+Step
+Click on submit 
+Test Data
+None
+Expected Result
+It should be Succesfully submitted
+
+
+29
+Step
+Go back to customer shipment screen
+Verify the Rate Shop Carrier, Rate shop carrier service and miscellaneous charges
+Test Data
+None
+Expected Result
+
+
+
+
+30
+Step
+Search and verify the billing type
+Test Data
+None
+Expected Result
+
+
+
+31
+Step
+Check API request for pack shipment
+In your server, go to your local QuickShip installation folder (i.e. C:\EpicorData\Companies\EPIC06\Log)
+There, open the RateShop request JSON file with the last creation date and time
+Test Data
+None
+Expected Result
+{
+"PrintingDocument": null,
+"Authentication": {
+"Userid": "epicor",
+"Username": "admin",
+"RegistrationId": "QuickShipDemo",
+"WorkstationId": "PACK",
+"CompanyName": "EPIC06"
+},
+"ReleaseIdPrefix": "CS",
+"ShipTo": {
+"CustomerCode": "2",
+"ShipToCode": "001",
+"Address": {
+"RecipientLine2": "",
+"Phone": "608-555-5678",
+"CompanyName": "Addison, INC",
+"AddressLine1": "215 Martin Luther King, Jr. Blvd",
+"AddressLine2": "Door 2",
+"AddressLine3": "",
+"AddressLine4": null,
+"City": "Madison",
+"District": "WI",
+"PostalCode": "53703",
+"Country": "USA",
+"Residential": false
+},
+"TaxIdentification": "",
+"Email": "",
+"Eori": "",
+"VAT": ""
+},
+"ParentCustomer": {
+"CustomerCode": "2",
+"ShipToCode": "",
+"Address": {
+"RecipientLine2": "",
+"Phone": "",
+"CompanyName": "Addison, INC",
+"AddressLine1": "210 Martin Luther King, Jr. Blvd",
+"AddressLine2": "",
+"AddressLine3": "",
+"AddressLine4": null,
+"City": "Madison",
+"District": "WI",
+"PostalCode": "53703",
+"Country": "USA",
+"Residential": false
+},
+"TaxIdentification": "VAT",
+"Email": "",
+"Eori": "",
+"VAT": ""
+},
+"ContactName": "Addison, INC",
+"ContactPhoneNumber": "608-555-5678",
+"ParentCustomerContactName": "Lonnie Smith",
+"ParentCustomerContactPhoneNumber": "",
+"ShipCode": "F92",
+"ShipDate": "2026-10-30T00:00:00-07:00",
+"BillingShipCode": "",
+"BillingPayFlag": "",
+"BillingMethod": "PREPAID_AND_ADD",
+"BillingAccount": {
+"AccountNumber": "",
+"BillingAddress": {
+"RecipientLine2": "",
+"Phone": "",
+"CompanyName": "Addison, INC",
+"AddressLine1": "",
+"AddressLine2": "",
+"AddressLine3": "",
+"AddressLine4": "",
+"City": "",
+"District": "",
+"PostalCode": "",
+"Country": "",
+"Residential": false
+}
+},
+"OrderReference": "8119",
+"PurchaseOrderReference": "",
+"OrderCurrency": "USD",
+"BaseCurrencyUom": "USD",
+"CurrencyConversionFactor": 1.0000000000,
+"ShipmentReference": "323",
+"ShipmentServices": null,
+"DefaultCarrierServices": "",
+"containers": [
+{
+"CaseNumber": "323-1",
+"PackCode": "323-1",
+"PackageDescription": "box",
+"ErpRefrence": "",
+"Length": 24.0,
+"LengthSpecified": true,
+"Width": 18.0,
+"WidthSpecified": true,
+"Height": 12.0,
+"HeightSpecified": true,
+"Weight": 3.34,
+"ContainerTypeCode": "box",
+"ContainerServices": null,
+"HazardousInformation": {
+"isExceptedQuantity": false,
+"additionalHazMatInfo": ""
+},
+"PackingDetail": [
+{
+"Product": {
+"ProductKey": "SM",
+"Description": "SM",
+"Tariff": "1234.56.78.9101",
+"UnitOfMeasure": "EA",
+"UnitWeightSpecified": false,
+"HazmatMass": 0,
+"NaftaPreferenceCriterion": "",
+"ProducerOfTheGood": "",
+"NetCostMethod": 0,
+"CountryOfManufacture": "",
+"HazmatGroupDescription": "",
+"FreightClass": "",
+"Eccn": "",
+"NetWeight": 10.0,
+"NetWeightUom": "g",
+"FairMarketValueUnitPrice": 0.0,
+"LotKey": ""
+},
+"CustomerProductCode": "",
+"UnitPrice": 0.0,
+"UnitPriceSpecified": true,
+"ExportUnitPriceSpecified": false,
+"QtyPacked": 1.0,
+"OrderlineNumber": 1,
+"OrderReference": "8119",
+"OrderPrice": 0.0,
+"udFields": {}
+}
+],
+"DgAccessible": false,
+"DimensionUOM": "",
+"specialServices": {
+"ReferenceInformation": "true",
+"Reference1": "",
+"Reference2": "",
+"Reference3": "",
+"Reference4": "",
+"PriorityAlert": "False",
+"ReferenceNotes": ""
+},
+"udFields": {}
+},
+{
+"CaseNumber": "323-2",
+"PackCode": "323-2",
+"PackageDescription": "box",
+"ErpRefrence": "",
+"Length": 24.0,
+"LengthSpecified": true,
+"Width": 18.0,
+"WidthSpecified": true,
+"Height": 12.0,
+"HeightSpecified": true,
+"Weight": 3.33,
+"ContainerTypeCode": "box",
+"ContainerServices": null,
+"HazardousInformation": {
+"isExceptedQuantity": false,
+"additionalHazMatInfo": ""
+},
+"PackingDetail": [
+{
+"Product": {
+"ProductKey": "SM",
+"Description": "SM",
+"Tariff": "1234.56.78.9101",
+"UnitOfMeasure": "EA",
+"UnitWeightSpecified": false,
+"HazmatMass": 0,
+"NaftaPreferenceCriterion": "",
+"ProducerOfTheGood": "",
+"NetCostMethod": 0,
+"CountryOfManufacture": "",
+"HazmatGroupDescription": "",
+"FreightClass": "",
+"Eccn": "",
+"NetWeight": 10.0,
+"NetWeightUom": "g",
+"FairMarketValueUnitPrice": 0.0,
+"LotKey": ""
+},
+"CustomerProductCode": "",
+"UnitPrice": 0.0,
+"UnitPriceSpecified": true,
+"ExportUnitPriceSpecified": false,
+"QtyPacked": 0.0,
+"OrderlineNumber": 1,
+"OrderReference": "8119",
+"OrderPrice": 0.0,
+"udFields": {}
+}
+],
+"DgAccessible": false,
+"DimensionUOM": "",
+"specialServices": {
+"ReferenceInformation": "true",
+"Reference1": "",
+"Reference2": "",
+"Reference3": "",
+"Reference4": "",
+"PriorityAlert": "False",
+"ReferenceNotes": ""
+},
+"udFields": {}
+},
+{
+"CaseNumber": "323-3",
+"PackCode": "323-3",
+"PackageDescription": "box",
+"ErpRefrence": "",
+"Length": 24.0,
+"LengthSpecified": true,
+"Width": 18.0,
+"WidthSpecified": true,
+"Height": 12.0,
+"HeightSpecified": true,
+"Weight": 3.33,
+"ContainerTypeCode": "box",
+"ContainerServices": null,
+"HazardousInformation": {
+"isExceptedQuantity": false,
+"additionalHazMatInfo": ""
+},
+"PackingDetail": [
+{
+"Product": {
+"ProductKey": "SM",
+"Description": "SM",
+"Tariff": "1234.56.78.9101",
+"UnitOfMeasure": "EA",
+"UnitWeightSpecified": false,
+"HazmatMass": 0,
+"NaftaPreferenceCriterion": "",
+"ProducerOfTheGood": "",
+"NetCostMethod": 0,
+"CountryOfManufacture": "",
+"HazmatGroupDescription": "",
+"FreightClass": "",
+"Eccn": "",
+"NetWeight": 10.0,
+"NetWeightUom": "g",
+"FairMarketValueUnitPrice": 0.0,
+"LotKey": ""
+},
+"CustomerProductCode": "",
+"UnitPrice": 0.0,
+"UnitPriceSpecified": true,
+"ExportUnitPriceSpecified": false,
+"QtyPacked": 0.0,
+"OrderlineNumber": 1,
+"OrderReference": "8119",
+"OrderPrice": 0.0,
+"udFields": {}
+}
+],
+"DgAccessible": false,
+"DimensionUOM": "",
+"specialServices": {
+"ReferenceInformation": "true",
+"Reference1": "",
+"Reference2": "",
+"Reference3": "",
+"Reference4": "",
+"PriorityAlert": "False",
+"ReferenceNotes": ""
+},
+"udFields": {}
+}
+],
+"internationalInfo": {
+"printInternationalDocs": false,
+"ultimateConsignee": {
+"recipientLine2": "",
+"phone": "608-555-5678",
+"companyName": "Addison, INC",
+"addressLine1": "215 Martin Luther King, Jr. Blvd",
+"addressLine2": "Door 2",
+"addressLine3": "",
+"addressLine4": null,
+"city": "Madison",
+"district": "WI",
+"postalCode": "53703",
+"country": "USA"
+},
+"freightForwarder": null,
+"termsLocation": "",
+"incoterms": "",
+"xtnNumber": ""
+},
+"PackageWeight": 0.0,
+"codCollectionType": null,
+"IsCodCollectionType": false,
+"ReturnShipmentLabelComment": "",
+"IsSignatureRequired": false,
+"CheckBox01": false,
+"CheckBox02": false,
+"CheckBox03": false,
+"CheckBox04": false,
+"CheckBox05": false,
+"CheckBox06": false,
+"CheckBox07": false,
+"CheckBox08": false,
+"CheckBox09": false,
+"CheckBox10": false,
+"CheckBox11": false,
+"CheckBox12": false,
+"CheckBox13": false,
+"CheckBox14": false,
+"CheckBox15": false,
+"CheckBox16": false,
+"CheckBox17": false,
+"CheckBox18": false,
+"CheckBox19": false,
+"CheckBox20": false,
+"CarrierOptionLevels": null,
+"HomeDelivery": null,
+"HandlingCharge": 0.0,
+"HandlingChargeFlag": false,
+"FreightApiRequest": false,
+"NumberOfPieces": null,
+"customerNotes": "",
+"shipperNotes": "",
+"deliveryInstructions": "",
+"udFields": {},
+"BlindShipping": false,
+"createShipment": false
+}
+
+
+32
+Step
+Then, click Freight button
+Test Data
+None
+Expected Result
+Status should change to Freighted
+Tracking number field should be populated
+CO2 should populate with 0.83
+
+
+
+
+33
+Step
+Check pack on QuickShip > Shipments
+Open Quick ship app 
+In the QuickShip homepage, click on Shipments
+Click search button and filter shipments from yesterday date to tomorrow's date.
+Click on search
+Test Data
+None
+Expected Result
+A record for your Customer shipment should be displayed 
+
+
+34
+Step
+Check API request for pack shipment
+In your server, go to your local QuickShip installation folder (i.e. C:\inetpub\wwwroot\QuickShip)
+Click on your CarrierXMLFile folder 
+There, open the shipment response JSON file with the last creation date and time
+Test Data
+None
+Expected Result
+{
+"authentication": {
+"userid": "epicor",
+"username": "admin",
+"registrationId": "QuickShipDemo",
+"workstationId": "PACK"
+},
+"releaseIDPrefix": "CS",
+"shipTo": {
+"customerCode": "2",
+"shipToCode": "001",
+"address": {
+"recipientLine2": "",
+"phone": "608-555-5678",
+"companyName": "Addison, INC",
+"addressLine1": "215 Martin Luther King, Jr. Blvd",
+"addressLine2": "Door 2",
+"addressLine3": "",
+"city": "Madison",
+"district": "WI",
+"postalCode": "53703",
+"country": "USA",
+"residential": false,
+"addressVerifiedField": false
+},
+"taxIdentification": "",
+"email": "",
+"vat": "",
+"eori": ""
+},
+"parentCustomer": {
+"customerCode": "2",
+"shipToCode": "",
+"address": {
+"recipientLine2": "",
+"phone": "",
+"companyName": "Addison, INC",
+"addressLine1": "210 Martin Luther King, Jr. Blvd",
+"addressLine2": "",
+"addressLine3": "",
+"city": "Madison",
+"district": "WI",
+"postalCode": "53703",
+"country": "USA",
+"residential": false,
+"addressVerifiedField": false
+},
+"taxIdentification": "VAT",
+"email": "",
+"vat": "",
+"eori": ""
+},
+"contactName": "Addison, INC",
+"contactPhoneNumber": "608-555-5678",
+"parentCustomerContactName": "Lonnie Smith",
+"parentCustomerContactPhoneNumber": "",
+"shipCode": "UPS",
+"shipDate": "2026-10-30T00:00:00-07:00",
+"billingShipCode": "",
+"billingPayFlag": "SHIP",
+"billingMethod": "PREPAID",
+"billingAccount": {
+"accountNumber": "Blank Account Number",
+"billingAddress": {
+"recipientLine2": "",
+"phone": "",
+"companyName": "Addison, INC",
+"addressLine1": "",
+"addressLine2": "",
+"addressLine3": "",
+"addressLine4": "",
+"city": "",
+"district": "",
+"postalCode": "",
+"country": "",
+"residential": false,
+"addressVerifiedField": false
+}
+},
+"orderReference": "8119",
+"purchaseOrderReference": "",
+"orderCurrency": "USD",
+"baseCurrencyUOM": "USD",
+"currencyConversionFactor": 1.0,
+"shipmentReference": "323",
+"shipmentServices": [
+{
+"serviceElementName": "DocumentOnlyShipment",
+"serviceElementValue": "false"
+},
+{
+"serviceElementName": "ResidentialDelivery",
+"serviceElementValue": "false"
+},
+{
+"serviceElementName": "SaturdayDelivery",
+"serviceElementValue": "false"
+},
+{
+"serviceElementName": "SaturdayPickup",
+"serviceElementValue": "false"
+}
+],
+"defaultCarrierServices": [],
+"containers": [
+{
+"caseNumber": "323-1",
+"packCode": "323-1",
+"packageDescription": "box",
+"erpRefrence": "",
+"length": 24.0,
+"lengthSpecified": true,
+"width": 18.0,
+"widthSpecified": true,
+"height": 12.0,
+"heightSpecified": true,
+"weight": 3.34,
+"containerTypeCode": "box",
+"containerServices": [
+{
+"serviceElementName": "COD",
+"serviceElementValue": "false"
+}
+],
+"hazardousInformation": {
+"isExceptedQuantity": false,
+"additionalHazMatInfo": ""
+},
+"packingDetail": [
+{
+"product": {
+"productKey": "SM",
+"description": "SM",
+"tariff": "1234.56.78.9101",
+"unitOfMeasure": "EA",
+"unitWeight": 0.0,
+"hazmatMass": 0.0,
+"naftaPreferenceCriterion": "",
+"producerOfTheGood": "",
+"netCostMethod": "NO",
+"countryOfManufacture": "",
+"hazmatGroupDescription": "",
+"freightClass": "",
+"eccn": "",
+"netWeight": 0.02200,
+"netWeightUom": "g",
+"fairMarketValueUnitPrice": 0.0,
+"lotKey": ""
+},
+"unitPrice": 0.0,
+"exportUnitPrice": 0.0,
+"qtyPacked": 1.0,
+"orderlineNumber": 1,
+"orderReference": "8119",
+"orderPrice": 0.0,
+"customerProductCode": "",
+"udFields": {}
+}
+],
+"dgAccessible": false,
+"specialServices": {
+"referenceInformation": "true",
+"reference1": "",
+"reference2": "",
+"reference3": "",
+"reference4": "",
+"priorityAlert": "False",
+"referenceNotes": ""
+},
+"dimensionUOM": "IN",
+"udFields": {}
+},
+{
+"caseNumber": "323-2",
+"packCode": "323-2",
+"packageDescription": "box",
+"erpRefrence": "",
+"length": 24.0,
+"lengthSpecified": true,
+"width": 18.0,
+"widthSpecified": true,
+"height": 12.0,
+"heightSpecified": true,
+"weight": 3.33,
+"containerTypeCode": "box",
+"containerServices": [
+{
+"serviceElementName": "COD",
+"serviceElementValue": "false"
+}
+],
+"hazardousInformation": {
+"isExceptedQuantity": false,
+"additionalHazMatInfo": ""
+},
+"packingDetail": [
+{
+"product": {
+"productKey": "SM",
+"description": "SM",
+"tariff": "1234.56.78.9101",
+"unitOfMeasure": "EA",
+"unitWeight": 0.0,
+"hazmatMass": 0.0,
+"naftaPreferenceCriterion": "",
+"producerOfTheGood": "",
+"netCostMethod": "NO",
+"countryOfManufacture": "",
+"hazmatGroupDescription": "",
+"freightClass": "",
+"eccn": "",
+"netWeight": 10.0,
+"netWeightUom": "g",
+"fairMarketValueUnitPrice": 0.0,
+"lotKey": ""
+},
+"unitPrice": 0.0,
+"exportUnitPrice": 0.0,
+"qtyPacked": 0.0,
+"orderlineNumber": 1,
+"orderReference": "8119",
+"orderPrice": 0.0,
+"customerProductCode": "",
+"udFields": {}
+}
+],
+"dgAccessible": false,
+"specialServices": {
+"referenceInformation": "true",
+"reference1": "",
+"reference2": "",
+"reference3": "",
+"reference4": "",
+"priorityAlert": "False",
+"referenceNotes": ""
+},
+"dimensionUOM": "IN",
+"udFields": {}
+},
+{
+"caseNumber": "323-3",
+"packCode": "323-3",
+"packageDescription": "box",
+"erpRefrence": "",
+"length": 24.0,
+"lengthSpecified": true,
+"width": 18.0,
+"widthSpecified": true,
+"height": 12.0,
+"heightSpecified": true,
+"weight": 3.33,
+"containerTypeCode": "box",
+"containerServices": [
+{
+"serviceElementName": "COD",
+"serviceElementValue": "false"
+}
+],
+"hazardousInformation": {
+"isExceptedQuantity": false,
+"additionalHazMatInfo": ""
+},
+"packingDetail": [
+{
+"product": {
+"productKey": "SM",
+"description": "SM",
+"tariff": "1234.56.78.9101",
+"unitOfMeasure": "EA",
+"unitWeight": 0.0,
+"hazmatMass": 0.0,
+"naftaPreferenceCriterion": "",
+"producerOfTheGood": "",
+"netCostMethod": "NO",
+"countryOfManufacture": "",
+"hazmatGroupDescription": "",
+"freightClass": "",
+"eccn": "",
+"netWeight": 10.0,
+"netWeightUom": "g",
+"fairMarketValueUnitPrice": 0.0,
+"lotKey": ""
+},
+"unitPrice": 0.0,
+"exportUnitPrice": 0.0,
+"qtyPacked": 0.0,
+"orderlineNumber": 1,
+"orderReference": "8119",
+"orderPrice": 0.0,
+"customerProductCode": "",
+"udFields": {}
+}
+],
+"dgAccessible": false,
+"specialServices": {
+"referenceInformation": "true",
+"reference1": "",
+"reference2": "",
+"reference3": "",
+"reference4": "",
+"priorityAlert": "False",
+"referenceNotes": ""
+},
+"dimensionUOM": "IN",
+"udFields": {}
+}
+],
+"internationalInfo": {
+"printInternationalDocs": false,
+"xtnNumber": "",
+"incoterms": "",
+"ultimateConsignee": {
+"recipientLine2": "",
+"phone": "608-555-5678",
+"companyName": "Addison, INC",
+"addressLine1": "215 Martin Luther King, Jr. Blvd",
+"addressLine2": "Door 2",
+"addressLine3": "",
+"city": "Madison",
+"district": "WI",
+"postalCode": "53703",
+"country": "USA",
+"residential": false,
+"addressVerifiedField": false
+},
+"reasonForExport": "Sale",
+"routedTransaction": "0",
+"exportCode": "OS",
+"partiesToTransaction": false,
+"termsLocation": ""
+},
+"printBOL": false,
+"packageWeight": 10.0,
+"isCodCollectionType": false,
+"isSignatureRequired": false,
+"checkBox01": false,
+"checkBox02": false,
+"checkBox03": false,
+"checkBox04": false,
+"checkBox05": false,
+"checkBox06": false,
+"checkBox07": false,
+"checkBox08": false,
+"checkBox09": false,
+"checkBox10": false,
+"checkBox11": false,
+"checkBox12": false,
+"checkBox13": false,
+"checkBox14": false,
+"checkBox15": false,
+"checkBox16": false,
+"checkBox17": false,
+"checkBox18": false,
+"checkBox19": false,
+"checkBox20": false,
+"handlingCharge": 0.0,
+"handlingChargeFlag": false,
+"freightApiRequest": true,
+"customerNotes": "",
+"shipperNotes": "",
+"deliveryInstructions": "",
+"udFields": {},
+"returnShipmentLabelComment": "",
+"createShipment": false,
+"blindShipping": false
+}
+
+

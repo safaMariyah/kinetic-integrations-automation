@@ -1,0 +1,14 @@
+{
+  "name": "epicor-customer-shipment-orchestration",
+  "private": true,
+  "scripts": {
+    "check": "tsc --noEmit",
+    "test:local": "playwright test --project=local",
+    "test:shipping": "playwright test --project=erp-orchestration --workers=1 --retries=0"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.1",
+    "@types/node": "^22.0.0",
+    "typescript": "5.9.3"
+  }
+}

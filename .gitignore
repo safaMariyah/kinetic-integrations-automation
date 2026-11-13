@@ -1,0 +1,13 @@
+.env
+.env.*
+!.env.example
+node_modules/
+test-results/
+playwright-report/
+part-extras.local.json
+
+.auth/
+auth/
+playwright/.auth/
+captures/
+*.local.*
