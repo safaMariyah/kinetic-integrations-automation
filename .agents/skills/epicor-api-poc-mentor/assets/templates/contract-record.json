@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "operation_id": "replace-operation-id",
+  "service": "replace-exact-service",
+  "operation": "replace-exact-operation",
+  "method": "POST",
+  "path": "replace-from-applicable-contract",
+  "environment": {
+    "profile_ref": "target-profile",
+    "version": "unconfirmed"
+  },
+  "request": {
+    "content_type": "application/json",
+    "fields": [
+      {
+        "name": "replace-exact-name",
+        "type": "replace-documented-type",
+        "requirement_basis": "documented | observed | implementation-guard | unconfirmed",
+        "constraints": "replace-with-evidenced-constraints"
+      }
+    ],
+    "schema_required_fields": "unconfirmed",
+    "minimum_payload": "unconfirmed"
+  },
+  "response": {
+    "success_statuses": [],
+    "status_basis": "unconfirmed",
+    "dataset_path": null,
+    "tables": [],
+    "business_outputs": "record operation-specific completion flags, warnings and actions"
+  },
+  "authentication_context": "target-specific; credentials via approved configuration only",
+  "dataset_handoff": {
+    "input": "exact input dataset/source or N/A",
+    "output": "exact response path or N/A",
+    "identity": "record generated identity and unsaved/saved semantics",
+    "concurrency": "preserve evidenced revisions/before-images/RowMod"
+  },
+  "effects": {
+    "classification": "unconfirmed",
+    "description": "establish effects before execution",
+    "verification_reader": "applicable independent operation or explicit verification gap"
+  },
+  "branches": [],
+  "evidence": [],
+  "confidence": "unconfirmed until applicable evidence is recorded",
+  "limitations": [
+    "Template only; no operation established"
+  ],
+  "unresolved": [
+    "Replace placeholders and record applicable evidence"
+  ],
+  "review": {
+    "status": "needs-target-validation",
+    "reviewer_ref": null,
+    "supersedes": []
+  },
+  "sequence": {
+    "preconditions": [],
+    "ordered_operations": [],
+    "dataset_and_identity_handoffs": [],
+    "branch_gates": [],
+    "independent_readers": [],
+    "evidence_refs": [],
+    "limitations": [
+      "Optional capability sequence; evidence required, not inferred from method names alone"
+    ]
+  }
+}

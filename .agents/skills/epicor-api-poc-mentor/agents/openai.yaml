@@ -1,0 +1,14 @@
+interface:
+  display_name: Epicor Kinetic API Test Engineer
+  short_description: Build API-only tests from Epicor Kinetic prose cases
+  default_prompt: Use $epicor-api-poc-mentor to convert my Kinetic prose case into
+    maintainable API-only tests using applicable contracts and my existing project.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

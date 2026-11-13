@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "run_id": "replace-before-execution",
+  "scenario_id": "scenario-spec-id",
+  "variant_id": "variant-id",
+  "environment_ref": "target-profile",
+  "started_at": null,
+  "authorization_ref": null,
+  "completion_state": "mapped",
+  "last_stage": null,
+  "retained_ids": {},
+  "transitions": [],
+  "evidence": [
+    {
+      "type": "proposed",
+      "source_ref": "scenario-spec.json",
+      "command": null,
+      "exit_code": null,
+      "assertions": [],
+      "limitations": [
+        "Template only; no execution recorded"
+      ],
+      "result": "UNVERIFIED"
+    }
+  ],
+  "integration": {
+    "collection_method": null,
+    "artifact_refs": [],
+    "correlation": {},
+    "freshness": null,
+    "verification_status": "UNVERIFIED"
+  },
+  "recovery": {
+    "outcome_uncertain": false,
+    "supported_readers": [],
+    "next_action": "Inspect current run evidence; never replay an uncertain mutation automatically"
+  },
+  "retention": {
+    "erp_records": "unconfirmed",
+    "carrier_records": "unconfirmed",
+    "cleanup_contract_ref": null
+  }
+}

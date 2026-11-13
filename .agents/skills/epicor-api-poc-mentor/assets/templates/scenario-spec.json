@@ -1,0 +1,168 @@
+{
+  "schema_version": 1,
+  "scenario_id": "example-part-read",
+  "objective": "Example only: read a configured part and verify its identity; replace with the actual case.",
+  "sources": [
+    {
+      "id": "source-prose",
+      "location": "user-supplied-prose",
+      "description": "Example input, not a supplied execution record"
+    },
+    {
+      "id": "source-contract",
+      "location": "examples/customer-shipment/part-contracts.md",
+      "description": "Bundled Part read contract; confirm target environment before execution"
+    }
+  ],
+  "source_steps": [
+    {
+      "id": "1",
+      "source_id": "source-prose",
+      "text": "Read the configured part and verify its company and part number.",
+      "expectations": [
+        {
+          "id": "1.identity",
+          "text": "Returned company and part number match configured inputs."
+        }
+      ]
+    }
+  ],
+  "environment": {
+    "profile_ref": "current-target-profile",
+    "company_ref": "config.company",
+    "version": "unconfirmed"
+  },
+  "entities": [
+    {
+      "id": "part",
+      "type": "Part",
+      "identity_inputs": [
+        "company",
+        "partNum"
+      ]
+    }
+  ],
+  "preconditions": [
+    {
+      "id": "access",
+      "description": "Configured authorized API read access and existing part",
+      "source_refs": [
+        "source-prose"
+      ],
+      "status": "unconfirmed"
+    }
+  ],
+  "inputs": {
+    "company": {
+      "type": "string",
+      "origin": "configuration",
+      "value_ref": "config.company",
+      "classification": "LITERAL"
+    },
+    "partNum": {
+      "type": "string",
+      "origin": "configuration",
+      "value_ref": "config.partNum",
+      "classification": "EXAMPLE"
+    }
+  },
+  "deviations": [],
+  "operations": [
+    {
+      "id": "part-get",
+      "contract_ref": "examples/customer-shipment/part-contracts.md",
+      "status": "supported",
+      "evidence_refs": [
+        "source-contract"
+      ],
+      "limitations": [
+        "Confirm current environment and existing part before live execution"
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "id": "default",
+      "overrides": {},
+      "precondition_ids": [
+        "access"
+      ],
+      "assertion_ids": [
+        "part-identity"
+      ],
+      "status": "mapped"
+    }
+  ],
+  "actions": [
+    {
+      "id": "read-part",
+      "source_step_ids": [
+        "1"
+      ],
+      "operation_id": "part-get",
+      "depends_on": [],
+      "inputs": {
+        "company": "inputs.company",
+        "partNum": "inputs.partNum"
+      },
+      "outputs": {
+        "part": "response-body"
+      },
+      "mutation": false,
+      "effects": [],
+      "verification_ids": [
+        "part-identity"
+      ],
+      "implementation": {
+        "status": "planned",
+        "reference": null
+      }
+    }
+  ],
+  "assertions": [
+    {
+      "id": "part-identity",
+      "source_step_ids": [
+        "1"
+      ],
+      "kind": "response",
+      "reader_action_id": "read-part",
+      "expected": {
+        "Company": "inputs.company",
+        "PartNum": "inputs.partNum"
+      },
+      "variant_ids": [
+        "default"
+      ],
+      "evidence_refs": [
+        "source-prose"
+      ],
+      "source_expectation_ids": [
+        "1.identity"
+      ]
+    }
+  ],
+  "coverage": [
+    {
+      "step_id": "1",
+      "disposition": "action",
+      "references": [
+        "read-part"
+      ],
+      "deviation_id": null
+    }
+  ],
+  "gaps": [
+    {
+      "id": "access-gap",
+      "target_ids": [
+        "access"
+      ],
+      "missing_fact": "Target access and data availability",
+      "requested_artifact": "Sanitized configuration presence and existing-part evidence",
+      "status": "open"
+    }
+  ],
+  "status": "mapped",
+  "validation": []
+}
