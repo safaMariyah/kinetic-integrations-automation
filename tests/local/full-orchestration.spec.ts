@@ -1,10 +1,12 @@
 import { test, expect, type APIRequestContext } from '@playwright/test';
 import { BaseClient } from '../../src/api/baseClient';
-import { customerShipment, type Progress } from '../../src/flows/customerShipment';
+import { customerShipment, prepareCustomerShipment, type Progress } from '../../src/flows/customerShipment';
 import type { Row, Dataset } from '../../src/support/datasets';
 
-for (const blindShipping of [false, true]) {
-  test(`mock transport: complete fresh flow, blindShipping=${blindShipping}`, async () => {
+for (const mode of ['false', 'true', 'prepare']) {
+  const blindShipping = mode === 'true';
+  const preparation = mode === 'prepare';
+  test(`mock transport: complete fresh flow, mode=${mode}`, async () => {
     let part: Row = {}, orderDs: Dataset = {}, shipment: Dataset = {}, moved = false;
     const calls: string[] = [];
     const wrap = (ds: Dataset, outputs: Row = {}) => ({parameters: {ds, ...outputs}});
@@ -106,11 +108,17 @@ for (const blindShipping of [false, true]) {
     const context = {get: transport, post: transport} as unknown as APIRequestContext;
     const client = new BaseClient(context, {baseUrl: 'https://example.test/api/v2/odata', company: 'EPIC06', timeoutMs: 90000});
     const progress: Progress = {stage: 'start'};
-    const result = await customerShipment(client, {company: 'EPIC06', customerId: 'ECD', employeeId: '105', plant: 'MfgSys',
+    const result = await (preparation ? prepareCustomerShipment : customerShipment)(client, {company: 'EPIC06', customerId: 'ECD', employeeId: '105', plant: 'MfgSys',
       fromWhse: 'CHI', fromBin: '00-00-00', toWhse: 'SHP', toBin: 'SHP-1', stockQty: 10, quantity: 8,
       shipVia: 'F92', packageCode: 'BOX', weight: 3, unitPrice: 0, tariff: '1234.56.7899', blindShipping,
       freightUrl: 'http://integration.test/service', workstation: 'PACK', freightTimeout: 60, partExtras: {}},
       async (_name, action) => action(), progress);
+    if (preparation) {
+      expect(result.progress).toMatchObject({packNum: 400, orderNum: 9000, stage: 'completed: OPEN pack preparation boundary'});
+      expect((result.shipment.ShipHead as Row[])[0].ShipStatus).toBe('OPEN');
+      for (const op of ['ChangeStatus', 'ConvertToManifestUOM', 'FreightCarton', 'BuildCustFreightRequest', 'UpdateFreightedShipment']) expect(calls).not.toContain(op);
+      return;
+    }
     expect(result.progress).toMatchObject({orderNum: 9000, packNum: 400, queueSeq: 1800, freightTransaction: '600'});
     expect(calls.filter(c => c === 'PerformMaterialMovement')).toHaveLength(1);
     expect(calls.filter(c => c === 'FreightCarton')).toHaveLength(1);

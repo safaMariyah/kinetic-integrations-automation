@@ -1,0 +1,352 @@
+{
+  "evidenceType": "implementation-inspected",
+  "source": "Observed EPIC06 MetaFXSvc/GetApp response via native Customer Shipment Entry launch; no freight executed",
+  "limits": "Application definitions, not successful request/response observations or persisted business outcomes",
+  "bindings": [
+    {
+      "page": "Details",
+      "id": "chkCreateShipment_",
+      "epBinding": "ShipHead.CreateShipment"
+    },
+    {
+      "page": "ManifestInfo",
+      "id": "chkCreateShipment",
+      "epBinding": "ShipHead.CreateShipment"
+    }
+  ],
+  "events": [
+    {
+      "id": "ProcessFreightManifest",
+      "actions": [
+        {
+          "type": "condition",
+          "param": {
+            "expression": "'{TransView.manifestWebServiceUrl}' !== ''",
+            "onSuccess": [
+              {
+                "type": "event-next",
+                "value": "CheckPackWeight"
+              },
+              {
+                "type": "event-next",
+                "value": "CallConvertToManifestUOM"
+              },
+              {
+                "type": "event-next",
+                "value": "CallBuildCustFreightRequest"
+              },
+              {
+                "type": "event-next",
+                "value": "CallUpdateTimeOut"
+              },
+              {
+                "type": "event-next",
+                "value": "CallFreightCarton"
+              },
+              {
+                "type": "condition",
+                "param": {
+                  "expression": "{ShipHead.CreateShipment}==true && '{FreightCartonResponse.ErrorStatus}' == 'Warning'",
+                  "onSuccess": [
+                    {
+                      "type": "event-next",
+                      "value": "CallUpdateCreatedShipment"
+                    }
+                  ],
+                  "onFailure": [
+                    {
+                      "type": "event-next",
+                      "value": "CallUpdateFreightedShipment"
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "event-next",
+                "value": "Refresh"
+              }
+            ],
+            "onFailure": [
+              {
+                "type": "erp-message-handler",
+                "param": {
+                  "level": "error",
+                  "type": "Slideout",
+                  "message": "Missing freight service URL.  Review workstation setup.",
+                  "buttons": "ok"
+                }
+              },
+              {
+                "type": "exit"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "CallBuildCustFreightRequest",
+      "actions": [
+        {
+          "type": "rest-erp",
+          "param": {
+            "svc": "Erp.BO.FreightServiceSvc",
+            "svcPath": "BuildCustFreightRequest",
+            "requestMethod": "POST",
+            "erpRequestMethod": "ErpPostWithDataViewProcessing",
+            "methodParameters": [
+              {
+                "field": "packID",
+                "epBinding": "ShipHead.PackNum"
+              }
+            ],
+            "erpRestPostArgs": {
+              "responseParamArgs": [
+                {
+                  "dataset": {
+                    "systemCode": "Erp",
+                    "datasetId": "FreightInfoRequest"
+                  },
+                  "responsePath": "returnObj"
+                }
+              ]
+            }
+          },
+          "onError": [
+            {
+              "type": "exit"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CallFreightCarton",
+      "actions": [
+        {
+          "type": "rest-erp",
+          "param": {
+            "svc": "Erp.BO.FreightServiceSvc",
+            "svcPath": "FreightCarton",
+            "requestMethod": "POST",
+            "erpRequestMethod": "ErpPostWithDataViewProcessing",
+            "methodParameters": [
+              {
+                "field": "freightURL",
+                "epBinding": "TransView.manifestWebServiceUrl"
+              },
+              {
+                "field": "rdt",
+                "value": {},
+                "params": [
+                  {
+                    "field": "MasterPackInfo",
+                    "model": "MasterPackInfo",
+                    "isArray": true
+                  },
+                  {
+                    "field": "PackInfo",
+                    "model": "PackInfo",
+                    "isArray": true
+                  },
+                  {
+                    "field": "MasterUPSQV",
+                    "model": "MasterUPSQV",
+                    "isArray": true
+                  },
+                  {
+                    "field": "OrderInfo",
+                    "model": "OrderInfo",
+                    "isArray": true
+                  },
+                  {
+                    "field": "OrderLine",
+                    "model": "OrderLine",
+                    "isArray": true
+                  },
+                  {
+                    "field": "KitComponent",
+                    "model": "KitComponent",
+                    "isArray": true
+                  },
+                  {
+                    "field": "PhantomPack",
+                    "model": "PhantomPack",
+                    "isArray": true
+                  },
+                  {
+                    "field": "COO",
+                    "model": "COO",
+                    "isArray": true
+                  },
+                  {
+                    "field": "UPSQV",
+                    "model": "UPSQV",
+                    "isArray": true
+                  }
+                ]
+              },
+              {
+                "field": "WorkStationID",
+                "epBinding": "TransView.workstation"
+              },
+              {
+                "field": "httpTimeOut",
+                "epBinding": "TransView.httpTimeOut"
+              }
+            ],
+            "erpRestPostArgs": {
+              "responseParamArgs": [
+                {
+                  "dataset": {
+                    "systemCode": "Erp",
+                    "datasetId": "FreightInfoResponse"
+                  },
+                  "responsePath": "returnObj"
+                }
+              ]
+            }
+          },
+          "onSuccess": [
+            {
+              "type": "condition",
+              "param": {
+                "expression": "%FreightCartonResponse.count% === 0",
+                "onSuccess": [
+                  {
+                    "type": "erp-message-handler",
+                    "param": {
+                      "message": "Freight Response Not Returned",
+                      "level": "error",
+                      "type": "Slideout",
+                      "buttons": "OK"
+                    }
+                  },
+                  {
+                    "type": "exit"
+                  }
+                ]
+              }
+            },
+            {
+              "type": "condition",
+              "param": {
+                "expression": "{FreightCartonResponse.ErrorFlag} === true && '{FreightCartonResponse.ErrorMessage}' !== ''",
+                "onSuccess": [
+                  {
+                    "type": "erp-message-handler",
+                    "param": {
+                      "message": "{FreightCartonResponse.ErrorMessage}",
+                      "level": "error",
+                      "type": "Slideout",
+                      "buttons": "OK"
+                    }
+                  },
+                  {
+                    "type": "exit"
+                  }
+                ]
+              }
+            }
+          ],
+          "onError": [
+            {
+              "type": "exit"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CallUpdateFreightedShipment",
+      "actions": [
+        {
+          "type": "rest-erp",
+          "param": {
+            "svc": "Erp.BO.FreightServiceSvc",
+            "svcPath": "UpdateFreightedShipment",
+            "requestMethod": "POST",
+            "erpRequestMethod": "ErpPostWithDataViewProcessing",
+            "methodParameters": [
+              {
+                "field": "ipPackID",
+                "epBinding": "ShipHead.PackNum"
+              },
+              {
+                "field": "ipShipmentType",
+                "value": "Sales"
+              },
+              {
+                "field": "ds",
+                "value": {},
+                "params": [
+                  {
+                    "field": "FreightCartonResponse",
+                    "model": "FreightCartonResponse",
+                    "isArray": true
+                  },
+                  {
+                    "field": "FreightCartonResponseTracking",
+                    "model": "FreightCartonResponseTracking",
+                    "isArray": true
+                  }
+                ]
+              }
+            ],
+            "erpRestPostArgs": {
+              "responseParamArgs": []
+            }
+          },
+          "onError": [
+            {
+              "type": "exit"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CallUpdateCreatedShipment",
+      "actions": [
+        {
+          "type": "rest-erp",
+          "param": {
+            "svc": "Erp.BO.FreightServiceSvc",
+            "svcPath": "UpdateCreatedShipment",
+            "requestMethod": "POST",
+            "erpRequestMethod": "ErpPostWithDataViewProcessing",
+            "methodParameters": [
+              {
+                "field": "ipPackID",
+                "epBinding": "ShipHead.PackNum"
+              },
+              {
+                "field": "ipShipmentType",
+                "value": "Sales"
+              }
+            ],
+            "erpRestPostArgs": {
+              "responseParamArgs": []
+            }
+          },
+          "onSuccess": [
+            {
+              "type": "erp-message-handler",
+              "param": {
+                "type": "Slideout",
+                "level": "info",
+                "buttons": "OK",
+                "message": "{FreightCartonResponse.ErrorMessage}"
+              }
+            }
+          ],
+          "onError": [
+            {
+              "type": "exit"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

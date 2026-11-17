@@ -6,6 +6,7 @@ export interface QuickShipExpected {
   packNum: number; orderNum: number; orderLine: number; partNum: string;
   quantity: number; unitPrice: number; tariff: string; packageCode: string;
   weight: number; blindShipping: boolean;
+  createShipment?: boolean;
 }
 export function decodeArtifact(text: string): Row {
   let value: unknown = JSON.parse(text.replace(/^\uFEFF/, ''));
@@ -14,6 +15,7 @@ export function decodeArtifact(text: string): Row {
 }
 export function verifyQuickShip(payload: unknown, expected: QuickShipExpected): void {
   const p = record(payload, 'actual QuickShip request');
+  if(expected.createShipment !== undefined) identity(p,{createShipment:expected.createShipment});
   identity(p, {shipmentReference: String(expected.packNum), orderReference: String(expected.orderNum),
     blindShipping: expected.blindShipping, packageWeight: expected.weight});
   if (!Array.isArray(p.containers) || p.containers.length !== 1) throw new Error('Expected one QuickShip container.');
@@ -46,7 +48,8 @@ export async function waitForQuickShip(
         if (e instanceof SyntaxError || (e as NodeJS.ErrnoException).code === 'ENOENT') continue;
         throw e;
       }
-      if (p.shipmentReference === String(expected.packNum) && p.orderReference === String(expected.orderNum)) matches.push({path, body: p});
+      if (p.shipmentReference === String(expected.packNum) && p.orderReference === String(expected.orderNum) &&
+          (expected.createShipment === undefined || p.createShipment === expected.createShipment)) matches.push({path, body: p});
     }
     if (matches.length > 1) throw new Error('Multiple QuickShip artifacts match this run; correlation is ambiguous.');
     if (matches.length === 1) {

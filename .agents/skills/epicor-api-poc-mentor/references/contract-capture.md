@@ -1,5 +1,9 @@
 # Browser contract discovery
 
+Work toward a resolved capability/contract or consolidated blocker, not one screen or command per turn. Within existing authorization, autonomously handle routine navigation, spec searches/extraction, DOM/network inspection, selector adaptation, driver repair and offline checks. Reuse saved sessions/evidence; inspect frames, tabs, menus and accessible controls yourself. After repeated uninformative attempts inspect state and change strategy. Combine browser findings with focused specs; startup traffic alone is not shipment-contract discovery.
+
+Keep reusable procedures in the skill, scenario facts in project evidence and machine settings/authentication private. Improve guidance for evidenced transferable gaps, not incidental UI events. Ask only for inaccessible information, acceptance-critical decisions or effects outside authorization; batch questions and continue independent work. Skill edits cannot expand authorization or promote unverified observations into contracts.
+
 Use only when remaining contract/sequence gaps cannot be resolved from documentation and inspected code. This is separate contract discovery; generated regression tests remain API-only. Prefer agent-operated discovery when a compatible browser tool or local Playwright runtime, reachable application and authorized authenticated session are available. Do not assume browser access, intranet reachability or authentication from the existence of Node.js alone. Performing UI actions may mutate ERP; capture does not grant authorization. Scope the session to approved actions.
 
 ## Concrete tool choice and execution plan
@@ -57,3 +61,7 @@ Promote reviewed observations using the contract-record template with target/ver
 ## Offline checks
 
 Run `node --test scripts/test_capture_contracts.cjs` using Node 24+ for the source-stripping test harness. It tests real pure functions and a mocked capture lifecycle without launching Chromium. It does not typecheck against installed Playwright/Node typings or prove live browser capture. Check the TypeScript file in the discovery project's actual compiler and perform an authorized focused session before claiming that environment's capture works.
+
+When shell keyword search fails, inspect captured menu metadata and rendered controls instead of retrying the same search. Distinguish menu resource names from deployed URL resolution: relative metadata URLs are not proof of their hosting base. Inspect launch configuration or a successful observed navigation before promoting a route. Save per-frame DOM inventories and relevant metadata privately. A missing accessible label requires DOM inspection, not guessed icon selectors. Prefer plain Node .cjs/.mjs with installed Playwright; tsx is optional.
+
+For native tree navigation, inspect aria-expanded and the actual expansion control; selecting a label may leave a branch collapsed. Distinguish tree expansion from flyout activation. Exclude hidden duplicate templates before enforcing uniqueness, never pick the first ambiguous control. Attach context-wide page/frame/navigation listeners before launch. After native launch, inspect returned application definitions for bindings/event chains and correlate exact methods with local specs before considering record-level mutations. Application metadata establishes client logic, not server outcomes or automatic field resets.

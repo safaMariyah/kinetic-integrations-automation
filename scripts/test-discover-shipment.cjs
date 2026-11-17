@@ -1,0 +1,9 @@
+const {test}=require('node:test');const assert=require('node:assert/strict');const http=require('node:http');const fs=require('node:fs');const {chromium}=require('@playwright/test');const {main,act}=require('./discover-shipment.cjs');
+test('local inspection/action capture lifecycle and ambiguous controls',async()=>{
+ const server=http.createServer((req,res)=>{if(req.url==='/api/save'){res.setHeader('content-type','application/json');res.end(JSON.stringify({ok:true,token:'fixture-secret'}));}else{res.end(`<button onclick="fetch('/api/save',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({token:'fixture-secret'})})">Save fixture</button><button>Duplicate</button><button>Duplicate</button>`);}});
+ await new Promise(r=>server.listen(0,'127.0.0.1',r));const url='http://127.0.0.1:'+server.address().port;
+ const config='fixture-discovery.local.json';const before=new Set(fs.existsSync('captures')?fs.readdirSync('captures'):[]);const argv=process.argv;
+ try{fs.writeFileSync(config,JSON.stringify({url,origins:[url],apiPrefixes:['/api/'],actionApproved:true,action:{kind:'click',role:'button',name:'Save fixture',responsePath:'/api/save'}}));process.argv=['node','driver',config,'action'];await main();const dir=fs.readdirSync('captures').find(x=>!before.has(x));const pairs=JSON.parse(fs.readFileSync('captures/'+dir+'/pairs.json'));assert.equal(pairs[0].method,'POST');assert.equal(pairs[0].request.token,'[REDACTED]');assert.equal(pairs[0].response.ok,true);
+ const b=await chromium.launch();try{const p=await b.newPage();await p.goto(url);await assert.rejects(act(p,{kind:'click',role:'button',name:'Duplicate'}));await assert.rejects(act(p,{kind:'click',role:'button',name:'Missing'}));await assert.rejects(act(p,{kind:'click',role:'button',name:'Freight'}));}finally{await b.close();}
+ }finally{process.argv=argv;fs.unlinkSync(config);await new Promise(r=>server.close(r));}
+});

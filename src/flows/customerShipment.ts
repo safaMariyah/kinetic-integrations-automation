@@ -30,9 +30,9 @@ export interface Progress {
 }
 type Step = <T>(name: string, action: () => Promise<T>) => Promise<T>;
 
-export async function customerShipment(
+async function executeShipment(
   client: BaseClient, input: ScenarioInput,
-  step: Step, progress: Progress,
+  step: Step, progress: Progress, preparationOnly = false,
 ): Promise<{progress: Progress; shipment: Dataset; freightRequest: Dataset}> {
   const part = new PartApi(client, input.company);
   const inv = new InventoryApi(client);
@@ -250,6 +250,11 @@ export async function customerShipment(
       OrderRelNum: progress.orderRelease, PartNum: progress.partNum, WarehouseCode: input.toWhse,
       BinNum: input.toBin, OurInventoryShipQty: input.quantity, SellingInventoryShipQty: input.quantity});
   });
+  if (preparationOnly) {
+    identity(one(shipment, 'ShipHead'), {ShipStatus: 'OPEN'});
+    progress.stage = 'completed: OPEN pack preparation boundary';
+    return {progress, shipment, freightRequest: {}};
+  }
   await run('Close and independently verify CLOSED status', async () => {
     const header = one(shipment, 'ShipHead');
     if (typeof header.SysRowID !== 'string' || !header.SysRowID) throw new Error('Missing saved header identity.');
@@ -288,4 +293,11 @@ function master(ds: Dataset, packNum: number, checkLine: boolean, billToCustomer
   return {ds, doValidateCreditHold: false, doCheckShipDtl: checkLine, doLotValidation: false,
     doCheckOrderComplete: false, doPostUpdate: false, doCheckCompliance: false,
     ipShippedFlagChanged: false, ipPackNum: packNum, ipBTCustNum: billToCustomer};
+}
+
+export async function prepareCustomerShipment(client: BaseClient, input: ScenarioInput, step: Step, progress: Progress) {
+  return executeShipment(client, input, step, progress, true);
+}
+export async function customerShipment(client: BaseClient, input: ScenarioInput, step: Step, progress: Progress) {
+  return executeShipment(client, input, step, progress);
 }

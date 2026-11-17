@@ -58,6 +58,11 @@ export class FreightApi {
     );
   }
 
+  updateCreatedShipment(packNum: number) {
+    this.validatePackNum(packNum);
+    return this.client.post('/Erp.BO.FreightServiceSvc/UpdateCreatedShipment', {ipPackID: packNum, ipShipmentType: 'Sales'});
+  }
+
   updateFreightedShipment(
     packNum: number,
     freightResult: Dataset,
