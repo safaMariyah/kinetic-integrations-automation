@@ -3,7 +3,7 @@ import { BaseClient } from '../../src/api/baseClient';
 import { customerShipment, prepareCustomerShipment, type Progress } from '../../src/flows/customerShipment';
 import type { Row, Dataset } from '../../src/support/datasets';
 
-for (const mode of ['false', 'true', 'prepare']) {
+for (const mode of ['false', 'true', 'prepare', 'product-code']) {
   const blindShipping = mode === 'true';
   const preparation = mode === 'prepare';
   test(`mock transport: complete fresh flow, mode=${mode}`, async () => {
@@ -58,7 +58,7 @@ for (const mode of ['false', 'true', 'prepare']) {
       else if (op === 'GetSlimOrderAlloc') response = {returnObj: {SlimOrderAlloc: [allocation()]}, parameters: {ds}};
       else if (op === 'CheckDates') response = wrap(ds, {cMessageText: ''});
       else if (op === 'AutoAllocation') response = {parameters: {lReleased: true, cMessageText: ['1 Demand record(s) allocated.','0 Demand record(s) cross docked.','1 Demand record(s) selected for picking.','1 Demand record(s) submitted for picking.'].join('\n')}};
-      else if (op === 'GetRowsCustomParams') response = {returnObj: {MtlQueue: [queue()]}, parameters: {morePages: false}};
+      else if (op === 'GetRowsCustomParams') response = {returnObj: {MtlQueue: mode==='product-code' && moved ? [] : [queue()]}, parameters: {morePages: false}};
       else if (op === 'Update' && path.includes('MaterialQueueSvc')) response = wrap({MtlQueue: [(ds.MtlQueue as Row[])[1]]});
       else if (op === 'PreGetNewIssueReturn') response = {parameters: {pcAction: '', pcMessage: '', pdQtyAvailable: 0}};
       else if (op === 'VerifyMtlQueueExists') response = {returnObj: true};
@@ -84,13 +84,15 @@ for (const mode of ['false', 'true', 'prepare']) {
         response = wrap(shipment, {...noMessages(['opReleaseMessage','opCompleteMessage','opShippingMessage','opLotMessage','opInventoryMessage','opLockQtyMessage','opAllocationMessage','opPartListNeedsAttr','opLotListNeedsAttr','shipCreditMsg','msg','opPostUpdMessage']),
           cError: false, compError: false, checkComplianceError: false, changeStatusError: false, checkShipDtlAgain: false, updateComplete: true});
       }
+      else if(op==='ChangeXPartNum') response=wrap(ds);
+      else if(op==='GetByID' && path.includes('SalesOrderSvc')) response={returnObj:structuredClone(orderDs)};
       else if (op === 'GetByID' && path.includes('CustShipSvc')) response = {returnObj: structuredClone(shipment)};
       else if (op === 'GetNewOrdrShipDtl') response = wrap({...ds, ShipDtl: [{...base, PackNum: 400, PackLine: 0, RowMod: 'A', SellingInventoryShipQty: 0}]});
       else if (op === 'GetOrderInfo') response = wrap({...ds, ShipDtl: [{...(ds.ShipDtl as Row[])[0], OrderNum: 9000}]}, {creditMessage: ''});
       else if (op === 'AfterChangedShipDtlOrderNum') response = wrap(ds);
       else if (op === 'GetOrderLineInfo') response = wrap({...ds, ShipDtl: [{...(ds.ShipDtl as Row[])[0], OrderLine: 1, PartNum: part.PartNum}]});
       else if (op === 'CheckPrePartInfo') response = {parameters: {partNum: part.PartNum, origPartNum: part.PartNum, vSubAvail: false, vMsgText: '', vMsgType: ''}};
-      else if (op === 'GetOrderRelInfo') response = wrap({...ds, ShipDtl: [{...(ds.ShipDtl as Row[])[0], OrderRelNum: 1}]});
+      else if (op === 'GetOrderRelInfo') response = wrap({...ds, ShipDtl: [{...(ds.ShipDtl as Row[])[0], OrderRelNum: 1, ...(mode==='product-code'?{XPartNum:'EP1Testing'}:{})}]});
       else if (op === 'GetWhseInfo') response = wrap({...ds, ShipDtl: [{...(ds.ShipDtl as Row[])[0], WarehouseCode: 'SHP'}]});
       else if (op === 'ValidateBinCode') response = {};
       else if (op === 'GetQtyInfo') response = wrap({...ds, ShipDtl: [{...(ds.ShipDtl as Row[])[0], OurInventoryShipQty: b.displayInvQty}]});
@@ -111,6 +113,7 @@ for (const mode of ['false', 'true', 'prepare']) {
     const result = await (preparation ? prepareCustomerShipment : customerShipment)(client, {company: 'EPIC06', customerId: 'ECD', employeeId: '105', plant: 'MfgSys',
       fromWhse: 'CHI', fromBin: '00-00-00', toWhse: 'SHP', toBin: 'SHP-1', stockQty: 10, quantity: 8,
       shipVia: 'F92', packageCode: 'BOX', weight: 3, unitPrice: 0, tariff: '1234.56.7899', blindShipping,
+      ...(mode==='product-code'?{customerPartCode:'EP1Testing'}:{}),
       freightUrl: 'http://integration.test/service', workstation: 'PACK', freightTimeout: 60, partExtras: {}},
       async (_name, action) => action(), progress);
     if (preparation) {

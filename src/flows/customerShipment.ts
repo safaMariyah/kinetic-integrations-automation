@@ -1,3 +1,5 @@
+import {createOwnedCustomerPart} from './ownedCustomerPart';
+import {verifyMovedQueueAbsent} from './productCodeReaders';
 import { FulfillmentApi } from '../api/fulfillmentApi';
 import { BaseClient } from '../api/baseClient';
 import { PartApi } from '../api/partApi';
@@ -22,8 +24,13 @@ export interface ScenarioInput {
   weight: number; unitPrice: number; tariff: string; blindShipping: boolean;
   freightUrl: string; workstation: string; freightTimeout: number;
   partExtras: Row;
+  customerPartCode?: string;
+  customerPartRevision?: string;
+  internalPartRevision?: string;
+  createOwnedMapping?: boolean;
 }
 export interface Progress {
+  customerPartMappingId?: string;
   stage: string; partNum?: string; orderNum?: number; orderLine?: number;
   orderRelease?: number; queueSeq?: number; packNum?: number;
   inventoryTransactions?: string; movementTransactions?: string; freightTransaction?: string;
@@ -105,6 +112,13 @@ async function executeShipment(
     progress.orderNum = positive(one(orderDs, 'OrderHed').OrderNum, 'order number');
     orderDs = dataset(await json(order.getNewOrderDtl(progress.orderNum, orderDs), 'Initialize order line'));
     const line = one(orderDs, 'OrderDtl');
+    if(input.createOwnedMapping) {
+      if(input.customerPartCode===undefined||input.customerPartRevision===undefined||input.internalPartRevision===undefined)throw new Error('Explicit customer code and revision required.');
+      const custNum=one(orderDs,'OrderHed').CustNum;
+      if(typeof custNum!=='number'||custNum<=0)throw new Error('Returned order customer identity missing.');
+      progress.customerPartMappingId=await createOwnedCustomerPart(client,input.company,custNum,progress.partNum!,input.customerPartCode,input.customerPartRevision,input.internalPartRevision);
+    }
+    if(input.internalPartRevision!==undefined) orderDs=changed(orderDs,'OrderDtl',{RevisionNum:input.internalPartRevision});
     const partBody = await json(order.changePartNumMaster({
       partNum: progress.partNum!, lSubstitutePartExist: false, lIsPhantom: false, uomCode: '',
       SysRowID: String(line.SysRowID), rowType: '', salesKitView: false, removeKitComponents: false,
@@ -119,6 +133,11 @@ async function executeShipment(
       if (pp[flag] === true) throw new Error(`Part condition requires review: ${flag}.`);
     }
     orderDs = dataset(partBody);
+    if(input.internalPartRevision!==undefined) identity(one(orderDs,'OrderDtl'),{RevisionNum:input.internalPartRevision});
+    if(input.customerPartCode !== undefined) {
+      orderDs = dataset(await json(order.changeXPartNum(changed(orderDs,'OrderDtl',{XPartNum:input.customerPartCode,...(input.customerPartRevision!==undefined?{XRevisionNum:input.customerPartRevision}:{})})), 'Source 12: select customer part'));
+      identity(one(orderDs,'OrderDtl'),{PartNum:progress.partNum,XPartNum:input.customerPartCode,...(input.customerPartRevision!==undefined?{XRevisionNum:input.customerPartRevision}:{})});
+    }
     const quantityBody = await json(order.changeSellingQtyMaster({
       ipSellingQuantity: String(input.quantity), chkSellQty: false, negInvTest: false, chgSellQty: true,
       chgDiscPer: true, lKeepUnitPrice: true, pcAttributeSetID: '0', pcBinNum: '', pcDimCode: 'EA',
@@ -131,6 +150,13 @@ async function executeShipment(
     identity(saved, {Company: input.company, OrderNum: progress.orderNum, PartNum: progress.partNum,
       SellingQuantity: input.quantity, OrderQty: input.quantity, SalesUM: 'EA', UnitPrice: input.unitPrice});
     progress.orderLine = positive(saved.OrderLine, 'order line');
+    if(input.customerPartCode !== undefined) {
+      const persisted=returned(await json(order.getById(progress.orderNum!), 'Source 12: independently read saved customer part'));
+      const line=rows(persisted,'OrderDtl').filter(r=>r.OrderNum===progress.orderNum && r.OrderLine===progress.orderLine);
+      if(line.length!==1) throw new Error('Expected exact persisted order line.');
+      if(input.internalPartRevision!==undefined) identity(line[0],{RevisionNum:input.internalPartRevision});
+      identity(line[0],{PartNum:progress.partNum,XPartNum:input.customerPartCode,...(input.customerPartRevision!==undefined?{XRevisionNum:input.customerPartRevision}:{})});
+    }
     const release = one(orderDs, 'OrderRel');
     identity(release, {OrderNum: progress.orderNum, OrderLine: progress.orderLine,
       Plant: input.plant, WarehouseCode: input.fromWhse, OurReqQty: input.quantity});
@@ -196,6 +222,7 @@ async function executeShipment(
     stringsEmpty(moved, ['legalNumberMessage']);
     if (typeof moved.partTranPKs !== 'string' || !moved.partTranPKs) throw new Error('Missing movement transaction references.');
     progress.movementTransactions = moved.partTranPKs;
+    if(input.customerPartCode !== undefined) verifyMovedQueueAbsent(await json(movement.findQueue(progress.orderNum!,input.employeeId),'Source 20: independently verify moved queue disappearance'),input.company,progress.queueSeq!);
     const after = await stock();
     if (balance(after, input.fromWhse, input.fromBin) !== sourceBefore - input.quantity ||
         balance(after, input.toWhse, input.toBin) !== input.quantity) throw new Error('Post-movement stock mismatch.');
@@ -250,6 +277,8 @@ async function executeShipment(
       OrderRelNum: progress.orderRelease, PartNum: progress.partNum, WarehouseCode: input.toWhse,
       BinNum: input.toBin, OurInventoryShipQty: input.quantity, SellingInventoryShipQty: input.quantity});
   });
+  if(input.internalPartRevision!==undefined) identity(one(shipment,'ShipDtl'),{RevisionNum:input.internalPartRevision});
+  if(input.customerPartCode !== undefined) identity(one(shipment,'ShipDtl'),{XPartNum:input.customerPartCode,...(input.customerPartRevision!==undefined?{XRevisionNum:input.customerPartRevision}:{})});
   if (preparationOnly) {
     identity(one(shipment, 'ShipHead'), {ShipStatus: 'OPEN'});
     progress.stage = 'completed: OPEN pack preparation boundary';

@@ -35,6 +35,12 @@ export interface ChangeSellingQtyMasterInput {
 export class SalesOrderApi {
   constructor(private readonly client: BaseClient) {}
 
+  changeXPartNum(ds: Record<string, unknown>) {
+    return this.client.post('/Erp.BO.SalesOrderSvc/ChangeXPartNum', {ds});
+  }
+  getById(orderNum: number) {
+    return this.client.get('/Erp.BO.SalesOrderSvc/GetByID?orderNum='+orderNum);
+  }
   getNewOrderHed(ds: Record<string, unknown>) {
     return this.client.post(
       '/Erp.BO.SalesOrderSvc/GetNewOrderHed',

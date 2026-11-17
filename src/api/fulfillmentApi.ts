@@ -2,10 +2,10 @@ import { BaseClient } from './baseClient';
 import type { Dataset, Row } from '../support/datasets';
 export class FulfillmentApi {
   constructor(private readonly client: BaseClient) {}
-  findQueue(orderNum: number, employeeId: string) {
+  findQueue(orderNum: number, _employeeId: string) {
     return this.client.post('/Erp.BO.MaterialQueueSvc/GetRowsCustomParams', {
       whereClause: `OrderNum = ${orderNum}`, fromDate: '', toDate: '', fromWhse: '', toWhse: '',
-      tranType: '', selectedByEmpID: employeeId, excludeTransStatus: '', onlySelectedByEmp: false,
+      tranType: '', selectedByEmpID: '', excludeTransStatus: '', onlySelectedByEmp: false,
       onlyUnselected: false, pageSize: 0, absolutePage: 1,
     });
   }

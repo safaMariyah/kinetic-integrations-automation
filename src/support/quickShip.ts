@@ -7,6 +7,7 @@ export interface QuickShipExpected {
   quantity: number; unitPrice: number; tariff: string; packageCode: string;
   weight: number; blindShipping: boolean;
   createShipment?: boolean;
+  customerProductCode?: string;
 }
 export function decodeArtifact(text: string): Row {
   let value: unknown = JSON.parse(text.replace(/^\uFEFF/, ''));
@@ -23,6 +24,7 @@ export function verifyQuickShip(payload: unknown, expected: QuickShipExpected): 
   identity(container, {containerTypeCode: expected.packageCode, weight: expected.weight, dimensionUOM: 'IN'});
   if (!Array.isArray(container.packingDetail) || container.packingDetail.length !== 1) throw new Error('Expected one QuickShip packing detail.');
   const detail = record(container.packingDetail[0]);
+  if(expected.customerProductCode !== undefined) identity(detail,{customerProductCode:expected.customerProductCode});
   identity(detail, {qtyPacked: expected.quantity, unitPrice: expected.unitPrice, orderPrice: expected.unitPrice,
     orderlineNumber: expected.orderLine, orderReference: String(expected.orderNum)});
   identity(record(detail.product), {productKey: expected.partNum, tariff: expected.tariff, unitOfMeasure: 'EA'});
