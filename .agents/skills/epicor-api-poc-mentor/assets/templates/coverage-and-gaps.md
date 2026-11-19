@@ -15,3 +15,13 @@ Scenario/spec version: <id/version>. Sources actually read: <source refs>. Envir
 | <ID> | <original> | <revised> | <explicit user instruction; otherwise proposed> | <IDs> |
 
 Report implemented and verified scope separately. List commands actually run, results, retained effects/IDs, recovery readers and exact unresolved transition. A mock pass or configured report does not establish a live/pipeline pass.
+
+## Scenario model
+Record rule, entity ownership, initial state/prerequisites, transitions, propagation values and authoritative readers with evidence references.
+
+## Source values
+| Source value | Role: acceptance-critical / illustrative-configurable / shared prerequisite / system-derived | Chosen value/substitution | Basis/approval | Ownership/effects |
+| --- | --- | --- | --- | --- |
+
+## Partial-delivery stopping record
+For each blocked requirement record investigation/evidence, remaining unknown/decision, why authorized tools cannot resolve it, and smallest input/access/authorization needed. Distinguish planned coverage, implemented coverage and live verification.

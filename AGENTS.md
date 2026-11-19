@@ -7,3 +7,9 @@ Keep regression tests API-only. Browser/network discovery is a separate, explici
 Preserve original source-step IDs and substantive expected results in scenario coverage; record exclusions and gaps explicitly. Customer-shipment sources live under `resources/customer-shipment`; the blind-shipping baseline does not implement the two-stage createShipment case.
 Run offline checks with `npm.cmd run check` and `npm.cmd run test:local`; `npm.cmd run list:live` only discovers tests. Live runs require applicable authorization and exact target/scope validation; generation and offline checks do not authorize live requests.
 Machine-specific discovery paths belong in ignored `discovery.local.json`: JSON keys `catalog` (index directory) and `specDir` (original OpenAPI directory). Pass those values to query_catalog.py via `--catalog` and `--spec-dir`; this file is not automatically loaded. Store no credentials there.
+
+Before capability/assertion changes inspect retained evidence and shared code. VAT records are under resources/customer-shipment/vat and resources/customer-shipment/run-evidence; original failures, corrected read-only checks and fresh passes remain distinct. Product Code unique-mapping approval does not prove earlier failure causes.
+
+QuickShip refresh is implemented in scripts/refresh-quickship-session.cjs; inspect scope and authorization before use. Resolve QUICKSHIP_STORAGE_STATE exactly as the reader does and verify a fresh reader with required header presence without revealing values. Opening shipments can invoke applyBestWay. Shared scope logic/tests: src/support/quickShipReader.ts and tests/local/quickship-scope.spec.ts.
+
+playwright.config.ts gives each invocation unique timestamp/UUID reports under captures/runs. Preserve original live evidence. Stage only task-specific files for maintenance commits.
