@@ -1,18 +1,8 @@
 import { randomUUID } from 'node:crypto';
 
-export interface CreatePartPayload extends Record<string, unknown> {
-  Company: string;
-  PartNum: string;
-  PartDescription: string;
-  UOMClassID: string;
-  IUM: string;
-  PUM: string;
-  SalesUM: string;
-  TypeCode: 'P';
-  CostMethod: 'S';
-  NonStock: boolean;
-  QtyBearing: boolean;
-}
+import type { CreatePartPayload } from '../api/partApi';
+// Preserve external type imports while the writable contract belongs to the API layer.
+export type { CreatePartPayload } from '../api/partApi';
 
 export function buildPurchasedStockPart(
   company: string,

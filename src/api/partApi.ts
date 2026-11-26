@@ -1,6 +1,19 @@
 // Reconstructed from the documented OData contract and supplied create-part test.
 import { BaseClient } from './baseClient';
-import type { CreatePartPayload } from '../flows/purchasedPart';
+/** Writable create-part contract shared by the adapter and scenario builders. */
+export interface CreatePartPayload extends Record<string, unknown> {
+  Company: string;
+  PartNum: string;
+  PartDescription: string;
+  UOMClassID: string;
+  IUM: string;
+  PUM: string;
+  SalesUM: string;
+  TypeCode: 'P';
+  CostMethod: 'S';
+  NonStock: boolean;
+  QtyBearing: boolean;
+}
 export class PartApi {
   constructor(private readonly client: BaseClient, private readonly company: string) {}
   getNewPart(ds: Record<string, unknown>) { return this.client.post('/Erp.BO.PartSvc/GetNewPart', {ds}); }
