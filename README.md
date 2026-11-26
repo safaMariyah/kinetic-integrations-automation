@@ -214,6 +214,14 @@ Generation/review checklist:
    persisted outcomes and actual correlated integration artifacts. A mock pass,
    completeness barrier or recovery pass is not a fresh full scenario pass.
 
+The architecture check inspects imports, re-exports, literal `require()` calls,
+import assignments and dynamic imports. It normalizes relative paths before
+enforcing layer direction: configuration stays independent, API adapters do not
+depend on workflows, and integration adapters do not depend on scenarios.
+Live specs use the shared fixture and cannot import discovery tools or browser
+drivers. Named Playwright imports keep these dependencies reviewable. This is a
+maintainability check, not a security sandbox or a detector for duplicated logic.
+
 Two-stage Create Shipment is implemented in its own spec with an observed
 create-only contract, before-image-aware save and transition ledger. Its exact
 creation Warning is not a general warning-acceptance policy. See source coverage
