@@ -171,12 +171,20 @@ source hashes, commit/dirty state and outcomes. Private environment/runtime file
 are excluded. A passing manifest records execution evidence, not a complete
 snapshot of external ERP/carrier state or private configuration.
 
+Inline checkpoint attachments also record a content hash and a narrow recovery-ID
+summary in the manifest. Only approved part/order/pack/queue/transaction identifiers
+are projected; arbitrary payloads, VAT before-images, credentials and addresses
+are excluded. The original attachment remains in the private report. Recovery
+still requires current authoritative reads and the original scenario preconditions.
+
 
 ## Capability index for adding scenarios
 
 Start here, then inspect the function and its callers. The index describes code
-boundaries, not authorization or proof of live compatibility. Latest typed-handoff
-changes have offline coverage; historical live passes predate those changes.
+boundaries, not authorization or proof of live compatibility. Typed preparation
+handoffs have retained fresh live passes. Later tooling and evidence-only changes
+have separate offline/hosted verification; consult the exact run manifests rather
+than treating an older pass as verification of every later revision.
 
 | Need | Existing function | Input / result | Preconditions and limits |
 | --- | --- | --- | --- |

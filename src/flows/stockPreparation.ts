@@ -28,8 +28,7 @@ export async function prepareScenarioStock(client: BaseClient, input: StockInput
     await json(part.createPart(payload), 'Create part', 201);
     const saved = await json(part.getPart(payload.PartNum), 'Read part');
     identity(saved, payload);
-    // Price 0 is intentional for this POC. Extra create fields are verified by read-back.
-    // SchedBcode on the create payload is an extension requiring the first live validation.
+    // Price and tariff remain scenario inputs; verify them through the persisted part read.
     identity(saved, {UnitPrice: input.unitPrice, SchedBcode: input.tariff});
     for (const key of ['TrackLots','TrackSerialNum','TrackDimension','TrackInventoryAttributes','TrackInventoryByRevision']) {
       if (saved[key] === true) throw new Error(`Simple-stock scenario does not support ${key}.`);

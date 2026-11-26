@@ -1,7 +1,8 @@
 # Automation repository redesign plan and implementation record
 
-Updated: 24 November 2026. This is the authoritative redesign status; source-case
-coverage and original run evidence remain authoritative for business acceptance.
+Historical snapshot: 24 November 2026. This predates subsequent implementation
+and is not current redesign status. Source-case coverage and original run
+evidence remain authoritative for business acceptance; progress is reported in chat.
 No architecture guarantees that ERP, carrier, environment or credential changes
 cannot cause failures. The goal is controlled changes and diagnosable failures.
 
