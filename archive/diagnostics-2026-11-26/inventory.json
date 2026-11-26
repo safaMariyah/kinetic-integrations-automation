@@ -1,0 +1,122 @@
+[
+  {
+    "original": "scripts\\check-quickship-browser-reader.cjs",
+    "destination": "archive\\diagnostics-2026-11-26\\check-quickship-browser-reader.cjs.txt",
+    "sha256": "b1912777ba177fb134204b28e6fdacaa2394c903a776de206fa7d46a70d8a91f",
+    "status": "historical investigation, not supported execution"
+  },
+  {
+    "original": "scripts\\check-shipment-readiness.cjs",
+    "destination": "archive\\diagnostics-2026-11-26\\check-shipment-readiness.cjs.txt",
+    "sha256": "a2ca11d398f1fb4c75ae9435c92f9e118774b0ec1d907865a84953ec74bcbef8",
+    "status": "historical investigation, not supported execution"
+  },
+  {
+    "original": "scripts\\diagnose-shipment-access.cjs",
+    "destination": "archive\\diagnostics-2026-11-26\\diagnose-shipment-access.cjs.txt",
+    "sha256": "adee914507fb1a2445aef519698b7d96046143d6614e716c7bcfe3f60ca10e6c",
+    "status": "historical investigation, not supported execution"
+  },
+  {
+    "original": "scripts\\diagnose-vat-live.cjs",
+    "destination": "archive\\diagnostics-2026-11-26\\diagnose-vat-live.cjs.txt",
+    "sha256": "b455f2793b00934a354c8f45a26552c8508ef2a10397e6538bee217c88a27de4",
+    "status": "historical investigation, not supported execution"
+  },
+  {
+    "original": "scripts\\discover-shipment.cjs",
+    "destination": "tools\\discovery\\discover-shipment.cjs",
+    "sha256": "39269895f87d192c8a7eae90c423af61a5322603f02dbfb627b0af7e520da659",
+    "status": "supported discovery"
+  },
+  {
+    "original": "scripts\\inspect-kinetic-navigation.cjs",
+    "destination": "archive\\diagnostics-2026-11-26\\inspect-kinetic-navigation.cjs.txt",
+    "sha256": "1fc89c98f73619bd2f7731c2bd8e51e44b34b41d016f6a9578fef81b80791d6a",
+    "status": "historical investigation, not supported execution"
+  },
+  {
+    "original": "scripts\\inspect-native-menu.cjs",
+    "destination": "archive\\diagnostics-2026-11-26\\inspect-native-menu.cjs.txt",
+    "sha256": "da9cbf5d72f3cc1a05d5feb150fe47d4907a56de7b853fbc8b73990bd12618d5",
+    "status": "historical investigation, not supported execution"
+  },
+  {
+    "original": "scripts\\inspect-quickship-login.cjs",
+    "destination": "archive\\diagnostics-2026-11-26\\inspect-quickship-login.cjs.txt",
+    "sha256": "bc087e21c4542e87db7eed18e0c7668d2b929df3b3514358dc4cf5f695a9d8b2",
+    "status": "historical investigation, not supported execution"
+  },
+  {
+    "original": "scripts\\inspect-quickship-lookup.cjs",
+    "destination": "archive\\diagnostics-2026-11-26\\inspect-quickship-lookup.cjs.txt",
+    "sha256": "ee5db7015bf66b95ce10c0e8c76721ea3670233662654f9522c6a0ca34770776",
+    "status": "historical investigation, not supported execution"
+  },
+  {
+    "original": "scripts\\login-quickship.cjs",
+    "destination": "archive\\diagnostics-2026-11-26\\login-quickship.cjs.txt",
+    "sha256": "7d061eec309c021d8b1c385abbfb317cad184e7b39f364a2345f8935f13ad674",
+    "status": "historical investigation, not supported execution"
+  },
+  {
+    "original": "scripts\\preflight-vat-live.cjs",
+    "destination": "archive\\diagnostics-2026-11-26\\preflight-vat-live.cjs.txt",
+    "sha256": "862572b337e10848b3935dedd3e2b830deec083df70e5b2d0e3c6ed76e8b7bda",
+    "status": "historical investigation, not supported execution"
+  },
+  {
+    "original": "scripts\\read-misc-master-applications.cjs",
+    "destination": "archive\\diagnostics-2026-11-26\\read-misc-master-applications.cjs.txt",
+    "sha256": "568b67401acb27f537086c43c558b95d6f781d95dbd027aa73de06d7b3f908af",
+    "status": "historical investigation, not supported execution"
+  },
+  {
+    "original": "scripts\\read-misc-master-prerequisites.cjs",
+    "destination": "archive\\diagnostics-2026-11-26\\read-misc-master-prerequisites.cjs.txt",
+    "sha256": "946483fcf1e7dccc205f83e79a6699fbd32295ba814f330ed3aee0fa73ff46fb",
+    "status": "historical investigation, not supported execution"
+  },
+  {
+    "original": "scripts\\read-product-code-prerequisites.cjs",
+    "destination": "archive\\diagnostics-2026-11-26\\read-product-code-prerequisites.cjs.txt",
+    "sha256": "35724036c449d897b9dda9b5462ff987c9bf3a5c3e8d23cb871b3e37d43edd0d",
+    "status": "historical investigation, not supported execution"
+  },
+  {
+    "original": "scripts\\read-vat-application.cjs",
+    "destination": "archive\\diagnostics-2026-11-26\\read-vat-application.cjs.txt",
+    "sha256": "7f54c69acc2da9b2b41128134639fcb6a1c7b3cbe6357a0f20bedc43bedec798",
+    "status": "historical investigation, not supported execution"
+  },
+  {
+    "original": "scripts\\read-vat-prerequisites.cjs",
+    "destination": "archive\\diagnostics-2026-11-26\\read-vat-prerequisites.cjs.txt",
+    "sha256": "7744bed95e9af8a6225f1c784effdbdfc80a188a47b0039b1a0fe1ca45c27d26",
+    "status": "historical investigation, not supported execution"
+  },
+  {
+    "original": "scripts\\test-discover-shipment.cjs",
+    "destination": "tools\\discovery\\test-discover-shipment.cjs",
+    "sha256": "1058473e5f43fa8751f10d3c01b9a1be57da69a51e046bb9030cbb6fefbd4604",
+    "status": "supported discovery"
+  },
+  {
+    "original": "scripts\\verify-integration-scope.cjs",
+    "destination": "archive\\diagnostics-2026-11-26\\verify-integration-scope.cjs.txt",
+    "sha256": "1f180c47cea946f14ed1428458f369b423039d28a03c97384797cdb53d55ca50",
+    "status": "historical investigation, not supported execution"
+  },
+  {
+    "original": "scripts\\verify-vat-existing-readonly.cjs",
+    "destination": "archive\\diagnostics-2026-11-26\\verify-vat-existing-readonly.cjs.txt",
+    "sha256": "36b3743801218e1fd01af50ffcb65320eeb8a257d5a0e6ca6716e47984c8d210",
+    "status": "historical investigation, not supported execution"
+  },
+  {
+    "original": "scripts\\verify-vat-fresh-postrun.cjs",
+    "destination": "archive\\diagnostics-2026-11-26\\verify-vat-fresh-postrun.cjs.txt",
+    "sha256": "51da751bca354bc9edafea78ece31698e26ff687ebffbf0344ee6903926f3520",
+    "status": "historical investigation, not supported execution"
+  }
+]

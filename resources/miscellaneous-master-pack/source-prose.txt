@@ -1,0 +1,96 @@
+Source: user-supplied steps 5–10. Test Data: None for every step.
+
+5
+Enter Part ID and Description = M1
+Save
+Move to Part / Sites / Warehouses / Warehouse Detail
+Primary Bin = 00-00-01
+Save
+Move to Part/ Attributes tab
+UOM = IN
+Unit Net Weight = 2.00000 LB
+Save
+Expected Result: None
+
+6
+Quantity adjustment for stock parts
+Material Management/Inventory Management/General Operations/ Quantity Adjustment
+Part =M1
+Bin = 00-00-01
+Quantity = 10
+Reason = Add new part
+Click on the Adjust Button
+Expected Result: None
+
+7
+Create Sales Order(Ord#1)
+Go to Sales Management/Customer Relationship Management/General Operations/Order Entry
+Enter customer ECD and tab out
+Select Need By date = <Today>
+Click on the ShipTo search
+Select EDA-A
+Save
+Move to Lines > Detail tab
+Click new
+Enter Part = M1 and tab out
+Enter order quantity = 7
+Save save order number (####)
+Go back to the Details tab. Click Ready to fulfill = true
+Save
+On actions, select Reserve/Allocate
+Select both lines and then click allocate by part
+Allocation Process Criteria screen appears.
+Click continue
+Ad Hoc Allocation Template screen appear.
+Release to picking = True
+Click Continue
+Message appear "Do you want to print the released items?"
+Click No
+Expected Result:
+1 Demand record(s) allocated.
+0 Demand record(s) cross docked.
+1 Demand record(s) selected for picking.
+1 Demand record(s) submitted for picking
+
+8
+Go to Material Management/Advanced Material Management/General Operations/Material Request Queue
+Retrieve transactions from today
+Select the first record displayed (Relate to M1 Part)
+Click process
+Click OK
+Expected Result: None
+
+9
+Create a Pack for Misc Shipment
+Service Management/Field Service/General Operations/Miscellaneous Shipment Entry
+Click New Pack
+On the Name field, click the search button, select East Coast Distribution - Albany
+Click OK
+Enter order number created before (Ord#1)
+Ship Via = FedEx Ground
+Package code = BOX
+Save
+On the left tree, go to the Line details tab
+Click New Line
+Enter part = M1
+Enter quantity = 7
+Save
+Expected Result: None
+
+10
+Create a Master Pack
+Go to Master Pack Shipment Entry
+Material Management/Shipping / Receiving/General Operations/Master Pack Shipment Entry
+Click New Master Pack
+Shipment Type = Miscellanous
+Freight Pack IDs Individually = False
+Enter Package code = BOX
+Ship via = FedEx Ground
+Save
+On the left tree, Go to the Line Details tab
+Click on New Pack
+Enter Pack number created on previous steps for Ord#1 and tab out
+Save Master Pack ID.
+Expected Result: not supplied
+
+User clarification: IN is dimension UOM; allocate the single M1 line.

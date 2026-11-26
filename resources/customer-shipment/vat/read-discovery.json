@@ -1,0 +1,169 @@
+{
+  "customer": {
+    "http": 200,
+    "tables": [
+      "Customer",
+      "CustomerAttch",
+      "CustomCrdPool",
+      "Partner",
+      "CustBillTo",
+      "CustBank",
+      "CustChild",
+      "CustDfltDocType",
+      "CustIC",
+      "CustLabExpRate",
+      "CustMandate",
+      "CustomerDocs",
+      "CustRestriction",
+      "CustUPSEmail",
+      "CustomerDiscPriceLst",
+      "CustomerFSPriceList",
+      "GlbCustCred",
+      "MXCustomerFiscalText",
+      "NAMember",
+      "PECustWhldHist",
+      "ShipTo",
+      "ShipToAttch",
+      "ShipToRestriction",
+      "ShipToLabExpRate",
+      "CustomerDocsSH",
+      "ShipToDiscPriceLst",
+      "ShipToMFBill",
+      "ShipToPriceLst",
+      "ShipToUPSEml",
+      "CustMFBill",
+      "MangCust",
+      "ShipToSrch",
+      "CustomerPriceLst",
+      "EntityGLC",
+      "TaxExempt",
+      "ExtensionTables"
+    ],
+    "rows": [
+      {
+        "Company": "EPIC06",
+        "CustID": "ECD",
+        "CustNum": 12,
+        "CustomerVATNum": "",
+        "ResaleID": "",
+        "UseBlindShipping": false,
+        "ShipToNum": ""
+      }
+    ],
+    "shipTos": [
+      {
+        "Company": "EPIC06",
+        "CustNum": 12,
+        "ShipToNum": "",
+        "ShipToVAT": "",
+        "INVATNumber": "",
+        "ResaleID": ""
+      },
+      {
+        "Company": "EPIC06",
+        "CustNum": 12,
+        "ShipToNum": "EDA-A",
+        "ShipToVAT": "",
+        "INVATNumber": "",
+        "ResaleID": ""
+      }
+    ]
+  },
+  "metadata": {
+    "http": 200,
+    "attributes": {
+      "erp.customer.customervatnum": {
+        "Field": "CustomerVATNum",
+        "SystemFlag": "True",
+        "Seq": "413",
+        "DBTableName": "Customer",
+        "Description": "CustomerVATNum",
+        "IsDescriptionField": "False",
+        "External": "False",
+        "FieldScale": "0",
+        "Format": "x(20)",
+        "Caption": "CustomerVATNum",
+        "DataType": "nvarchar"
+      },
+      "erp.customer.resaleid": {
+        "Field": "ResaleID",
+        "SystemFlag": "True",
+        "Seq": "12",
+        "DBTableName": "Customer",
+        "Description": "Optional field used to record the customer's State Tax Identification number, which is displayed on Sales Acknowledgments.",
+        "IsDescriptionField": "False",
+        "External": "False",
+        "FieldScale": "0",
+        "Format": "x(20)",
+        "Caption": "Tax ID",
+        "DataType": "nvarchar"
+      },
+      "erp.customer.twtaxpayertype": {
+        "CGCCode": "TW",
+        "Field": "TWTaxPayerType",
+        "SystemFlag": "True",
+        "Seq": "342",
+        "DBTableName": "Customer",
+        "Description": "TWTaxPayerType",
+        "IsDescriptionField": "False",
+        "External": "False",
+        "FieldScale": "0",
+        "CodeDescriptionList": "0`Individual~1`Qualified VAT~2`Special",
+        "Caption": "Tax Payer Type",
+        "DataType": "int"
+      },
+      "erp.customer.reservepridescription": {
+        "Field": "ReservePriDescription",
+        "Caption": "Description",
+        "Format": "x(30)",
+        "FieldScale": "0",
+        "DataType": "nvarchar",
+        "Linked": "True",
+        "ReadOnly": "True",
+        "Description": "Description of the reservation priority. Example \"High\".",
+        "IsDescriptionField": "True",
+        "Required": "True",
+        "SystemFlag": "True"
+      },
+      "erp.shipto.invatnumber": {
+        "Caption": "VAT Number",
+        "Field": "INVATNumber",
+        "SystemFlag": "True",
+        "Seq": "159",
+        "DBTableName": "ShipTo",
+        "Description": "INVATNumber",
+        "IsDescriptionField": "False",
+        "External": "False",
+        "FieldScale": "0",
+        "Format": "x(20)",
+        "DataType": "nvarchar"
+      },
+      "erp.shipto.resaleid": {
+        "Field": "ResaleID",
+        "SystemFlag": "True",
+        "Seq": "12",
+        "DBTableName": "ShipTo",
+        "Description": "The State Tax Identification Number. Used in Order Entry and prints on Sales Acknowledgements.",
+        "IsDescriptionField": "False",
+        "External": "False",
+        "FieldScale": "0",
+        "Format": "x(20)",
+        "Caption": "Tax ID",
+        "DataType": "nvarchar"
+      },
+      "erp.shipto.shiptovat": {
+        "Field": "ShipToVAT",
+        "SystemFlag": "True",
+        "Seq": "182",
+        "DBTableName": "ShipTo",
+        "Description": "ShipToVAT",
+        "IsDescriptionField": "False",
+        "External": "False",
+        "FieldScale": "0",
+        "Format": "x(20)",
+        "Caption": "ShipToVAT",
+        "DataType": "nvarchar"
+      }
+    }
+  }
+}

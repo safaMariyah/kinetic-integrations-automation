@@ -1,0 +1,981 @@
+{
+  "schema_version": 1,
+  "scenario_id": "miscellaneous-master-pack",
+  "objective": "Create M1, add 10 stock, order and pick 7, create a miscellaneous pack and include that exact pack in a master pack.",
+  "sources": [
+    {
+      "id": "prose",
+      "location": "source-prose.txt",
+      "description": "User source and subsequent clarification"
+    },
+    {
+      "id": "contracts",
+      "location": "contracts.json",
+      "description": "Focused original OpenAPI extraction; runtime version unconfirmed"
+    },
+    {
+      "id": "app",
+      "location": "application-contracts.json",
+      "description": "Fresh read-only event definitions, menu evidence resolved application IDs and menu IDs"
+    },
+    {
+      "id": "reads",
+      "location": "prerequisite-discovery.json",
+      "description": "Read-only prerequisite evidence; not a business scenario run"
+    }
+  ],
+  "source_steps": [
+    {
+      "id": "5",
+      "source_id": "prose",
+      "text": "Enter Part ID and Description = M1\nSave\nMove to Part / Sites / Warehouses / Warehouse Detail\nPrimary Bin = 00-00-01\nSave\nMove to Part/ Attributes tab\nUOM = IN\nUnit Net Weight = 2.00000 LB\nSave\nExpected Result: None",
+      "expectations": []
+    },
+    {
+      "id": "6",
+      "source_id": "prose",
+      "text": "Quantity adjustment for stock parts\nMaterial Management/Inventory Management/General Operations/ Quantity Adjustment\nPart =M1\nBin = 00-00-01\nQuantity = 10\nReason = Add new part\nClick on the Adjust Button\nExpected Result: None",
+      "expectations": []
+    },
+    {
+      "id": "7",
+      "source_id": "prose",
+      "text": "Create Sales Order(Ord#1)\nGo to Sales Management/Customer Relationship Management/General Operations/Order Entry\nEnter customer ECD and tab out\nSelect Need By date = <Today>\nClick on the ShipTo search\nSelect EDA-A\nSave\nMove to Lines > Detail tab\nClick new\nEnter Part = M1 and tab out\nEnter order quantity = 7\nSave save order number (####)\nGo back to the Details tab. Click Ready to fulfill = true\nSave\nOn actions, select Reserve/Allocate\nSelect both lines and then click allocate by part\nAllocation Process Criteria screen appears.\nClick continue\nAd Hoc Allocation Template screen appear.\nRelease to picking = True\nClick Continue\nMessage appear \"Do you want to print the released items?\"\nClick No\nExpected Result:\n1 Demand record(s) allocated.\n0 Demand record(s) cross docked.\n1 Demand record(s) selected for picking.\n1 Demand record(s) submitted for picking",
+      "expectations": [
+        {
+          "id": "7.1",
+          "text": "1 Demand record(s) allocated."
+        },
+        {
+          "id": "7.2",
+          "text": "0 Demand record(s) cross docked."
+        },
+        {
+          "id": "7.3",
+          "text": "1 Demand record(s) selected for picking."
+        },
+        {
+          "id": "7.4",
+          "text": "1 Demand record(s) submitted for picking"
+        }
+      ]
+    },
+    {
+      "id": "8",
+      "source_id": "prose",
+      "text": "Go to Material Management/Advanced Material Management/General Operations/Material Request Queue\nRetrieve transactions from today\nSelect the first record displayed (Relate to M1 Part)\nClick process\nClick OK\nExpected Result: None",
+      "expectations": []
+    },
+    {
+      "id": "9",
+      "source_id": "prose",
+      "text": "Create a Pack for Misc Shipment\nService Management/Field Service/General Operations/Miscellaneous Shipment Entry\nClick New Pack\nOn the Name field, click the search button, select East Coast Distribution - Albany\nClick OK\nEnter order number created before (Ord#1)\nShip Via = FedEx Ground\nPackage code = BOX\nSave\nOn the left tree, go to the Line details tab\nClick New Line\nEnter part = M1\nEnter quantity = 7\nSave\nExpected Result: None",
+      "expectations": []
+    },
+    {
+      "id": "10",
+      "source_id": "prose",
+      "text": "Create a Master Pack\nGo to Master Pack Shipment Entry\nMaterial Management/Shipping / Receiving/General Operations/Master Pack Shipment Entry\nClick New Master Pack\nShipment Type = Miscellanous\nFreight Pack IDs Individually = False\nEnter Package code = BOX\nShip via = FedEx Ground\nSave\nOn the left tree, Go to the Line Details tab\nClick on New Pack\nEnter Pack number created on previous steps for Ord#1 and tab out\nSave Master Pack ID.\nExpected Result: not supplied",
+      "expectations": []
+    }
+  ],
+  "environment": {
+    "profile_ref": "existing .env",
+    "company_ref": "EPICOR_COMPANY",
+    "version": "unconfirmed"
+  },
+  "entities": [
+    {
+      "id": "part",
+      "type": "Part",
+      "identity_inputs": [
+        "company",
+        "M1"
+      ]
+    },
+    {
+      "id": "order",
+      "type": "OrderHed",
+      "identity_inputs": [
+        "company",
+        "returned orderNum"
+      ]
+    },
+    {
+      "id": "misc",
+      "type": "MscShpHd",
+      "identity_inputs": [
+        "company",
+        "returned miscPackNum"
+      ]
+    },
+    {
+      "id": "master",
+      "type": "MasterPack",
+      "identity_inputs": [
+        "company",
+        "returned masterPackNum"
+      ]
+    }
+  ],
+  "preconditions": [
+    {
+      "id": "setup",
+      "description": "Existing site, warehouses, bins, UOMs, ECD/EDA-A, FedEx Ground, BOX, employee and reason master; no shared configuration changes. M1 ownership/absence must be established before provisioning.",
+      "source_refs": [
+        "prose"
+      ],
+      "status": "runtime-checked"
+    }
+  ],
+  "inputs": {
+    "part": {
+      "type": "string",
+      "origin": "source prose",
+      "classification": "LITERAL",
+      "value": "M1"
+    },
+    "description": {
+      "type": "string",
+      "origin": "source prose",
+      "classification": "LITERAL",
+      "value": "M1"
+    },
+    "dimensionUom": {
+      "type": "string",
+      "origin": "source prose",
+      "classification": "LITERAL",
+      "value": "IN"
+    },
+    "netWeight": {
+      "type": "number",
+      "origin": "source prose",
+      "classification": "LITERAL",
+      "value": 2
+    },
+    "weightUom": {
+      "type": "string",
+      "origin": "source prose",
+      "classification": "LITERAL",
+      "value": "LB"
+    },
+    "bin": {
+      "type": "string",
+      "origin": "source prose",
+      "classification": "LITERAL",
+      "value": "00-00-01"
+    },
+    "stockQty": {
+      "type": "number",
+      "origin": "source prose",
+      "classification": "LITERAL",
+      "value": 10
+    },
+    "quantity": {
+      "type": "number",
+      "origin": "source prose",
+      "classification": "LITERAL",
+      "value": 7
+    },
+    "customer": {
+      "type": "string",
+      "origin": "source prose",
+      "classification": "LITERAL",
+      "value": "ECD"
+    },
+    "shipTo": {
+      "type": "string",
+      "origin": "source prose",
+      "classification": "LITERAL",
+      "value": "EDA-A"
+    },
+    "recipient": {
+      "type": "string",
+      "origin": "source prose",
+      "classification": "LITERAL",
+      "value": "East Coast Distribution - Albany",
+      "environment_spelling": "East Coast Distribiution - Albany",
+      "resolution": "Cosmetic spelling normalization only; customer identity separately read from Customer master. Distinct from ECD."
+    },
+    "reasonDescription": {
+      "type": "string",
+      "origin": "source prose",
+      "classification": "LITERAL",
+      "value": "Add new part"
+    },
+    "shipViaDescription": {
+      "type": "string",
+      "origin": "source prose",
+      "classification": "LITERAL",
+      "value": "FedEx Ground"
+    },
+    "package": {
+      "type": "string",
+      "origin": "source prose",
+      "classification": "LITERAL",
+      "value": "BOX"
+    }
+  },
+  "deviations": [
+    {
+      "id": "one-line",
+      "status": "approved",
+      "original": "Select both lines",
+      "replacement": "Allocate the single M1 line, quantity 7",
+      "approval_ref": "User clarification in this conversation"
+    },
+    {
+      "id": "close-misc",
+      "status": "approved",
+      "original": "Save miscellaneous pack, then add it to master",
+      "replacement": "Close this newly created miscellaneous pack between source steps 9 and 10 because master validation requires CLOSED",
+      "approval_ref": "User approval in this conversation"
+    }
+  ],
+  "operations": [
+    {
+      "id": "step-5",
+      "contract_ref": "contracts.json and existing customer-shipment contracts: Erp.BO.PartSvc/Update",
+      "status": "supported",
+      "evidence_refs": [
+        "contracts",
+        "app"
+      ],
+      "limitations": [
+        "Fresh live execution unverified; existing no-prompt/simple-stock branches only"
+      ]
+    },
+    {
+      "id": "step-5-read",
+      "contract_ref": "contracts.json and existing customer-shipment contracts: Erp.BO.PartSvc/GetByID",
+      "status": "supported",
+      "evidence_refs": [
+        "contracts",
+        "app"
+      ],
+      "limitations": [
+        "Fresh live execution unverified; existing no-prompt/simple-stock branches only"
+      ]
+    },
+    {
+      "id": "step-6",
+      "contract_ref": "contracts.json and existing customer-shipment contracts: Erp.BO.InventoryQtyAdjSvc/SetInventoryQtyAdj",
+      "status": "supported",
+      "evidence_refs": [
+        "contracts",
+        "app"
+      ],
+      "limitations": [
+        "Fresh live execution unverified; existing no-prompt/simple-stock branches only"
+      ]
+    },
+    {
+      "id": "step-6-read",
+      "contract_ref": "contracts.json and existing customer-shipment contracts: Erp.BO.PartBinSearchSvc/GetFullBinSearch",
+      "status": "supported",
+      "evidence_refs": [
+        "contracts",
+        "app"
+      ],
+      "limitations": [
+        "Fresh live execution unverified; existing no-prompt/simple-stock branches only"
+      ]
+    },
+    {
+      "id": "step-7",
+      "contract_ref": "contracts.json and existing customer-shipment contracts: Erp.BO.SalesOrderSvc/Update",
+      "status": "supported",
+      "evidence_refs": [
+        "contracts",
+        "app"
+      ],
+      "limitations": [
+        "Fresh live execution unverified; existing no-prompt/simple-stock branches only"
+      ]
+    },
+    {
+      "id": "step-7-read",
+      "contract_ref": "contracts.json and existing customer-shipment contracts: Erp.BO.SalesOrderSvc/GetByID",
+      "status": "supported",
+      "evidence_refs": [
+        "contracts",
+        "app"
+      ],
+      "limitations": [
+        "Fresh live execution unverified; existing no-prompt/simple-stock branches only"
+      ]
+    },
+    {
+      "id": "step-8",
+      "contract_ref": "contracts.json and existing customer-shipment contracts: Erp.BO.IssueReturnSvc/PerformMaterialMovement",
+      "status": "supported",
+      "evidence_refs": [
+        "contracts",
+        "app"
+      ],
+      "limitations": [
+        "Fresh live execution unverified; existing no-prompt/simple-stock branches only"
+      ]
+    },
+    {
+      "id": "step-8-read",
+      "contract_ref": "contracts.json and existing customer-shipment contracts: Erp.BO.MaterialQueueSvc/GetRowsCustomParams",
+      "status": "supported",
+      "evidence_refs": [
+        "contracts",
+        "app"
+      ],
+      "limitations": [
+        "Fresh live execution unverified; existing no-prompt/simple-stock branches only"
+      ]
+    },
+    {
+      "id": "step-9",
+      "contract_ref": "contracts.json and existing customer-shipment contracts: Erp.BO.MiscShipSvc/Update",
+      "status": "supported",
+      "evidence_refs": [
+        "contracts",
+        "app"
+      ],
+      "limitations": [
+        "Fresh live execution unverified; existing no-prompt/simple-stock branches only"
+      ]
+    },
+    {
+      "id": "step-9-read",
+      "contract_ref": "contracts.json and existing customer-shipment contracts: Erp.BO.MiscShipSvc/GetByID",
+      "status": "supported",
+      "evidence_refs": [
+        "contracts",
+        "app"
+      ],
+      "limitations": [
+        "Fresh live execution unverified; existing no-prompt/simple-stock branches only"
+      ]
+    },
+    {
+      "id": "step-10",
+      "contract_ref": "contracts.json and existing customer-shipment contracts: Erp.BO.MasterPackSvc/Update",
+      "status": "supported",
+      "evidence_refs": [
+        "contracts",
+        "app"
+      ],
+      "limitations": [
+        "Fresh live execution unverified; existing no-prompt/simple-stock branches only"
+      ]
+    },
+    {
+      "id": "step-10-read",
+      "contract_ref": "contracts.json and existing customer-shipment contracts: Erp.BO.MasterPackSvc/GetByID",
+      "status": "supported",
+      "evidence_refs": [
+        "contracts",
+        "app"
+      ],
+      "limitations": [
+        "Fresh live execution unverified; existing no-prompt/simple-stock branches only"
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "id": "default",
+      "overrides": {},
+      "precondition_ids": [
+        "setup"
+      ],
+      "assertion_ids": [
+        "step-5-persisted",
+        "step-6-persisted",
+        "step-7-persisted",
+        "step-8-persisted",
+        "step-9-persisted",
+        "step-10-persisted",
+        "allocation-1",
+        "allocation-2",
+        "allocation-3",
+        "allocation-4"
+      ],
+      "status": "implemented"
+    }
+  ],
+  "actions": [
+    {
+      "id": "step-5",
+      "source_step_ids": [
+        "5"
+      ],
+      "operation_id": "step-5",
+      "depends_on": [],
+      "inputs": {
+        "source": "source step 5"
+      },
+      "outputs": {
+        "identities": "retained run checkpoint"
+      },
+      "mutation": true,
+      "effects": [
+        "Retained ERP business records/transactions; no automatic cleanup"
+      ],
+      "verification_ids": [
+        "step-5-persisted"
+      ],
+      "implementation": {
+        "status": "implemented",
+        "reference": "src/flows/miscellaneousMasterPack.ts; src/flows/customerShipment.ts"
+      }
+    },
+    {
+      "id": "step-5-read",
+      "source_step_ids": [
+        "5"
+      ],
+      "operation_id": "step-5-read",
+      "depends_on": [
+        "step-5"
+      ],
+      "inputs": {
+        "identity": "this run corresponding saved identity"
+      },
+      "outputs": {
+        "state": "separate authoritative read"
+      },
+      "mutation": false,
+      "effects": [],
+      "verification_ids": [
+        "step-5-persisted"
+      ],
+      "implementation": {
+        "status": "implemented",
+        "reference": "src/flows/miscellaneousMasterPack.ts; src/flows/customerShipment.ts"
+      }
+    },
+    {
+      "id": "step-6",
+      "source_step_ids": [
+        "6"
+      ],
+      "operation_id": "step-6",
+      "depends_on": [
+        "step-5-read"
+      ],
+      "inputs": {
+        "source": "source step 6"
+      },
+      "outputs": {
+        "identities": "retained run checkpoint"
+      },
+      "mutation": true,
+      "effects": [
+        "Retained ERP business records/transactions; no automatic cleanup"
+      ],
+      "verification_ids": [
+        "step-6-persisted"
+      ],
+      "implementation": {
+        "status": "implemented",
+        "reference": "src/flows/miscellaneousMasterPack.ts; src/flows/customerShipment.ts"
+      }
+    },
+    {
+      "id": "step-6-read",
+      "source_step_ids": [
+        "6"
+      ],
+      "operation_id": "step-6-read",
+      "depends_on": [
+        "step-6"
+      ],
+      "inputs": {
+        "identity": "this run corresponding saved identity"
+      },
+      "outputs": {
+        "state": "separate authoritative read"
+      },
+      "mutation": false,
+      "effects": [],
+      "verification_ids": [
+        "step-6-persisted"
+      ],
+      "implementation": {
+        "status": "implemented",
+        "reference": "src/flows/miscellaneousMasterPack.ts; src/flows/customerShipment.ts"
+      }
+    },
+    {
+      "id": "step-7",
+      "source_step_ids": [
+        "7"
+      ],
+      "operation_id": "step-7",
+      "depends_on": [
+        "step-6-read"
+      ],
+      "inputs": {
+        "source": "source step 7"
+      },
+      "outputs": {
+        "identities": "retained run checkpoint"
+      },
+      "mutation": true,
+      "effects": [
+        "Retained ERP business records/transactions; no automatic cleanup"
+      ],
+      "verification_ids": [
+        "step-7-persisted",
+        "allocation-1",
+        "allocation-2",
+        "allocation-3",
+        "allocation-4"
+      ],
+      "implementation": {
+        "status": "implemented",
+        "reference": "src/flows/miscellaneousMasterPack.ts; src/flows/customerShipment.ts"
+      }
+    },
+    {
+      "id": "step-7-read",
+      "source_step_ids": [
+        "7"
+      ],
+      "operation_id": "step-7-read",
+      "depends_on": [
+        "step-7"
+      ],
+      "inputs": {
+        "identity": "this run corresponding saved identity"
+      },
+      "outputs": {
+        "state": "separate authoritative read"
+      },
+      "mutation": false,
+      "effects": [],
+      "verification_ids": [
+        "step-7-persisted"
+      ],
+      "implementation": {
+        "status": "implemented",
+        "reference": "src/flows/miscellaneousMasterPack.ts; src/flows/customerShipment.ts"
+      }
+    },
+    {
+      "id": "step-8",
+      "source_step_ids": [
+        "8"
+      ],
+      "operation_id": "step-8",
+      "depends_on": [
+        "step-7-read"
+      ],
+      "inputs": {
+        "source": "source step 8"
+      },
+      "outputs": {
+        "identities": "retained run checkpoint"
+      },
+      "mutation": true,
+      "effects": [
+        "Retained ERP business records/transactions; no automatic cleanup"
+      ],
+      "verification_ids": [
+        "step-8-persisted"
+      ],
+      "implementation": {
+        "status": "implemented",
+        "reference": "src/flows/miscellaneousMasterPack.ts; src/flows/customerShipment.ts"
+      }
+    },
+    {
+      "id": "step-8-read",
+      "source_step_ids": [
+        "8"
+      ],
+      "operation_id": "step-8-read",
+      "depends_on": [
+        "step-8"
+      ],
+      "inputs": {
+        "identity": "this run corresponding saved identity"
+      },
+      "outputs": {
+        "state": "separate authoritative read"
+      },
+      "mutation": false,
+      "effects": [],
+      "verification_ids": [
+        "step-8-persisted"
+      ],
+      "implementation": {
+        "status": "implemented",
+        "reference": "src/flows/miscellaneousMasterPack.ts; src/flows/customerShipment.ts"
+      }
+    },
+    {
+      "id": "step-9",
+      "source_step_ids": [
+        "9"
+      ],
+      "operation_id": "step-9",
+      "depends_on": [
+        "step-8-read"
+      ],
+      "inputs": {
+        "source": "source step 9"
+      },
+      "outputs": {
+        "identities": "retained run checkpoint"
+      },
+      "mutation": true,
+      "effects": [
+        "Retained ERP business records/transactions; no automatic cleanup"
+      ],
+      "verification_ids": [
+        "step-9-persisted"
+      ],
+      "implementation": {
+        "status": "implemented",
+        "reference": "src/flows/miscellaneousMasterPack.ts; src/flows/customerShipment.ts"
+      }
+    },
+    {
+      "id": "step-9-read",
+      "source_step_ids": [
+        "9"
+      ],
+      "operation_id": "step-9-read",
+      "depends_on": [
+        "step-9"
+      ],
+      "inputs": {
+        "identity": "this run corresponding saved identity"
+      },
+      "outputs": {
+        "state": "separate authoritative read"
+      },
+      "mutation": false,
+      "effects": [],
+      "verification_ids": [
+        "step-9-persisted"
+      ],
+      "implementation": {
+        "status": "implemented",
+        "reference": "src/flows/miscellaneousMasterPack.ts; src/flows/customerShipment.ts"
+      }
+    },
+    {
+      "id": "step-10",
+      "source_step_ids": [
+        "10"
+      ],
+      "operation_id": "step-10",
+      "depends_on": [
+        "step-9-read"
+      ],
+      "inputs": {
+        "source": "source step 10"
+      },
+      "outputs": {
+        "identities": "retained run checkpoint"
+      },
+      "mutation": true,
+      "effects": [
+        "Retained ERP business records/transactions; no automatic cleanup"
+      ],
+      "verification_ids": [
+        "step-10-persisted"
+      ],
+      "implementation": {
+        "status": "implemented",
+        "reference": "src/flows/miscellaneousMasterPack.ts; src/flows/customerShipment.ts"
+      }
+    },
+    {
+      "id": "step-10-read",
+      "source_step_ids": [
+        "10"
+      ],
+      "operation_id": "step-10-read",
+      "depends_on": [
+        "step-10"
+      ],
+      "inputs": {
+        "identity": "this run corresponding saved identity"
+      },
+      "outputs": {
+        "state": "separate authoritative read"
+      },
+      "mutation": false,
+      "effects": [],
+      "verification_ids": [
+        "step-10-persisted"
+      ],
+      "implementation": {
+        "status": "implemented",
+        "reference": "src/flows/miscellaneousMasterPack.ts; src/flows/customerShipment.ts"
+      }
+    }
+  ],
+  "assertions": [
+    {
+      "id": "step-5-persisted",
+      "source_step_ids": [
+        "5"
+      ],
+      "kind": "persisted-state",
+      "reader_action_id": "step-5-read",
+      "expected": "M1 description M1; primary bin 00-00-01; dimension IN; net weight 2 LB",
+      "variant_ids": [
+        "default"
+      ],
+      "evidence_refs": [
+        "prose",
+        "contracts",
+        "app"
+      ],
+      "source_expectation_ids": []
+    },
+    {
+      "id": "step-6-persisted",
+      "source_step_ids": [
+        "6"
+      ],
+      "kind": "persisted-state",
+      "reader_action_id": "step-6-read",
+      "expected": "Source stock 10 EA after positive adjustment; retained partTranPKs",
+      "variant_ids": [
+        "default"
+      ],
+      "evidence_refs": [
+        "prose",
+        "contracts",
+        "app"
+      ],
+      "source_expectation_ids": []
+    },
+    {
+      "id": "step-7-persisted",
+      "source_step_ids": [
+        "7"
+      ],
+      "kind": "persisted-state",
+      "reader_action_id": "step-7-read",
+      "expected": "ECD / EDA-A, today, M1 line quantity 7, persisted ReadyToFulfill true",
+      "variant_ids": [
+        "default"
+      ],
+      "evidence_refs": [
+        "prose",
+        "contracts",
+        "app"
+      ],
+      "source_expectation_ids": []
+    },
+    {
+      "id": "step-8-persisted",
+      "source_step_ids": [
+        "8"
+      ],
+      "kind": "persisted-state",
+      "reader_action_id": "step-8-read",
+      "expected": "Movement from 00-00-01 to configured shipping bin; source 3, destination 7; queue absent",
+      "variant_ids": [
+        "default"
+      ],
+      "evidence_refs": [
+        "prose",
+        "contracts",
+        "app"
+      ],
+      "source_expectation_ids": []
+    },
+    {
+      "id": "step-9-persisted",
+      "source_step_ids": [
+        "9"
+      ],
+      "kind": "persisted-state",
+      "reader_action_id": "step-9-read",
+      "expected": "This order, independently selected Albany customer, BOX, FedEx Ground, M1 quantity 7; approved CLOSED state",
+      "variant_ids": [
+        "default"
+      ],
+      "evidence_refs": [
+        "prose",
+        "contracts",
+        "app"
+      ],
+      "source_expectation_ids": []
+    },
+    {
+      "id": "step-10-persisted",
+      "source_step_ids": [
+        "10"
+      ],
+      "kind": "persisted-state",
+      "reader_action_id": "step-10-read",
+      "expected": "Master ShipmentType Misc, IndividualPackIDs false, BOX, FedEx Ground; one DtlPackNum references this run miscellaneous pack",
+      "variant_ids": [
+        "default"
+      ],
+      "evidence_refs": [
+        "prose",
+        "contracts",
+        "app"
+      ],
+      "source_expectation_ids": []
+    },
+    {
+      "id": "allocation-1",
+      "source_step_ids": [
+        "7"
+      ],
+      "kind": "response",
+      "reader_action_id": "step-7",
+      "expected": "1 Demand record(s) allocated.",
+      "variant_ids": [
+        "default"
+      ],
+      "evidence_refs": [
+        "prose"
+      ],
+      "source_expectation_ids": [
+        "7.1"
+      ]
+    },
+    {
+      "id": "allocation-2",
+      "source_step_ids": [
+        "7"
+      ],
+      "kind": "response",
+      "reader_action_id": "step-7",
+      "expected": "0 Demand record(s) cross docked.",
+      "variant_ids": [
+        "default"
+      ],
+      "evidence_refs": [
+        "prose"
+      ],
+      "source_expectation_ids": [
+        "7.2"
+      ]
+    },
+    {
+      "id": "allocation-3",
+      "source_step_ids": [
+        "7"
+      ],
+      "kind": "response",
+      "reader_action_id": "step-7",
+      "expected": "1 Demand record(s) selected for picking.",
+      "variant_ids": [
+        "default"
+      ],
+      "evidence_refs": [
+        "prose"
+      ],
+      "source_expectation_ids": [
+        "7.3"
+      ]
+    },
+    {
+      "id": "allocation-4",
+      "source_step_ids": [
+        "7"
+      ],
+      "kind": "response",
+      "reader_action_id": "step-7",
+      "expected": "1 Demand record(s) submitted for picking",
+      "variant_ids": [
+        "default"
+      ],
+      "evidence_refs": [
+        "prose"
+      ],
+      "source_expectation_ids": [
+        "7.4"
+      ]
+    }
+  ],
+  "coverage": [
+    {
+      "step_id": "5",
+      "disposition": "action",
+      "references": [
+        "step-5",
+        "step-5-read"
+      ],
+      "deviation_id": null
+    },
+    {
+      "step_id": "6",
+      "disposition": "action",
+      "references": [
+        "step-6",
+        "step-6-read"
+      ],
+      "deviation_id": null
+    },
+    {
+      "step_id": "7",
+      "disposition": "action",
+      "references": [
+        "step-7",
+        "step-7-read"
+      ],
+      "deviation_id": null
+    },
+    {
+      "step_id": "8",
+      "disposition": "action",
+      "references": [
+        "step-8",
+        "step-8-read"
+      ],
+      "deviation_id": null
+    },
+    {
+      "step_id": "9",
+      "disposition": "action",
+      "references": [
+        "step-9",
+        "step-9-read"
+      ],
+      "deviation_id": null
+    },
+    {
+      "step_id": "10",
+      "disposition": "action",
+      "references": [
+        "step-10",
+        "step-10-read"
+      ],
+      "deviation_id": null
+    }
+  ],
+  "gaps": [],
+  "status": "implemented",
+  "validation": [
+    {
+      "variant_id": "default",
+      "type": "typecheck",
+      "result": "PASS",
+      "command": "npm.cmd run check",
+      "source_ref": "README.md#verification"
+    },
+    {
+      "variant_id": "default",
+      "type": "mock-test",
+      "result": "PASS",
+      "command": "npm.cmd run test:local (43 passed)",
+      "source_ref": "README.md#verification"
+    },
+    {
+      "variant_id": "default",
+      "type": "live-api-test",
+      "result": "UNVERIFIED",
+      "reason": "Live mutations not authorized or executed"
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 import { FulfillmentApi } from '../api/fulfillmentApi';
 import type { BaseClient } from '../api/baseClient';
-import { json, parameters, returned, rows, one, identity, dataset, stringsEmpty, type Row, type Dataset } from '../support/datasets';
+import { parameters, returned, rows, one, identity, dataset, stringsEmpty, type Row, type Dataset } from '../support/datasets';
+import { json } from '../api/response';
 
 export async function beforeInitialize(client: BaseClient, queue: Row) {
       const p = parameters(await json(new FulfillmentApi(client).preGetNewIssueReturn(String(queue.SysRowID)), 'Check movement initialization'));

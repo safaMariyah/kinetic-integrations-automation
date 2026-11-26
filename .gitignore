@@ -11,3 +11,5 @@ auth/
 playwright/.auth/
 captures/
 *.local.*
+
+.runtime/

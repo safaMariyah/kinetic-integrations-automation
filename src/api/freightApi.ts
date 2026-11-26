@@ -91,11 +91,39 @@ export class FreightApi {
   );
 }
 }
-import { json, parameters, returned, rows, one, identity, dataset, stringsEmpty, type Row, type Dataset } from '../support/datasets';
+import { parameters, returned, rows, one, identity, dataset, stringsEmpty, type Row, type Dataset } from '../support/datasets';
+import { epicorErrorSummary, json } from './response';
+/** Whitelisted diagnostic projection; never retain arbitrary response fields or messages. */
+export function sanitizedFreightResponse(body: Row): Row {
+  const root = body.returnObj;
+  const result = root && typeof root === 'object' && !Array.isArray(root) ? root as Row : {};
+  const safeId = (v: unknown) => typeof v === 'number' && Number.isSafeInteger(v) ? v
+    : typeof v === 'string' && /^[A-Za-z0-9-]{1,80}$/.test(v) ? v : '[missing/invalid]';
+  const table = (name: string, project: (row: Row) => Row) => Array.isArray(result[name])
+    ? (result[name] as unknown[]).slice(0, 20).map(value => value && typeof value === 'object' && !Array.isArray(value)
+      ? project(value as Row) : {malformedRow: true}) : '[missing/invalid]';
+  return {FreightCartonResponse: table('FreightCartonResponse', row => ({
+    ErrorFlag: typeof row.ErrorFlag === 'boolean' ? row.ErrorFlag : '[missing/invalid]',
+    ErrorStatus: typeof row.ErrorStatus === 'string' && /^(SUCCESS|WARNING|Warning|ERROR|Error|FAILURE)$/.test(row.ErrorStatus)
+      ? row.ErrorStatus : '[missing/unrecognized]',
+    ErrorMessage: typeof row.ErrorMessage === 'string' && row.ErrorMessage.trim() === 'Unable to obtain courtesy rates.'
+      ? row.ErrorMessage.trim() : epicorErrorSummary({ErrorMessage: row.ErrorMessage}),
+    TransactionNumber: safeId(row.TransactionNumber),
+  })), FreightCartonResponseTracking: table('FreightCartonResponseTracking', row => ({
+    PackID: safeId(row.PackID), TrackingNumber: safeId(row.TrackingNumber),
+  }))};
+}
     export function readFreightResult(body: Row, packNum: number) {
       const result = returned(body);
       const status = one(result, 'FreightCartonResponse');
-      identity(status, {ErrorFlag: false, ErrorStatus: 'SUCCESS'});
+      if (status.ErrorFlag !== false || status.ErrorStatus !== 'SUCCESS') {
+        const flag = typeof status.ErrorFlag === 'boolean' ? String(status.ErrorFlag) : '[missing/invalid]';
+        const actual = typeof status.ErrorStatus === 'string' && /^(SUCCESS|WARNING|Warning|ERROR|Error|FAILURE)$/.test(status.ErrorStatus)
+          ? status.ErrorStatus : '[missing/unrecognized]';
+        const message = typeof status.ErrorMessage === 'string' && status.ErrorMessage.trim() === 'Unable to obtain courtesy rates.'
+          ? 'Unable to obtain courtesy rates.' : epicorErrorSummary({ErrorMessage: status.ErrorMessage});
+        throw new Error(`Freight result rejected for pack ${packNum}: expected ErrorFlag=false, ErrorStatus=SUCCESS; actual ErrorFlag=${flag}, ErrorStatus=${actual}; ${message}. Inspect persisted state before retrying.`);
+      }
       if (!String(status.TransactionNumber ?? '').trim()) throw new Error('Missing freight transaction.');
       const tracking = rows(result, 'FreightCartonResponseTracking');
       if (tracking.length !== 1 || tracking[0].PackID !== packNum ||

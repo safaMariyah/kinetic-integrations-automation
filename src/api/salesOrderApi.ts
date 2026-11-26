@@ -38,6 +38,9 @@ export class SalesOrderApi {
   changeXPartNum(ds: Record<string, unknown>) {
     return this.client.post('/Erp.BO.SalesOrderSvc/ChangeXPartNum', {ds});
   }
+  changeShipToId(ds: Record<string, unknown>) {
+    return this.client.post('/Erp.BO.SalesOrderSvc/ChangeShipToID', {ds});
+  }
   getById(orderNum: number) {
     return this.client.get('/Erp.BO.SalesOrderSvc/GetByID?orderNum='+orderNum);
   }

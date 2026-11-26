@@ -1,0 +1,162 @@
+{
+  "diagnosticAt": "2026-11-19T12:16:57.941Z",
+  "originalOutcome": "FAIL: original assertion and HTML report unchanged",
+  "verificationKind": "separate corrected read-only verification; not a fresh end-to-end run",
+  "identifiers": {
+    "stage": "completed: Build, freight and persist this shipment once",
+    "partNum": "APIPOC-0affce85490742908096e2ef59d8d420",
+    "inventoryTransactions": "11/19/26~24640~9614",
+    "orderNum": 8146,
+    "orderLine": 1,
+    "orderRelease": 1,
+    "queueSeq": 2705,
+    "movementTransactions": "11/19/26~24650~9615|11/19/26~24650~9616",
+    "packNum": 332,
+    "freightTransaction": "557"
+  },
+  "mutationsDuringDiagnostics": 0,
+  "persistedVat": {
+    "customer": "ECD",
+    "customerNum": 12,
+    "shipTo": "EDA-A",
+    "billingVat": "BillingVAT",
+    "shipToVat": "SHIPTOVAT"
+  },
+  "persistedShipment": {
+    "Company": "EPIC06",
+    "Plant": "MfgSys",
+    "PackNum": 332,
+    "OrderNum": 0,
+    "CustNum": 12,
+    "ShipToNum": "EDA-A",
+    "ShipStatus": "FREIGHTED",
+    "TrackingNumber": "794912053358",
+    "MFTransNum": "557",
+    "Weight": 3,
+    "WeightUOM": "LB",
+    "ShipDate": "2026-11-19T00:00:00"
+  },
+  "shipmentLine": [
+    {
+      "OrderNum": 8146,
+      "OrderLine": 1,
+      "OrderRelNum": 1,
+      "PartNum": "APIPOC-0affce85490742908096e2ef59d8d420",
+      "WarehouseCode": "SHP",
+      "BinNum": "SHP-1",
+      "OurInventoryShipQty": 100,
+      "SellingInventoryShipQty": 100,
+      "XPartNum": ""
+    }
+  ],
+  "persistedOrder": {
+    "Company": "EPIC06",
+    "OrderNum": 8146,
+    "CustNum": 12,
+    "ShipToNum": "EDA-A",
+    "NeedByDate": "2026-11-19T00:00:00"
+  },
+  "actualRequest": {
+    "file": "shipmentRequest_557.Json",
+    "sha256": "58b1950e43ee18ae2e5685fbccd7f5fd9eb96f8919500d042cd3ffa85f256322",
+    "shipmentReference": "332",
+    "orderReference": "8146",
+    "parentCustomer": {
+      "customerCode": "12",
+      "vat": "BillingVAT"
+    },
+    "shipTo": {
+      "customerCode": "12",
+      "shipToCode": "EDA-A",
+      "vat": "SHIPTOVAT"
+    },
+    "vatMappings": "PASS both equal independent persisted master reads"
+  },
+  "actualResponse": {
+    "file": "shipmentResponse_557.json",
+    "sha256": "536fa39915d04fa151ac986eff7a3300cc5ad2e65cae6d16cc66acda1cd5ea46",
+    "ReturnStatus": "SUCCESS",
+    "ShipmentNumber": "557",
+    "containers": [
+      {
+        "PackID": "332",
+        "TrackingNumber": "794912053358"
+      }
+    ]
+  },
+  "originalArtifactHashesUnchanged": true,
+  "quickShip": {
+    "freshSessionScope": "PASS EPIC06 with configured GUID",
+    "expectedCompanyId": "5691a760-6017-421d-b544-c8ebbd1850c2",
+    "shipment": {
+      "shipmentId": "117c06ab-2b08-4372-c62a-08df46336333",
+      "shipmentNumber": 557,
+      "orderNumber": "8146",
+      "trackingNumber": "794912053358",
+      "companyId": "00000000-0000-0000-0000-000000000000",
+      "status": "Shipped"
+    },
+    "shipmentCompanyProjectionMatches": false,
+    "shipmentCompanyProjectionAuthoritative": false,
+    "scopeVerification": "PASS: correlated Kinetic pack/company/site + actual workstation request + carrier transaction/pack/tracking + QuickShip ERP/order/tracking + company/facility/workstation relation"
+  },
+  "result": "PASS",
+  "scopeRelationships": {
+    "shipment": {
+      "isSuccess": true,
+      "result": {
+        "shipmentId": "117c06ab-2b08-4372-c62a-08df46336333",
+        "shipmentNumber": 557,
+        "orderNumber": "8146",
+        "trackingNumber": "794912053358",
+        "companyId": "00000000-0000-0000-0000-000000000000",
+        "erpSystem": "Epicor10",
+        "erpNumber": "CS332",
+        "status": "Shipped"
+      }
+    },
+    "company": {
+      "isSuccess": true,
+      "result": {
+        "companyId": "5691a760-6017-421d-b544-c8ebbd1850c2",
+        "companyName": "EPIC06"
+      }
+    },
+    "workstations": {
+      "currentFacility": {
+        "facilityName": "MfgSys",
+        "facilityId": "5524116a-ac56-483d-ae7d-b6f7f8f43a54",
+        "companyName": "EPIC06"
+      },
+      "currentWorkstation": {
+        "workstationId": "1c2aabdb-e37f-4d7b-3144-08df2dcdacf2",
+        "facilityId": "5524116a-ac56-483d-ae7d-b6f7f8f43a54",
+        "workstationKey": "PACK",
+        "description": "Freight Service 400",
+        "killSession": false,
+        "scalePort": null
+      }
+    }
+  },
+  "originalReportPreservation": {
+    "originalExitCode": 1,
+    "originalJUnit": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 1
+    },
+    "originalResultsStatus": "failed",
+    "sha256": {
+      "captures\\runs\\2026-11-19T11-50-34-621Z-690573a7-baef-4f9d-add7-a13da297feb9\\html\\index.html": "eff27d10bb8cef93061f3a81d746843cd94fa45cc35420a7d136af97066b56c5",
+      "captures\\runs\\2026-11-19T11-50-34-621Z-690573a7-baef-4f9d-add7-a13da297feb9\\results.xml": "954395c535a09afc0871e4274198a18056de02e96d1b26fc0dfa45d721419741",
+      "captures\\runs\\2026-11-19T11-50-34-621Z-690573a7-baef-4f9d-add7-a13da297feb9\\test-results\\.last-run.json": "db189a676988a9ed4265946db9912460410ec9c7bbc9c4c24b86fe964c2c8a4d",
+      "captures\\vat-live-2026-11-19T11-50-25-147Z-a2bf6c15-c2a6-45b5-9a45-f234972fe94e\\original-outcome.json": "514d4884be2e597ef7fc8e19354b91f9929286386162820e77a289076cc45a6e",
+      "captures\\vat-live-2026-11-19T11-50-25-147Z-a2bf6c15-c2a6-45b5-9a45-f234972fe94e\\original-run.stdout.log": "fc564c0a250bdfe0ea8ef29f6703836e3d263076d45913e4dd2f2df5eb1e67bb",
+      "captures\\vat-live-2026-11-19T11-50-25-147Z-a2bf6c15-c2a6-45b5-9a45-f234972fe94e\\read-only-diagnostics.json": "900f04fa96c5f0ab724a2e791d94c5fcd171cef1c2f616ad56c80703d1fe0d06"
+    }
+  },
+  "offlineChecks": {
+    "typecheck": "PASS",
+    "test:local": "PASS 34 tests"
+  }
+}

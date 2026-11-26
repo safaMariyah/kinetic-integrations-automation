@@ -1,0 +1,35 @@
+const fs = require('node:fs'), ts = require('typescript');
+require.extensions['.ts'] = (m, f) => m._compile(ts.transpileModule(fs.readFileSync(f, 'utf8'), {compilerOptions: {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022}}).outputText, f);
+(async () => {
+  process.loadEnvFile('.env');
+  const c = await require('../src/api/baseClient.ts').createEpicorClient();
+  const result = {};
+  try {
+    for (const [name, service, filter, table, fields] of [
+      ['reason', 'Reason', "Description = 'Add new part'", 'ReasonList', ['Company','ReasonType','ReasonCode','Description']],
+      ['recipient', 'MiscShipToSearch', "Name LIKE '%Albany%'", 'MiscShipToList', ['Company','RecordType','CustNum','ID','ShipToNum','Name']],
+      ['carrier', 'ShipVia', "Description = 'FedEx Ground'", 'ShipViaList', ['Company','ShipViaCode','Description']],
+    ]) {
+      const {response} = await c.client.get(`/Erp.BO.${service}Svc/GetList?` + new URLSearchParams({whereClause: filter, pageSize: '20', absolutePage: '1'}));
+      result[name] = {http: response.status()};
+      if (response.status() === 200) {
+        const body = await response.json();
+        result[name].morePages = body.parameters?.morePages;
+        result[name].rows = (body.returnObj?.[table] || []).map(r => Object.fromEntries(fields.map(k => [k, r[k]])));
+      }
+    }
+    const {response} = await c.client.get('/Erp.BO.PartSvc/GetByID?partNum=M1');
+    result.part = {http: response.status()};
+    const customer = await c.client.post('/Erp.BO.CustomerSvc/GetByCustID', {custID: 'ECD', withShipTo: true});
+    result.customer = {http: customer.response.status()};
+    if (customer.response.status() === 200) {
+      const body = await customer.response.json();
+      result.customer.identities = (body.returnObj.Customer || []).map(r => ({CustID:r.CustID, CustNum:r.CustNum}));
+      result.customer.shipTos = (body.returnObj.ShipTo || []).map(r => ({ShipToNum:r.ShipToNum, Name:r.Name}));
+    }
+  } finally { await c.dispose(); }
+  fs.writeFileSync('resources/miscellaneous-master-pack/prerequisite-discovery.json', JSON.stringify(result, null, 2));
+  console.log(JSON.stringify(result));
+})().catch(() => { console.error('Prerequisite read failed; private error withheld.'); process.exitCode = 1; });
+
+

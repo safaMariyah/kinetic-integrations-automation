@@ -1,0 +1,155 @@
+{
+  "scenario": "customer-vat",
+  "executionDate": "2026-11-19",
+  "originalRun": {
+    "outcome": "FAIL",
+    "exitCode": 1,
+    "executionCount": 1,
+    "workers": 1,
+    "retries": 0,
+    "failedRequirement": "QuickShip shipment companyId must equal configured EPIC06 company GUID",
+    "failure": "Returned shipment companyId is all-zero GUID; expected configured EPIC06 GUID.",
+    "privateEvidenceDirectory": "captures\\vat-live-2026-11-19T11-50-25-147Z-a2bf6c15-c2a6-45b5-9a45-f234972fe94e",
+    "reports": {
+      "captures\\runs\\2026-11-19T11-50-34-621Z-690573a7-baef-4f9d-add7-a13da297feb9": {
+        "html": [
+          "captures\\runs\\2026-11-19T11-50-34-621Z-690573a7-baef-4f9d-add7-a13da297feb9\\html\\index.html"
+        ],
+        "junit": [
+          "captures\\runs\\2026-11-19T11-50-34-621Z-690573a7-baef-4f9d-add7-a13da297feb9\\results.xml"
+        ],
+        "results": [
+          "captures\\runs\\2026-11-19T11-50-34-621Z-690573a7-baef-4f9d-add7-a13da297feb9\\test-results\\.last-run.json"
+        ]
+      },
+      "captures\\runs\\2026-11-19T11-50-35-289Z-80c58488-5586-4f53-b730-ecc946878472": {
+        "html": [],
+        "junit": [],
+        "results": []
+      }
+    }
+  },
+  "laterReadOnlyDiagnostics": {
+    "diagnosticAt": "2026-11-19T11:52:17.204Z",
+    "originalOutcome": "FAIL: final QuickShip companyId assertion; unchanged",
+    "identifiers": {
+      "stage": "completed: Build, freight and persist this shipment once",
+      "partNum": "APIPOC-0affce85490742908096e2ef59d8d420",
+      "inventoryTransactions": "11/19/26~24640~9614",
+      "orderNum": 8146,
+      "orderLine": 1,
+      "orderRelease": 1,
+      "queueSeq": 2705,
+      "movementTransactions": "11/19/26~24650~9615|11/19/26~24650~9616",
+      "packNum": 332,
+      "freightTransaction": "557"
+    },
+    "mutationsDuringDiagnostics": 0,
+    "persistedVat": {
+      "customer": "ECD",
+      "customerNum": 12,
+      "shipTo": "EDA-A",
+      "billingVat": "BillingVAT",
+      "shipToVat": "SHIPTOVAT"
+    },
+    "persistedShipment": {
+      "Company": "EPIC06",
+      "Plant": "MfgSys",
+      "PackNum": 332,
+      "OrderNum": 0,
+      "CustNum": 12,
+      "ShipToNum": "EDA-A",
+      "ShipStatus": "FREIGHTED",
+      "TrackingNumber": "794912053358",
+      "MFTransNum": "557",
+      "Weight": 3,
+      "WeightUOM": "LB",
+      "ShipDate": "2026-11-19T00:00:00"
+    },
+    "shipmentLine": [
+      {
+        "OrderNum": 8146,
+        "OrderLine": 1,
+        "OrderRelNum": 1,
+        "PartNum": "APIPOC-0affce85490742908096e2ef59d8d420",
+        "WarehouseCode": "SHP",
+        "BinNum": "SHP-1",
+        "OurInventoryShipQty": 100,
+        "SellingInventoryShipQty": 100,
+        "XPartNum": ""
+      }
+    ],
+    "persistedOrder": {
+      "Company": "EPIC06",
+      "OrderNum": 8146,
+      "CustNum": 12,
+      "ShipToNum": "EDA-A",
+      "NeedByDate": "2026-11-19T00:00:00"
+    },
+    "actualRequest": {
+      "file": "shipmentRequest_557.Json",
+      "sha256": "58b1950e43ee18ae2e5685fbccd7f5fd9eb96f8919500d042cd3ffa85f256322",
+      "shipmentReference": "332",
+      "orderReference": "8146",
+      "parentCustomer": {
+        "customerCode": "12",
+        "vat": "BillingVAT"
+      },
+      "shipTo": {
+        "customerCode": "12",
+        "shipToCode": "EDA-A",
+        "vat": "SHIPTOVAT"
+      },
+      "vatMappings": "PASS both equal independent persisted master reads"
+    },
+    "actualResponse": {
+      "file": "shipmentResponse_557.json",
+      "sha256": "536fa39915d04fa151ac986eff7a3300cc5ad2e65cae6d16cc66acda1cd5ea46",
+      "ReturnStatus": "SUCCESS",
+      "ShipmentNumber": "557",
+      "containers": [
+        {
+          "PackID": "332",
+          "TrackingNumber": "794912053358"
+        }
+      ]
+    },
+    "quickShip": {
+      "freshSessionScope": "PASS EPIC06 with configured GUID",
+      "expectedCompanyId": "5691a760-6017-421d-b544-c8ebbd1850c2",
+      "shipment": {
+        "shipmentId": "117c06ab-2b08-4372-c62a-08df46336333",
+        "shipmentNumber": 557,
+        "orderNumber": "8146",
+        "trackingNumber": "794912053358",
+        "companyId": "00000000-0000-0000-0000-000000000000",
+        "status": "Shipped"
+      },
+      "companyIdMatches": false
+    }
+  },
+  "beforeValues": "Captured privately in preflight-private.json and Playwright before-image attachment; intentionally omitted here.",
+  "retainedEffects": [
+    "ECD.CustomerVATNum=BillingVAT",
+    "ECD/EDA-A.ShipToVAT=SHIPTOVAT",
+    "new purchased part and inventory adjustment 200",
+    "order 8146 line/release 1, allocated/picked 100",
+    "pack 332 with shipped quantity 100",
+    "freight/carrier transaction 557 and tracking 794912053358"
+  ],
+  "recovery": {
+    "rerun": false,
+    "refreight": false,
+    "vatRestore": false,
+    "cleanup": false
+  },
+  "gateResults": {
+    "freshQuickShipReadiness": "PASS after session refresh",
+    "persistedMasterVat": "PASS",
+    "persistedShipmentAndTracking": "PASS",
+    "actualOutgoingVatMappings": "PASS",
+    "actualCarrierResponse": "PASS",
+    "QuickShipShipmentCompanyId": "FAIL",
+    "overallOriginalRun": "FAIL"
+  }
+}

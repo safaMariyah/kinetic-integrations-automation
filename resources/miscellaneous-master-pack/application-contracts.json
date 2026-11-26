@@ -1,0 +1,1279 @@
+[
+  {
+    "application": "Erp.UI.PartEntry",
+    "evidence_type": "fresh-read-only-application-metadata",
+    "sha256": "66dffc6dbd004f7990577fe60bfcb831986d66f9ec4cca770dfa9e02bd0a9354",
+    "events": [
+      {
+        "id": "GetNewPart",
+        "description": "Perform a getNew for the main 'parent' view",
+        "actions": [
+          {
+            "type": "rest-erp",
+            "param": {
+              "svc": "Erp.BO.PartSvc",
+              "svcPath": "GetNewPart",
+              "requestMethod": "POST",
+              "erpRequestMethod": "ErpPostWithDataViewProcessing",
+              "methodParameters": [
+                {
+                  "field": "ds",
+                  "value": {}
+                }
+              ],
+              "erpRestPostArgs": {
+                "requestParamArgs": [
+                  {
+                    "dataset": {
+                      "systemCode": "Erp",
+                      "datasetId": "Part"
+                    }
+                  }
+                ]
+              }
+            },
+            "onError": [
+              {
+                "type": "return-error"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "Update",
+        "actions": [
+          {
+            "type": "rest-erp",
+            "param": {
+              "svc": "Erp.BO.PartSvc",
+              "svcPath": "Update",
+              "requestMethod": "POST",
+              "erpRequestMethod": "ErpPostWithDataViewProcessing",
+              "erpRestPostArgs": {
+                "requestParamArgs": [
+                  {
+                    "dataset": {
+                      "systemCode": "Erp",
+                      "datasetId": "Part"
+                    }
+                  }
+                ]
+              }
+            },
+            "onSuccess": [
+              {
+                "type": "event-next",
+                "value": "SysAfterUpdate"
+              }
+            ],
+            "onError": [
+              {
+                "type": "return-error"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "GetNewPartWhse",
+        "actions": [
+          {
+            "type": "rest-erp",
+            "param": {
+              "svc": "Erp.BO.PartSvc",
+              "svcPath": "GetNewPartWhse",
+              "requestMethod": "POST",
+              "erpRequestMethod": "ErpPostWithDataViewProcessing",
+              "methodParameters": [
+                {
+                  "field": "partNum",
+                  "epBinding": "Part.PartNum"
+                },
+                {
+                  "field": "plant",
+                  "epBinding": "PartPlant.Plant"
+                }
+              ],
+              "erpRestPostArgs": {
+                "requestParamArgs": [
+                  {
+                    "dataset": {
+                      "systemCode": "Erp",
+                      "datasetId": "Part"
+                    },
+                    "responsePath": "returnObj"
+                  }
+                ]
+              }
+            },
+            "onError": [
+              {
+                "type": "return-error"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "PartWhse.PrimBinNum",
+        "trigger": {
+          "type": "EpBinding",
+          "target": "PartWhse.PrimBinNum",
+          "hook": "onSearch"
+        },
+        "actions": [
+          {
+            "type": "search-show",
+            "param": {
+              "searchOptions": {
+                "selectMode": "SingleSelect",
+                "like": "WhseBin.BinNum",
+                "searchForm": "default",
+                "sortByColumn": "BinNum",
+                "useGetRows": false,
+                "preLoadSearchFilter": "WarehouseCode = '{PartWhse.WarehouseCode}' AND InActive = 0",
+                "validation": {
+                  "validateFilter": "BinNum = '%value%'",
+                  "errorMessage": "Bin does not exist."
+                }
+              }
+            },
+            "onSuccess": [
+              {
+                "type": "search-value-set",
+                "epBinding": "PartWhse.PrimBinNum",
+                "value": "actionResult.BinNum"
+              },
+              {
+                "type": "search-value-set",
+                "epBinding": "PartWhse.PrimBinNumDescription",
+                "value": "actionResult.Description"
+              }
+            ],
+            "onError": [
+              {
+                "type": "event-cancel"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "clickContextWarehouseSearch",
+        "actions": [
+          {
+            "type": "search-show",
+            "param": {
+              "searchOptions": {
+                "like": "Warehse.WarehouseCode",
+                "searchForm": "WarehouseSearchNotInPart",
+                "sortByColumn": "",
+                "useGetRows": true,
+                "valueIn": [
+                  {
+                    "id": "Plant",
+                    "value": "{PartPlant.Plant}"
+                  },
+                  {
+                    "id": "PartNum",
+                    "value": "{PartWhse.PartNum}"
+                  }
+                ]
+              }
+            },
+            "onSuccess": [
+              {
+                "type": "search-value-set",
+                "epBinding": "PartWhse.WarehouseCode",
+                "value": "searchResult.WarehouseCode"
+              },
+              {
+                "type": "search-value-set",
+                "epBinding": "PartWhse.WarehouseDescription",
+                "value": "searchResult.Description"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "application": "Erp.UI.MiscShipEntry",
+    "evidence_type": "fresh-read-only-application-metadata",
+    "sha256": "667084b066a11bd4443f66def0cb5a73ad11b42999dbe381837d2c7eb508267e",
+    "events": [
+      {
+        "id": "GetNewMscShpHd",
+        "description": "Perform a getNew for the main 'parent' view",
+        "actions": [
+          {
+            "type": "rest-erp",
+            "param": {
+              "svc": "Erp.BO.MiscShipSvc",
+              "svcPath": "GetNewMscShpHd",
+              "requestMethod": "POST",
+              "erpRequestMethod": "ErpPostWithDataViewProcessing",
+              "methodParameters": [
+                {
+                  "field": "ds",
+                  "value": {}
+                }
+              ],
+              "erpRestPostArgs": {
+                "requestParamArgs": [
+                  {
+                    "dataset": {
+                      "systemCode": "Erp",
+                      "datasetId": "MiscShip"
+                    }
+                  }
+                ]
+              }
+            },
+            "onError": [
+              {
+                "type": "return-error"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "GetNewMscShpDt",
+        "actions": [
+          {
+            "type": "rest-erp",
+            "param": {
+              "svc": "Erp.BO.MiscShipSvc",
+              "svcPath": "GetNewMscShpDt",
+              "requestMethod": "POST",
+              "erpRequestMethod": "ErpPostWithDataViewProcessing",
+              "methodParameters": [
+                {
+                  "field": "packNum",
+                  "epBinding": "MscShpHd.PackNum"
+                },
+                {
+                  "field": "ds",
+                  "value": {}
+                }
+              ],
+              "erpRestPostArgs": {
+                "requestParamArgs": [
+                  {
+                    "dataset": {
+                      "systemCode": "Erp",
+                      "datasetId": "MiscShip"
+                    },
+                    "responsePath": "returnObj"
+                  }
+                ]
+              }
+            },
+            "onError": [
+              {
+                "type": "return-error"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "CloseCarton",
+        "actions": [
+          {
+            "type": "condition",
+            "param": {
+              "expression": "{MscShpHd.Weight} === 0",
+              "onSuccess": [
+                {
+                  "type": "event-next",
+                  "value": "GetWeight",
+                  "onSuccess": [
+                    {
+                      "type": "event-next",
+                      "value": "Update"
+                    }
+                  ],
+                  "onError": []
+                }
+              ]
+            }
+          },
+          {
+            "type": "rest-erp",
+            "param": {
+              "svc": "Erp.BO.MiscShipSvc",
+              "svcPath": "CloseCarton",
+              "requestMethod": "POST",
+              "erpRequestMethod": "ErpPostWithDataViewProcessing",
+              "methodParameters": [
+                {
+                  "field": "iPackNum",
+                  "value": "{MscShpHd.PackNum}"
+                }
+              ],
+              "erpRestPostArgs": {
+                "requestParamArgs": [
+                  {
+                    "dataset": {
+                      "systemCode": "Erp",
+                      "datasetId": "MiscShip"
+                    },
+                    "responsePath": "returnObj"
+                  }
+                ]
+              },
+              "dirtyRows": [
+                {
+                  "view": "MscShpHd"
+                },
+                {
+                  "view": "LegalNumGenOpts"
+                }
+              ]
+            },
+            "onError": [
+              {
+                "type": "event-cancel"
+              }
+            ]
+          },
+          {
+            "type": "event-next",
+            "value": "Refresh"
+          }
+        ]
+      },
+      {
+        "id": "ColumnChanged_OrderNum",
+        "trigger": {
+          "type": "DataTable",
+          "target": "MscShpHd",
+          "hook": "columnChanged",
+          "columns": [
+            "OrderNum"
+          ]
+        },
+        "actions": [
+          {
+            "type": "event-next",
+            "value": "CallGetCallInfo",
+            "param": {
+              "updatedField": "Order"
+            },
+            "onSuccess": [],
+            "onError": []
+          }
+        ]
+      },
+      {
+        "id": "ColumnChanging_PkgCode",
+        "trigger": {
+          "type": "DataTable",
+          "target": "MscShpHd",
+          "hook": "columnChanging",
+          "columns": [
+            "PkgCode"
+          ]
+        },
+        "actions": [
+          {
+            "type": "rest-erp",
+            "param": {
+              "svc": "Erp.BO.MiscShipSvc",
+              "svcPath": "GetPackaging",
+              "requestMethod": "POST",
+              "erpRequestMethod": "ErpPostWithDataViewProcessing",
+              "methodParameters": [
+                {
+                  "field": "ipPkgCode",
+                  "value": "%value%"
+                }
+              ],
+              "erpRestPostArgs": {
+                "requestParamArgs": [
+                  {
+                    "dataset": {
+                      "systemCode": "Erp",
+                      "datasetId": "MiscShip"
+                    },
+                    "responsePath": "returnObj"
+                  }
+                ]
+              },
+              "dirtyRows": [
+                {
+                  "view": "MscShpHd"
+                }
+              ]
+            },
+            "onError": [
+              {
+                "type": "event-cancel"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ColumnChanged_PartNum",
+        "trigger": {
+          "type": "DataTable",
+          "target": "MscShpDt",
+          "hook": "columnChanged",
+          "columns": [
+            "PartNum"
+          ]
+        },
+        "actions": [
+          {
+            "type": "rest-erp",
+            "param": {
+              "svc": "Erp.BO.MiscShipSvc",
+              "svcPath": "OnChangePartNum",
+              "requestMethod": "POST",
+              "erpRequestMethod": "ErpPostWithDataViewProcessing",
+              "methodParameters": [],
+              "erpRestPostArgs": {
+                "requestParamArgs": [
+                  {
+                    "dataset": {
+                      "systemCode": "Erp",
+                      "datasetId": "MiscShip"
+                    },
+                    "responsePath": "returnObj"
+                  }
+                ]
+              },
+              "dirtyRows": [
+                {
+                  "view": "%currentDataView%"
+                }
+              ]
+            },
+            "onError": [
+              {
+                "type": "event-cancel"
+              }
+            ]
+          },
+          {
+            "type": "data-clear",
+            "param": {
+              "type": "dataview",
+              "value": "ShipCOO"
+            }
+          },
+          {
+            "type": "event-next",
+            "value": "CalcShipCOOTotal"
+          }
+        ]
+      },
+      {
+        "id": "ColumnChanging_Quantity",
+        "trigger": {
+          "type": "DataTable",
+          "target": "MscShpDt",
+          "hook": "columnChanging",
+          "columns": [
+            "Quantity"
+          ]
+        },
+        "actions": [
+          {
+            "type": "rest-erp",
+            "param": {
+              "svc": "Erp.BO.MiscShipSvc",
+              "svcPath": "OnChangeQuantity",
+              "requestMethod": "POST",
+              "erpRequestMethod": "ErpPostWithDataViewProcessing",
+              "methodParameters": [
+                {
+                  "field": "pdQty",
+                  "value": "%value%"
+                }
+              ],
+              "erpRestPostArgs": {
+                "requestParamArgs": [
+                  {
+                    "dataset": {
+                      "systemCode": "Erp",
+                      "datasetId": "MiscShip"
+                    },
+                    "responsePath": "returnObj"
+                  }
+                ]
+              },
+              "dirtyRows": [
+                {
+                  "view": "%currentDataView%"
+                }
+              ]
+            },
+            "onError": [
+              {
+                "type": "event-cancel"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "CallGetCallInfo",
+        "actions": [
+          {
+            "type": "rest-erp",
+            "param": {
+              "svc": "Erp.BO.MiscShipSvc",
+              "svcPath": "GetCallInfo",
+              "requestMethod": "POST",
+              "erpRequestMethod": "ErpPostWithDataViewProcessing",
+              "methodParameters": [
+                {
+                  "field": "updatedField",
+                  "value": "{sysVariable.updatedField}"
+                }
+              ],
+              "erpRestPostArgs": {
+                "requestParamArgs": [
+                  {
+                    "dataset": {
+                      "systemCode": "Erp",
+                      "datasetId": "MiscShip"
+                    },
+                    "responsePath": "returnObj"
+                  }
+                ]
+              },
+              "dirtyRows": [
+                {
+                  "view": "MscShpHd"
+                }
+              ]
+            },
+            "onSuccess": [],
+            "onError": [
+              {
+                "type": "event-cancel"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "CallGetAddrInfo",
+        "actions": [
+          {
+            "type": "rest-erp",
+            "param": {
+              "svc": "Erp.BO.MiscShipSvc",
+              "svcPath": "GetAddrInfo",
+              "requestMethod": "POST",
+              "erpRequestMethod": "ErpPostWithDataViewProcessing",
+              "methodParameters": [],
+              "erpRestPostArgs": {
+                "requestParamArgs": [
+                  {
+                    "dataset": {
+                      "systemCode": "Erp",
+                      "datasetId": "MiscShip"
+                    },
+                    "responsePath": "returnObj"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "CalculateWeight",
+        "actions": [
+          {
+            "type": "rest-erp",
+            "param": {
+              "svc": "Erp.BO.MiscShipSvc",
+              "svcPath": "CalculateWeight",
+              "requestMethod": "POST",
+              "erpRequestMethod": "ErpPostWithDataViewProcessing",
+              "methodParameters": [
+                {
+                  "field": "cartonNumber",
+                  "epBinding": "MscShpHd.PackNum"
+                }
+              ]
+            },
+            "onSuccess": [
+              {
+                "type": "row-update",
+                "param": [
+                  {
+                    "columns": [
+                      {
+                        "epBinding": "MscShpHd.Weight",
+                        "value": "{actionResult.calculatedWeight}"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "event-next",
+                "value": "Update"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "MscShpHd.Name",
+        "trigger": {
+          "type": "EpBinding",
+          "target": "MscShpHd.Name",
+          "hook": "onClick"
+        },
+        "actions": [
+          {
+            "type": "search-show",
+            "param": {
+              "searchOptions": {
+                "selectMode": "SingleSelect",
+                "like": "MscShpHd.Name",
+                "searchForm": "default",
+                "sortByColumn": "Name"
+              }
+            },
+            "onSuccess": [
+              {
+                "type": "condition",
+                "param": {
+                  "expression": "'{searchResult.RecordType}' === 'ShipTo'",
+                  "onSuccess": [
+                    {
+                      "type": "search-value-set",
+                      "epBinding": "MscShpHd.ShipToNum",
+                      "value": "searchResult.ShipToNum"
+                    },
+                    {
+                      "type": "row-update",
+                      "param": [
+                        {
+                          "columns": [
+                            {
+                              "epBinding": "MscShpHd.VendorNumVendorID",
+                              "value": ""
+                            },
+                            {
+                              "epBinding": "MscShpHd.CustomerCustID",
+                              "value": ""
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "search-value-set",
+                      "epBinding": "MscShpHd.CustomerCustID",
+                      "value": "searchResult.ID"
+                    }
+                  ],
+                  "onFailure": [
+                    {
+                      "type": "search-value-set",
+                      "epBinding": "MscShpHd.PurPoint",
+                      "value": "searchResult.PurPoint"
+                    },
+                    {
+                      "type": "row-update",
+                      "param": [
+                        {
+                          "columns": [
+                            {
+                              "epBinding": "MscShpHd.CustomerCustID",
+                              "value": ""
+                            },
+                            {
+                              "epBinding": "MscShpHd.VendorNumVendorID",
+                              "value": ""
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "search-value-set",
+                      "epBinding": "MscShpHd.VendorNumVendorID",
+                      "value": "searchResult.ID"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "GetWeight",
+        "actions": [
+          {
+            "type": "condition",
+            "param": {
+              "expression": "'{TransView.weightoption}' === 'S' && {TransView.UseScale} === true",
+              "onSuccess": [
+                {
+                  "type": "event-next",
+                  "value": "CheckDevice",
+                  "onError": [
+                    {
+                      "type": "return-error"
+                    }
+                  ]
+                },
+                {
+                  "type": "event-next",
+                  "value": "GetWeightFromScale",
+                  "param": {
+                    "fieldToUpdate": "MscShpHd.Weight",
+                    "uomToUpdate": "MscShpHd.WeightUOM"
+                  },
+                  "onError": [
+                    {
+                      "type": "return-error"
+                    }
+                  ]
+                }
+              ],
+              "onFailure": [
+                {
+                  "type": "event-next",
+                  "value": "CalculateWeight"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "application": "Erp.UI.MasterpackEntry",
+    "evidence_type": "fresh-read-only-application-metadata",
+    "sha256": "c1f4ea4a6282b7b99204bd59a1da2f7635d0a9d8b2a339b79c3232db0edbf3c3",
+    "events": [
+      {
+        "id": "ColumnChanged_ShipmentType",
+        "trigger": {
+          "type": "DataTable",
+          "target": "MasterPack",
+          "hook": "columnChanged",
+          "columns": [
+            "ShipmentType"
+          ]
+        },
+        "actions": [
+          {
+            "type": "condition",
+            "param": {
+              "expression": "'%value%' !== 'Sales'",
+              "onSuccess": [
+                {
+                  "type": "row-update",
+                  "param": [
+                    {
+                      "columns": [
+                        {
+                          "epBinding": "Masterpack.OurBank",
+                          "value": ""
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "ColumnChanging_DtlPackNum",
+        "trigger": {
+          "type": "DataTable",
+          "target": "MasterPackDtl",
+          "hook": "columnChanging",
+          "columns": [
+            "DtlPackNum"
+          ]
+        },
+        "actions": [
+          {
+            "type": "row-update",
+            "param": [
+              {
+                "columns": [
+                  {
+                    "epBinding": "TransView.ProposedDtlPackNum",
+                    "value": "%value%"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "event-next",
+            "value": "CallCheckShipStatus",
+            "onSuccess": [
+              {
+                "type": "event-next",
+                "value": "CallCartonExists",
+                "onSuccess": [
+                  {
+                    "type": "event-next",
+                    "value": "CallCheckCartonInShip",
+                    "onSuccess": [
+                      {
+                        "type": "condition",
+                        "param": {
+                          "expression": "{TransView.AddingMultipleDtlRecords} === true",
+                          "onSuccess": [
+                            {
+                              "type": "event-next",
+                              "value": "SetRowMod",
+                              "param": {
+                                "dataview": "Masterpack",
+                                "RowMod": "U"
+                              }
+                            },
+                            {
+                              "type": "event-next",
+                              "value": "CallGetShipDetails"
+                            }
+                          ]
+                        }
+                      }
+                    ],
+                    "onError": [
+                      {
+                        "type": "event-next",
+                        "value": "UpdateTransViewContinueProcess",
+                        "param": {
+                          "continueProcess": false
+                        }
+                      },
+                      {
+                        "type": "event-cancel"
+                      }
+                    ]
+                  }
+                ],
+                "onError": [
+                  {
+                    "type": "event-next",
+                    "value": "UpdateTransViewContinueProcess",
+                    "param": {
+                      "continueProcess": false
+                    }
+                  },
+                  {
+                    "type": "event-cancel"
+                  }
+                ]
+              }
+            ],
+            "onError": [
+              {
+                "type": "event-next",
+                "value": "UpdateTransViewContinueProcess",
+                "param": {
+                  "continueProcess": false
+                }
+              },
+              {
+                "type": "event-cancel"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "CallCheckShipStatus",
+        "actions": [
+          {
+            "type": "rest-erp",
+            "param": {
+              "svc": "Erp.BO.MasterPackSvc",
+              "svcPath": "CheckShipStatus",
+              "requestMethod": "POST",
+              "erpRequestMethod": "ErpPostWithDataViewProcessing",
+              "methodParameters": [
+                {
+                  "field": "packNum",
+                  "value": "{TransView.ProposedDtlPackNum}"
+                },
+                {
+                  "field": "shipmentType",
+                  "value": "{Masterpack.ShipmentType}"
+                }
+              ],
+              "erpRestPostArgs": {
+                "requestParamArgs": []
+              }
+            },
+            "onSuccess": [
+              {
+                "type": "event-next",
+                "value": "UpdateTransViewContinueProcess",
+                "param": {
+                  "continueProcess": true
+                }
+              },
+              {
+                "type": "condition",
+                "param": {
+                  "expression": "'{actionResult.returnObj}' !== 'CLOSED'",
+                  "onSuccess": [
+                    {
+                      "type": "erp-message-handler",
+                      "param": {
+                        "type": "Slideout",
+                        "level": "info",
+                        "message": "Pack must be status 'Closed'."
+                      }
+                    },
+                    {
+                      "type": "event-next",
+                      "value": "UpdateTransViewContinueProcess",
+                      "param": {
+                        "continueProcess": false
+                      }
+                    },
+                    {
+                      "type": "return-error"
+                    }
+                  ],
+                  "onFailure": []
+                }
+              }
+            ],
+            "onError": [
+              {
+                "type": "event-next",
+                "value": "UpdateTransViewContinueProcess",
+                "param": {
+                  "continueProcess": false
+                }
+              },
+              {
+                "type": "return-error"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "CallCartonExists",
+        "actions": [
+          {
+            "type": "rest-erp",
+            "param": {
+              "svc": "Erp.BO.MasterPackSvc",
+              "svcPath": "CartonExists",
+              "requestMethod": "POST",
+              "erpRequestMethod": "ErpPostWithDataViewProcessing",
+              "methodParameters": [
+                {
+                  "field": "packNum",
+                  "value": "{TransView.ProposedDtlPackNum}"
+                },
+                {
+                  "field": "shipmentType",
+                  "value": "{Masterpack.ShipmentType}"
+                }
+              ],
+              "erpRestPostArgs": {
+                "requestParamArgs": []
+              }
+            },
+            "onSuccess": [
+              {
+                "type": "condition",
+                "param": {
+                  "expression": "{actionResult.returnObj} === true",
+                  "onSuccess": [
+                    {
+                      "type": "erp-message-handler",
+                      "param": {
+                        "type": "Slideout",
+                        "level": "info",
+                        "message": "This Pack was added in a Masterpack."
+                      },
+                      "onOk": [
+                        {
+                          "type": "return-error"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "onError": [
+              {
+                "type": "return-error"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "CallCheckCartonInShip",
+        "actions": [
+          {
+            "type": "condition",
+            "param": {
+              "expression": "%MasterpackDtl.count% > 1",
+              "onSuccess": [
+                {
+                  "type": "rest-erp",
+                  "param": {
+                    "svc": "Erp.BO.MasterPackSvc",
+                    "svcPath": "CheckCartonInShip",
+                    "requestMethod": "POST",
+                    "erpRequestMethod": "ErpPostWithDataViewProcessing",
+                    "methodParameters": [
+                      {
+                        "field": "packNum",
+                        "value": "{TransView.ProposedDtlPackNum}"
+                      },
+                      {
+                        "field": "shipViaCode",
+                        "value": "{Masterpack.ShipViaCode}"
+                      },
+                      {
+                        "field": "shipToNum",
+                        "value": "{Masterpack.ShipToNum}"
+                      },
+                      {
+                        "field": "shipmentType",
+                        "value": "{Masterpack.ShipmentType}"
+                      },
+                      {
+                        "field": "custNum",
+                        "value": "{Masterpack.CustNum}"
+                      },
+                      {
+                        "field": "masterPackNum",
+                        "value": "{MasterpackDtl.PackNum}"
+                      }
+                    ],
+                    "erpRestPostArgs": {
+                      "requestParamArgs": []
+                    }
+                  },
+                  "onSuccess": [
+                    {
+                      "type": "condition",
+                      "param": {
+                        "expression": "{actionResult.returnObj} === false",
+                        "onSuccess": [
+                          {
+                            "type": "erp-message-handler",
+                            "param": {
+                              "type": "Slideout",
+                              "level": "info",
+                              "message": "The Customer, Ship To, Ship Via, and Site fields do not match with the first added pack of this Masterpack."
+                            }
+                          },
+                          {
+                            "type": "return-error"
+                          }
+                        ],
+                        "onFailure": [
+                          {
+                            "type": "event-complete",
+                            "param": {
+                              "nextEvent": "ColumnChanged_MasterpackDtl_DtlPackNum"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "onError": [
+                    {
+                      "type": "return-error"
+                    }
+                  ]
+                }
+              ],
+              "onFailure": [
+                {
+                  "type": "event-complete",
+                  "param": {
+                    "nextEvent": "ColumnChanged_MasterpackDtl_DtlPackNum"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "CallGetShipDetails",
+        "actions": [
+          {
+            "type": "rest-erp",
+            "param": {
+              "svc": "Erp.BO.MasterPackSvc",
+              "svcPath": "GetShipDetails",
+              "requestMethod": "POST",
+              "erpRequestMethod": "ErpPostWithDataViewProcessing",
+              "methodParameters": [
+                {
+                  "field": "PackNum",
+                  "value": "{Masterpack.PackNum}"
+                },
+                {
+                  "field": "DtlPackNum",
+                  "value": "{TransView.ProposedDtlPackNum}"
+                },
+                {
+                  "field": "ShipmentType",
+                  "value": "{Masterpack.ShipmentType}"
+                },
+                {
+                  "field": "ds",
+                  "value": {}
+                }
+              ],
+              "erpRestPostArgs": {
+                "requestParamArgs": [
+                  {
+                    "dataset": {
+                      "systemCode": "Erp",
+                      "datasetId": "MasterPack"
+                    },
+                    "responsePath": "returnObj"
+                  }
+                ]
+              }
+            },
+            "onError": [
+              {
+                "type": "return-error"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ColumnChanged_MasterpackDtl_DtlPackNum",
+        "actions": [
+          {
+            "type": "condition",
+            "param": {
+              "expression": "{TransView.AddingMultipleDtlRecords} !== true",
+              "onSuccess": [
+                {
+                  "type": "event-next",
+                  "value": "SetRowMod",
+                  "param": {
+                    "dataview": "Masterpack",
+                    "RowMod": "U"
+                  }
+                },
+                {
+                  "type": "event-next",
+                  "value": "CallGetShipDetails"
+                },
+                {
+                  "type": "event-next",
+                  "value": "Update"
+                },
+                {
+                  "type": "event-next",
+                  "value": "Refresh"
+                },
+                {
+                  "type": "row-current-set",
+                  "param": {
+                    "dataview": "MasterpackDtl",
+                    "position": "last"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "GetNewMasterpackDtl",
+        "actions": [
+          {
+            "type": "condition",
+            "param": {
+              "expression": "%MasterpackDtl.hasRow% && '{MasterpackDtl.RowMod}' === 'A'",
+              "onSuccess": [
+                {
+                  "type": "return",
+                  "param": {
+                    "value": true
+                  }
+                }
+              ],
+              "onFailure": [
+                {
+                  "type": "rest-erp",
+                  "param": {
+                    "svc": "Erp.BO.MasterPackSvc",
+                    "svcPath": "GetNewMasterPackDtl",
+                    "requestMethod": "POST",
+                    "erpRequestMethod": "ErpPostWithDataViewProcessing",
+                    "methodParameters": [
+                      {
+                        "field": "mpackLine",
+                        "epBinding": "Masterpack.PackNum"
+                      },
+                      {
+                        "field": "ds",
+                        "value": {}
+                      }
+                    ],
+                    "erpRestPostArgs": {
+                      "requestParamArgs": [
+                        {
+                          "dataset": {
+                            "systemCode": "Erp",
+                            "datasetId": "MasterPack"
+                          },
+                          "responsePath": "returnObj"
+                        }
+                      ]
+                    }
+                  },
+                  "onSuccess": [
+                    {
+                      "type": "row-current-set",
+                      "param": {
+                        "dataview": "MasterpackDtl",
+                        "position": "last"
+                      }
+                    }
+                  ],
+                  "onError": [
+                    {
+                      "type": "return-error"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

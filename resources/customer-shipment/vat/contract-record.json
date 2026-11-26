@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "operation_id": "customer-vat-save",
+  "service": "Erp.BO.CustomerSvc",
+  "operation": "GetByCustID / Update",
+  "method": "POST",
+  "path": "/{company}/Erp.BO.CustomerSvc/{operation}",
+  "environment": {
+    "profile_ref": ".env",
+    "version": "Kinetic2027_100"
+  },
+  "request": {
+    "content_type": "application/json",
+    "fields": [
+      {
+        "name": "custID",
+        "type": "string",
+        "requirement_basis": "documented",
+        "constraints": "ECD"
+      },
+      {
+        "name": "withShipTo",
+        "type": "boolean",
+        "requirement_basis": "documented",
+        "constraints": "true"
+      },
+      {
+        "name": "ds",
+        "type": "CustomerTableset",
+        "requirement_basis": "documented",
+        "constraints": "complete returned dataset; only selected row RowMod=U"
+      }
+    ],
+    "schema_required_fields": "GetByCustID: custID, withShipTo; Update: ds",
+    "minimum_payload": "full returned dataset retained"
+  },
+  "response": {
+    "success_statuses": [
+      200
+    ],
+    "status_basis": "fresh read; documented save",
+    "dataset_path": "GetByCustID.returnObj; Update.parameters.ds",
+    "tables": [
+      "Customer",
+      "ShipTo"
+    ],
+    "business_outputs": "VAT fields separately persisted through independent GetByCustID reads"
+  },
+  "authentication_context": "existing BaseClient approved TLS and external .env auth; no secrets retained",
+  "dataset_handoff": {
+    "input": "read full CustomerTableset",
+    "output": "read after each save",
+    "identity": "Company EPIC06, ECD CustNum from response, EDA-A selected by exact identity",
+    "concurrency": "preserve SysRevID/SysRowID; clean rows required; only selected RowMod=U"
+  },
+  "effects": {
+    "classification": "master mutation",
+    "description": "future execution changes ECD billing and EDA-A ship-to VAT",
+    "verification_reader": "GetByCustID withShipTo=true after each save"
+  },
+  "branches": [
+    "Missing/ambiguous ship-to blocks before Update",
+    "Unexpected dirty rows block",
+    "Uncertain write stops; never replay automatically"
+  ],
+  "evidence": [
+    "contracts/customer-vat.json",
+    "application-bindings.json",
+    "read-discovery.json",
+    "user decision: Use ECD / EDA-A in future run"
+  ],
+  "confidence": "documented and fresh application metadata support implementation; writes unverified",
+  "limitations": [
+    "No live mutation authorization; no fresh VAT write verification"
+  ],
+  "unresolved": [],
+  "review": {
+    "status": "implementation-reviewed; live-unverified",
+    "reviewer_ref": "offline checks",
+    "supersedes": [
+      "prior preflight-only technical-gap claims"
+    ]
+  },
+  "sequence": {
+    "preconditions": [
+      "exact approved master identities and integration scope",
+      "artifact directory provenance and accessible path",
+      "fresh QuickShip scope readiness"
+    ],
+    "ordered_operations": [
+      "GetByCustID(ECD,true)",
+      "Update(Customer.CustomerVATNum=BillingVAT)",
+      "GetByCustID and assert Customer",
+      "Update(selected EDA-A ShipTo.ShipToVAT=SHIPTOVAT)",
+      "GetByCustID and assert both",
+      "SalesOrder ChangeShipToID with selected ShipToNum before save",
+      "existing shipment workflow"
+    ],
+    "dataset_and_identity_handoffs": [
+      "Carry full dataset from each fresh read; preserve unrelated ship-tos",
+      "Capture persisted order customer-part; assert on pack line",
+      "Separate Kinetic pack, returned QuickShip transaction/shipment number, internal shipmentId"
+    ],
+    "branch_gates": [
+      "No VAT-specific change handler in current application; CheckVATFormat belongs to ResaleID/Tax ID, not VAT ID",
+      "Do not accept arbitrary warnings"
+    ],
+    "independent_readers": [
+      "GetByCustID",
+      "SalesOrder.GetByID",
+      "CustShip.GetByID",
+      "complete material queue query",
+      "QuickShip GET shipment",
+      "actual request and carrier response files"
+    ],
+    "evidence_refs": [
+      "application-bindings.json",
+      "contracts/customer-vat.json",
+      "src/flows/customerShipment.ts"
+    ],
+    "limitations": [
+      "UI layout metadata documents bindings and handlers; it does not establish successful ERP writes"
+    ]
+  }
+}

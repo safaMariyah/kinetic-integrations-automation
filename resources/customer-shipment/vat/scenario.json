@@ -1,0 +1,807 @@
+{
+  "schema_version": 1,
+  "scenario_id": "customer-vat",
+  "objective": "Persist distinct billing and selected ship-to VAT and verify actual freight integration maps both correctly.",
+  "sources": [
+    {
+      "id": "prose",
+      "location": "source-prose.txt",
+      "description": "Original 27-step source with full sample JSON"
+    },
+    {
+      "id": "contracts",
+      "location": "contracts/customer-vat.json",
+      "description": "Focused original OpenAPI extraction plus current application-bindings.json and read-discovery.json"
+    }
+  ],
+  "source_steps": [
+    {
+      "id": "1",
+      "source_id": "prose",
+      "text": "Installation of QuickShip and setup for Kinetic Integration is needed to run this test case. See attached installation guide",
+      "expectations": []
+    },
+    {
+      "id": "2",
+      "source_id": "prose",
+      "text": "Ship Codes setup in QuickShip\nOn your server, open QuickShip app\nSelect Authentication Type = QuickShip Native\nSelect Registration code = quickshipdemo\nusername = admin\npassword = [redacted; use external credentials]\nLogin",
+      "expectations": [
+        {
+          "id": "2.expected",
+          "text": "QuickShip Home page is displayed"
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "source_id": "prose",
+      "text": "Open Kinetic App\nLogin with [external credentials]",
+      "expectations": [
+        {
+          "id": "3.expected",
+          "text": "Kinetic Homepage is displayed"
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "source_id": "prose",
+      "text": "Move to Company = EPIC06 and Workstation = Freight Service 400",
+      "expectations": []
+    },
+    {
+      "id": "5",
+      "source_id": "prose",
+      "text": "Active IN UOM Class\nGo to UOM Class\nProduction Management/Engineering/Setup/UOM Class\n \nEnter Class = Length\nIn the UOM List grid, click on IN record\nActive = True\nSave\nExit UOM Class Maintenance",
+      "expectations": []
+    },
+    {
+      "id": "6",
+      "source_id": "prose",
+      "text": "QuickShip settings for Workstation\nGo to Workstation Maintenance\nMaterial Management/Shipping / Receiving/Setup/Workstation\n\nSelect the workstation you are working on (PACK)\nWeight Input = Prompt for Weight\nManifest Enabled = True\nWeb Service URL = http://quickshipweb/EpicorFreightService.svc?regCode=QuickShipDemo\nManifest/Weight Capture Point = Both\nSize UOM = IN\nMake sure weight UOM = LB\nLog manifest messages = True\nSave",
+      "expectations": []
+    },
+    {
+      "id": "7",
+      "source_id": "prose",
+      "text": "Setup QuickShip integration for Kinetic Company\nGo to Company configuration \nSystem Setup/Company/Site Maintenance/Company Configuration\nClick on Modules button\n In left navigation menu at the left, go to Materials tab\nExpand the Shipping receiving Card\nFrom the Freight Service Integration combo, select REST API Integration\nOn the Quickship API URL enter = http://quickshipweb/\n-Registration code = quickshipdemo\n-username = admin\n-password = password123\n-Save and exit",
+      "expectations": []
+    },
+    {
+      "id": "8",
+      "source_id": "prose",
+      "text": "Create Purchased part\n Go to Part\nMain menu > Material Management>Inventory Management>Setup>Part\nOn the landing page, click the <Plus> icon to create a new Part\n Set Part& Description = EP1\nMake sure Type = Purchased\nOn the left navigation menu go to Part tab\nScroll down and set Sales Unit Price = 1.00\nSave",
+      "expectations": []
+    },
+    {
+      "id": "9",
+      "source_id": "prose",
+      "text": "In the navigation menu at the left, go to Integrations tab\nEnter Schedule B Code = 2222.22\nSave",
+      "expectations": []
+    },
+    {
+      "id": "10",
+      "source_id": "prose",
+      "text": "Adjust Quantity for parts\nGo to Quantity Adjustment\nMaterial Management/Inventory Management/General Operations/Quantity Adjustment\nEnter Part = EP1\nEnter Bin = 00-00-00\nEnter Adjust Quantity = 200\nSelect Reason = Add new Part \nClick Adjust button",
+      "expectations": []
+    },
+    {
+      "id": "11",
+      "source_id": "prose",
+      "text": "Verify the VAT number in customer master and ship to details in customer screen\nGo to Customer\n\nSearch for the customer ECD\nNavigate to Billing \nVerify the field and enter the VAT ID and save\nNavigate to Ship to Detail\nVerify the field and enter the VAT ID and save",
+      "expectations": [
+        {
+          "id": "11.expected",
+          "text": "VAT ID should be displayed in billing and ship to details"
+        }
+      ]
+    },
+    {
+      "id": "12",
+      "source_id": "prose",
+      "text": "Create an order for stock parts\nGo to Order entry\nSales Management/Customer Relationship Management/General Operations/Order Entry\n\nClick the plus icon to add a new sales order\nEnter customer ECD which has VAT number in master and ship to details and tab out\nSelect Need By date = Today's date\nSave",
+      "expectations": [
+        {
+          "id": "12.expected",
+          "text": "Save Order Num (####)"
+        }
+      ]
+    },
+    {
+      "id": "13",
+      "source_id": "prose",
+      "text": "In the navigation menu at the left, Move to Lines > Detail tab\nClick the Plus icon to add a new line\nEnter Part = EP1 and tab out\nEnter order quantity = 100.00\nSave",
+      "expectations": []
+    },
+    {
+      "id": "14",
+      "source_id": "prose",
+      "text": "Go to the overflow menu and click Reserve / Allocate",
+      "expectations": [
+        {
+          "id": "14.expected",
+          "text": "Fulfillment Workbench screen is displayed"
+        }
+      ]
+    },
+    {
+      "id": "15",
+      "source_id": "prose",
+      "text": "Select the 1 line displayed corresponding to your SO Lines\nThen in overflow menu click allocate by part",
+      "expectations": [
+        {
+          "id": "15.expected",
+          "text": "Allocation Process criteria screen opens up"
+        }
+      ]
+    },
+    {
+      "id": "16",
+      "source_id": "prose",
+      "text": "Click Continue",
+      "expectations": [
+        {
+          "id": "16.expected",
+          "text": "Ad Hoc Allocation Template Screen is displayed"
+        }
+      ]
+    },
+    {
+      "id": "17",
+      "source_id": "prose",
+      "text": "Set Release to Picking = True\nThen click Continue",
+      "expectations": [
+        {
+          "id": "17.expected",
+          "text": "Message displayed: \n\n1 Demand record(s) allocated.\n0 Demand record(s) cross docked.\n1 Demand record(s) selected for picking.\n1 Demand record(s) submitted for picking."
+        }
+      ]
+    },
+    {
+      "id": "18",
+      "source_id": "prose",
+      "text": "Click Ok",
+      "expectations": [
+        {
+          "id": "18.expected",
+          "text": "Message displayed: \"Release for Picking\nDo you want to print the released items?\""
+        }
+      ]
+    },
+    {
+      "id": "19",
+      "source_id": "prose",
+      "text": "Click No\nExit Fulfillment Workbench screen",
+      "expectations": []
+    },
+    {
+      "id": "20",
+      "source_id": "prose",
+      "text": "Pick order Lines to Shipping Area\nGo to Material Request Queue\nMaterial Management/Advanced Material Management/General Operations/Material Request Queue\nFilter transactions from today's date \nSelect the record displayed related to part EP1 and click Select button\nMove to My Selections tab\nClick process",
+      "expectations": [
+        {
+          "id": "20.expected",
+          "text": "WIP/Material Movement Transaction slide panel is displayed\nMake sure Part = EP1"
+        }
+      ]
+    },
+    {
+      "id": "21",
+      "source_id": "prose",
+      "text": "Scroll down and make sure To Warehouse = Shipping Area and To Bin = SHP-1\nThen Click OK",
+      "expectations": [
+        {
+          "id": "21.expected",
+          "text": "Record for part EP1 should disappear from the grid"
+        }
+      ]
+    },
+    {
+      "id": "22",
+      "source_id": "prose",
+      "text": "Create a new CS Pack\nGo to Customer Shipment\nMaterial Management/Shipping / Receiving/General Operations/Customer Shipment Entry\n\nClick the Plus icon Create a new Pack\nEnter Order number (####) previously generated\nSelect Ship Via = FedEx Ground\nSet Ship date = Today's date\nEnter Package Code = BOX\nSave",
+      "expectations": [
+        {
+          "id": "22.expected",
+          "text": "Save Pack Num (###)"
+        }
+      ]
+    },
+    {
+      "id": "23",
+      "source_id": "prose",
+      "text": "In the left navigation menu, go to Shipment Lines / Line Details tab\nClick the Plus icon to add a New Line\nEnter Line = 1 and Release = 1\nOn the From Inventory card, select Warehouse = Shipping Area and Bin = SHP-1\nMake sure Our Ship Qty = 100\nMake sure customer part is fetched from Order \nSave",
+      "expectations": []
+    },
+    {
+      "id": "24",
+      "source_id": "prose",
+      "text": "In the left navigation menu, go back to Details tab\nEnter weight = 3.0000 LB\nSave\nClick Close button",
+      "expectations": [
+        {
+          "id": "24.expected",
+          "text": "Pack status should change to CLOSED"
+        }
+      ]
+    },
+    {
+      "id": "25",
+      "source_id": "prose",
+      "text": "Then, click Freight button",
+      "expectations": [
+        {
+          "id": "25.expected",
+          "text": "Status should change to Freighted\nTracking number field should be populated"
+        }
+      ]
+    },
+    {
+      "id": "26",
+      "source_id": "prose",
+      "text": "Check pack on QuickShip > Shipments\nOpen Quick ship app \nIn the QuickShip homepage, click on Shipments\nClick search button and filter shipments from yesterday date to tomorrow's date.\nClick on search",
+      "expectations": [
+        {
+          "id": "26.expected",
+          "text": "A record for your Customer shipment should be displayed"
+        }
+      ]
+    },
+    {
+      "id": "27",
+      "source_id": "prose",
+      "text": "Check API request for pack shipment\nIn your server, go to your local QuickShip installation folder (i.e. C:\\inetpub\\wwwroot\\QuickShip)\nClick on your CarrierXMLFile folder \nThere, open the shipment request JSON file with the last creation date and time",
+      "expectations": [
+        {
+          "id": "27.expected",
+          "text": "If Customer has VAT ID in billing and shipto details, it should send to Quickship through API request json file Actual parentCustomer.vat=BillingVAT and shipTo.vat=SHIPTOVAT; original sample JSON retained in source-prose.txt."
+        }
+      ]
+    }
+  ],
+  "environment": {
+    "profile_ref": ".env",
+    "company_ref": "EPIC06",
+    "version": "Kinetic2027_100; runtime contracts not mutation-verified"
+  },
+  "entities": [
+    {
+      "id": "customer",
+      "type": "Customer/ShipTo",
+      "identity_inputs": [
+        "ECD",
+        "EDA-A"
+      ]
+    },
+    {
+      "id": "shipment",
+      "type": "Order/Pack/QuickShip shipment",
+      "identity_inputs": [
+        "system-derived IDs"
+      ]
+    }
+  ],
+  "preconditions": [
+    {
+      "id": "setup",
+      "description": "Existing UOM IN active, PACK configured, integration installed, valid master data; no shared setup changes",
+      "source_refs": [
+        "prose"
+      ],
+      "status": "partly verified by runtime read-only preflight"
+    }
+  ],
+  "inputs": {
+    "billingVat": {
+      "type": "string",
+      "origin": "source prose",
+      "classification": "LITERAL",
+      "value_ref": "BillingVAT"
+    },
+    "shipToVat": {
+      "type": "string",
+      "origin": "source prose",
+      "classification": "LITERAL",
+      "value_ref": "SHIPTOVAT"
+    },
+    "customer": {
+      "type": "string",
+      "origin": "source prose",
+      "classification": "LITERAL",
+      "value_ref": "ECD"
+    },
+    "shipTo": {
+      "type": "string",
+      "origin": "source prose",
+      "classification": "LITERAL",
+      "value_ref": "EDA-A"
+    },
+    "part": {
+      "type": "string",
+      "origin": "source prose",
+      "classification": "EXAMPLE",
+      "value_ref": "unique APIPOC part replacing EP1"
+    },
+    "orderAndPack": {
+      "type": "string",
+      "origin": "source prose",
+      "classification": "DERIVED",
+      "value_ref": "server-assigned identities"
+    }
+  },
+  "deviations": [],
+  "operations": [
+    {
+      "id": "workflow",
+      "contract_ref": "contracts/customer-vat.json; application-bindings.json; ../coverage.md; src/flows/customerShipment.ts",
+      "status": "supported",
+      "evidence_refs": [
+        "contracts"
+      ],
+      "limitations": [
+        "Documented/application-derived implementation; live writes and carrier outcomes unverified"
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "id": "default",
+      "overrides": {},
+      "precondition_ids": [
+        "setup"
+      ],
+      "assertion_ids": [
+        "outcomes"
+      ],
+      "status": "integration-verified"
+    }
+  ],
+  "actions": [
+    {
+      "id": "execute",
+      "source_step_ids": [
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21",
+        "22",
+        "23",
+        "24",
+        "25"
+      ],
+      "operation_id": "workflow",
+      "depends_on": [],
+      "inputs": {},
+      "outputs": {
+        "order": "progress.orderNum",
+        "pack": "progress.packNum",
+        "transaction": "progress.freightTransaction"
+      },
+      "mutation": true,
+      "effects": [
+        "shared VAT master changes, stock, order, movement, pack, carrier freight; retained without cleanup"
+      ],
+      "verification_ids": [
+        "outcomes"
+      ],
+      "implementation": {
+        "status": "implemented",
+        "reference": "tests/customer-shipment/customer-vat.spec.ts"
+      }
+    },
+    {
+      "id": "read",
+      "source_step_ids": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21",
+        "22",
+        "23",
+        "24",
+        "25",
+        "26",
+        "27"
+      ],
+      "operation_id": "workflow",
+      "depends_on": [
+        "execute"
+      ],
+      "inputs": {},
+      "outputs": {},
+      "mutation": false,
+      "effects": [],
+      "verification_ids": [
+        "outcomes"
+      ],
+      "implementation": {
+        "status": "implemented",
+        "reference": "src/flows/customerVat.ts; src/flows/customerShipment.ts; src/support/quickShip.ts; src/support/quickShipReader.ts"
+      }
+    }
+  ],
+  "assertions": [
+    {
+      "id": "outcomes",
+      "source_step_ids": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21",
+        "22",
+        "23",
+        "24",
+        "25",
+        "26",
+        "27"
+      ],
+      "kind": "persisted-state",
+      "reader_action_id": "read",
+      "expected": {
+        "1": "Existing setup; authenticated reads verify company, REST integration, workstation and QuickShip readiness. UI home screens are navigation, not browser assertions.",
+        "2": "Existing setup; authenticated reads verify company, REST integration, workstation and QuickShip readiness. UI home screens are navigation, not browser assertions.",
+        "3": "Existing setup; authenticated reads verify company, REST integration, workstation and QuickShip readiness. UI home screens are navigation, not browser assertions.",
+        "4": "Existing setup; authenticated reads verify company, REST integration, workstation and QuickShip readiness. UI home screens are navigation, not browser assertions.",
+        "5": "Existing setup; authenticated reads verify company, REST integration, workstation and QuickShip readiness. UI home screens are navigation, not browser assertions.",
+        "6": "Existing setup; authenticated reads verify company, REST integration, workstation and QuickShip readiness. UI home screens are navigation, not browser assertions.",
+        "7": "Existing setup; authenticated reads verify company, REST integration, workstation and QuickShip readiness. UI home screens are navigation, not browser assertions.",
+        "8": "Unique purchased stock part, TypeCode=P and UnitPrice=1",
+        "9": "Persisted SchedBcode=2222.22",
+        "10": "Adjust 200; independent source stock read",
+        "11": "Customer.CustomerVATNum=BillingVAT; selected EDA-A ShipTo.ShipToVAT=SHIPTOVAT; separate saves and reads",
+        "12": "Persisted order number and EDA-A header selection",
+        "13": "Quantity 100 and saved customer-part field retained for shipment comparison",
+        "14": "Exact 1 allocated / 0 cross docked / 1 selected / 1 submitted; screen and print prompts are UI navigation equivalents, no printing requested.",
+        "15": "Exact 1 allocated / 0 cross docked / 1 selected / 1 submitted; screen and print prompts are UI navigation equivalents, no printing requested.",
+        "16": "Exact 1 allocated / 0 cross docked / 1 selected / 1 submitted; screen and print prompts are UI navigation equivalents, no printing requested.",
+        "17": "Exact 1 allocated / 0 cross docked / 1 selected / 1 submitted; screen and print prompts are UI navigation equivalents, no printing requested.",
+        "18": "Exact 1 allocated / 0 cross docked / 1 selected / 1 submitted; screen and print prompts are UI navigation equivalents, no printing requested.",
+        "19": "Exact 1 allocated / 0 cross docked / 1 selected / 1 submitted; screen and print prompts are UI navigation equivalents, no printing requested.",
+        "20": "Exact order/release/part queue and IssueReturn identity",
+        "21": "SHP/SHP-1, quantity 100; independent complete queue query proves disappearance",
+        "22": "Pack number, F92, BOX, today ship date, EDA-A",
+        "23": "Persisted shipment quantity 100, warehouse/bin and customer part matches saved order",
+        "24": "3 LB and independently persisted CLOSED status",
+        "25": "Freight success, persisted FREIGHTED, exact returned transaction and nonempty tracking",
+        "26": "Independent authenticated read using returned QuickShip shipment number; order/tracking/company correlated, internal ID validated separately",
+        "27": "Fresh unambiguous actual request matched by order/pack; VAT and customer/ship-to identity; actual successful carrier response by transaction/pack/tracking"
+      },
+      "variant_ids": [
+        "default"
+      ],
+      "evidence_refs": [
+        "prose",
+        "contracts"
+      ],
+      "source_expectation_ids": [
+        "2.expected",
+        "3.expected",
+        "11.expected",
+        "12.expected",
+        "14.expected",
+        "15.expected",
+        "16.expected",
+        "17.expected",
+        "18.expected",
+        "20.expected",
+        "21.expected",
+        "22.expected",
+        "24.expected",
+        "25.expected",
+        "26.expected",
+        "27.expected"
+      ]
+    }
+  ],
+  "coverage": [
+    {
+      "step_id": "1",
+      "disposition": "prerequisite",
+      "references": [
+        "setup"
+      ],
+      "deviation_id": null
+    },
+    {
+      "step_id": "2",
+      "disposition": "prerequisite",
+      "references": [
+        "setup"
+      ],
+      "deviation_id": null
+    },
+    {
+      "step_id": "3",
+      "disposition": "prerequisite",
+      "references": [
+        "setup"
+      ],
+      "deviation_id": null
+    },
+    {
+      "step_id": "4",
+      "disposition": "prerequisite",
+      "references": [
+        "setup"
+      ],
+      "deviation_id": null
+    },
+    {
+      "step_id": "5",
+      "disposition": "prerequisite",
+      "references": [
+        "setup"
+      ],
+      "deviation_id": null
+    },
+    {
+      "step_id": "6",
+      "disposition": "prerequisite",
+      "references": [
+        "setup"
+      ],
+      "deviation_id": null
+    },
+    {
+      "step_id": "7",
+      "disposition": "prerequisite",
+      "references": [
+        "setup"
+      ],
+      "deviation_id": null
+    },
+    {
+      "step_id": "8",
+      "disposition": "action",
+      "references": [
+        "execute"
+      ],
+      "deviation_id": null
+    },
+    {
+      "step_id": "9",
+      "disposition": "action",
+      "references": [
+        "execute"
+      ],
+      "deviation_id": null
+    },
+    {
+      "step_id": "10",
+      "disposition": "action",
+      "references": [
+        "execute"
+      ],
+      "deviation_id": null
+    },
+    {
+      "step_id": "11",
+      "disposition": "action",
+      "references": [
+        "execute"
+      ],
+      "deviation_id": null
+    },
+    {
+      "step_id": "12",
+      "disposition": "action",
+      "references": [
+        "execute"
+      ],
+      "deviation_id": null
+    },
+    {
+      "step_id": "13",
+      "disposition": "action",
+      "references": [
+        "execute"
+      ],
+      "deviation_id": null
+    },
+    {
+      "step_id": "14",
+      "disposition": "action",
+      "references": [
+        "execute"
+      ],
+      "deviation_id": null
+    },
+    {
+      "step_id": "15",
+      "disposition": "action",
+      "references": [
+        "execute"
+      ],
+      "deviation_id": null
+    },
+    {
+      "step_id": "16",
+      "disposition": "action",
+      "references": [
+        "execute"
+      ],
+      "deviation_id": null
+    },
+    {
+      "step_id": "17",
+      "disposition": "action",
+      "references": [
+        "execute"
+      ],
+      "deviation_id": null
+    },
+    {
+      "step_id": "18",
+      "disposition": "action",
+      "references": [
+        "execute"
+      ],
+      "deviation_id": null
+    },
+    {
+      "step_id": "19",
+      "disposition": "action",
+      "references": [
+        "execute"
+      ],
+      "deviation_id": null
+    },
+    {
+      "step_id": "20",
+      "disposition": "action",
+      "references": [
+        "execute"
+      ],
+      "deviation_id": null
+    },
+    {
+      "step_id": "21",
+      "disposition": "action",
+      "references": [
+        "execute"
+      ],
+      "deviation_id": null
+    },
+    {
+      "step_id": "22",
+      "disposition": "action",
+      "references": [
+        "execute"
+      ],
+      "deviation_id": null
+    },
+    {
+      "step_id": "23",
+      "disposition": "action",
+      "references": [
+        "execute"
+      ],
+      "deviation_id": null
+    },
+    {
+      "step_id": "24",
+      "disposition": "action",
+      "references": [
+        "execute"
+      ],
+      "deviation_id": null
+    },
+    {
+      "step_id": "25",
+      "disposition": "action",
+      "references": [
+        "execute"
+      ],
+      "deviation_id": null
+    },
+    {
+      "step_id": "26",
+      "disposition": "action",
+      "references": [
+        "read"
+      ],
+      "deviation_id": null
+    },
+    {
+      "step_id": "27",
+      "disposition": "action",
+      "references": [
+        "read"
+      ],
+      "deviation_id": null
+    }
+  ],
+  "gaps": [],
+  "status": "integration-verified",
+  "validation": [
+    {
+      "variant_id": "default",
+      "type": "live-api-test",
+      "result": "UNVERIFIED"
+    },
+    {
+      "variant_id": "default",
+      "type": "integration-artifact",
+      "result": "UNVERIFIED"
+    },
+    {
+      "variant_id": "default",
+      "type": "typecheck",
+      "result": "PASS",
+      "source_ref": "verification.json"
+    },
+    {
+      "variant_id": "default",
+      "type": "mock-test",
+      "result": "PASS",
+      "source_ref": "verification.json"
+    },
+    {
+      "variant_id": "default",
+      "type": "scenario-structure",
+      "result": "PASS",
+      "source_ref": "verification.json"
+    },
+    {
+      "variant_id": "default",
+      "type": "test-discovery",
+      "result": "PASS",
+      "source_ref": "verification.json"
+    },
+    {
+      "variant_id": "default",
+      "type": "live-api-test",
+      "result": "PASS",
+      "source_ref": "../run-evidence/vat-fresh-full-live-pass.json"
+    },
+    {
+      "variant_id": "default",
+      "type": "integration-artifact",
+      "result": "PASS",
+      "source_ref": "../run-evidence/vat-fresh-full-live-pass.json"
+    }
+  ]
+}

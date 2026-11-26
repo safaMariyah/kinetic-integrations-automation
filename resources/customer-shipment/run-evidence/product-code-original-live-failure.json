@@ -1,0 +1,52 @@
+{
+  "result": "FAIL",
+  "execution": "one authorized live execution; no rerun",
+  "failure": "Source25 independent QuickShip orderNumber mismatch",
+  "run": "product-code-single-authorized-run",
+  "partNum": "APIPOC-c247c113ef1140af90a7558f8167a9a8",
+  "mappingId": "519904a1-0148-4e9d-9229-07789268051b",
+  "orderNum": 8139,
+  "queueSeq": 1712,
+  "packNum": 326,
+  "freightTransaction": "554",
+  "kineticHttp": 200,
+  "kinetic": {
+    "company": "EPIC06",
+    "packNum": 326,
+    "status": "FREIGHTED",
+    "tracking": "794911263851",
+    "transaction": "554",
+    "orderNum": 8139,
+    "customerCode": "EP1Testing",
+    "internalRevision": "",
+    "customerRevision": "",
+    "quantity": 100
+  },
+  "quickShipHttp": 200,
+  "quickShip": {
+    "isSuccess": true,
+    "shipmentNumber": 326,
+    "shipmentId": "baaabb8d-8a9c-4992-0792-08dd1abcc66d",
+    "orderNumber": "6060",
+    "tracking": "",
+    "companyId": "00000000-0000-0000-0000-000000000000"
+  },
+  "requests": [
+    {
+      "path": "C:\\inetpub\\wwwroot\\QuickShip\\CarrierXMLFile\\shipmentRequest_554.Json",
+      "pack": "326",
+      "order": "8139",
+      "details": [
+        {
+          "customerProductCode": "EP1Testing",
+          "part": "APIPOC-c247c113ef1140af90a7558f8167a9a8",
+          "quantity": 100,
+          "unitPrice": 1,
+          "tariff": "2222.22"
+        }
+      ]
+    }
+  ],
+  "responsePath": "C:\\inetpub\\wwwroot\\QuickShip\\CarrierXMLFile\\shipmentresponse_554.json",
+  "note": "Original failed result preserved separately; default HTML/JUnit later replaced by offline checks. No fresh end-to-end pass claimed."
+}

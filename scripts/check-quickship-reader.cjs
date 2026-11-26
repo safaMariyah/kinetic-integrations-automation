@@ -1,2 +1,4 @@
-const fs=require('fs');const {request}=require('@playwright/test');
-(async()=>{const c=await request.newContext({baseURL:'http://quickshipweb',storageState:'.auth/quickship.json',ignoreHTTPSErrors:false});try{const r=await c.get('/api/shipments/322',{maxRetries:0,maxRedirects:0});console.log('Observed candidate GET HTTP',r.status());if(r.headers()['content-type']?.includes('json')){const b=await r.json();console.log('isSuccess',b.isSuccess);if(b.result)console.log('types',Object.fromEntries(['shipmentNumber','orderNumber','shipmentId','trackingNumber'].map(k=>[k,typeof b.result[k]])));}}catch(e){console.log('Read error',String(e.message).split('\n')[0]);}finally{await c.dispose();}})();
+// Compatibility command: shared reader, selected environment and explicit target validation.
+console.log('This readiness command now delegates to tools/cli.cjs quickship-readiness. It verifies company scope only.');
+process.argv.splice(2, 0, 'quickship-readiness');
+require('../tools/cli.cjs');

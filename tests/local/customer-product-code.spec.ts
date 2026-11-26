@@ -1,4 +1,5 @@
-import {verifyQuickShipShipment} from '../../src/support/quickShipReader';
+import { verifySelectedCustomerPart } from '../../src/flows/customerProductCode';
+import {verifyQuickShipShipment} from '../../src/integrations/quickship/reader';
 import {FulfillmentApi} from '../../src/api/fulfillmentApi';
 import {verifyMovedQueueAbsent} from '../../src/flows/productCodeReaders';
 import {test,expect,type APIRequestContext} from '@playwright/test';
@@ -6,12 +7,13 @@ import {verifyCustomerPartReference,requireProductCodeComplete} from '../../src/
 import {CustomerPartXRefApi} from '../../src/api/customerPartXRefApi';
 import {SalesOrderApi} from '../../src/api/salesOrderApi';
 import {BaseClient} from '../../src/api/baseClient';
-import {verifyQuickShip} from '../../src/support/quickShip';
+import {verifyQuickShip} from '../../src/integrations/quickship/artifacts';
 test('product-code prerequisite and preflight reject wrong shared mapping before mutations',()=>{
  const row={Company:'C',CustNum:12,PartNum:'EP1',XPartNum:'EP1Testing'};
  verifyCustomerPartReference({CustXPrt:[row]},'C',12,'EP1','EP1Testing');
  expect(()=>verifyCustomerPartReference({CustXPrt:[row]},'C',13,'EP1','EP1Testing')).toThrow();
  expect(()=>requireProductCodeComplete()).toThrow('before mutation');
+ expect(()=>requireProductCodeComplete(true)).not.toThrow();
 });
 test('customer part selection preserves returned dataset input and exact xref keys',async()=>{
  const calls:{url:string,data:unknown}[]=[];
@@ -49,9 +51,19 @@ test('owned mapping retains defaults and exact returned identity with explicit r
  expect(calls.map(x=>x.split('/').at(-1))).toEqual(['GetNewCustXPrt','Update','GetByID']);
 });
 
-test('QuickShip reader rejects pack collisions across order tracking and company scopes',()=>{
- const e={packNum:4,orderNum:8,tracking:'T',companyId:'facility'};
- const r={shipmentNumber:4,orderNumber:'8',trackingNumber:'T',companyId:'facility',shipmentId:'internal-id'};
+test('QuickShip reader distinguishes external shipment number from pack and rejects order tracking collisions',()=>{
+ const e={packNum:4,quickShipShipmentNumber:554,orderNum:8,tracking:'T',companyId:'facility'};
+ const r={shipmentNumber:554,orderNumber:'8',trackingNumber:'T',companyId:'facility',shipmentId:'internal-id'};
  expect(verifyQuickShipShipment({isSuccess:true,result:r},e)).toEqual(r);
- for(const patch of [{orderNumber:'9'},{trackingNumber:'OTHER'},{companyId:'other'},{shipmentNumber:'4'}])expect(()=>verifyQuickShipShipment({isSuccess:true,result:{...r,...patch}},e)).toThrow();
+ expect(()=>verifyQuickShipShipment({isSuccess:true,result:{...r,shipmentNumber:4}},e)).toThrow();
+ expect(verifyQuickShipShipment({isSuccess:true,result:{...r,companyId:'00000000-0000-0000-0000-000000000000'}},e).shipmentNumber).toBe(554);
+ for(const patch of [{orderNumber:'9'},{trackingNumber:'OTHER'},{shipmentNumber:'554'}])expect(()=>verifyQuickShipShipment({isSuccess:true,result:{...r,...patch}},e)).toThrow();
+});
+
+test('customer-code selection stops a changed internal part before order save and withholds unknown identities', () => {
+ const expected = {partNum: 'APIPOC-' + 'a'.repeat(32), code: 'EP1Testing', revision: ''};
+ expect(() => verifySelectedCustomerPart({OrderDtl:[{PartNum: expected.partNum, XPartNum:'EP1Testing', XRevisionNum:''}]}, expected)).not.toThrow();
+ expect(() => verifySelectedCustomerPart({OrderDtl:[{PartNum:'private customer value'}]}, expected)).toThrow('order line has not been saved');
+ try { verifySelectedCustomerPart({OrderDtl:[{PartNum:'private customer value'}]}, expected); }
+ catch (error) { expect(String(error)).not.toContain('private customer value'); }
 });

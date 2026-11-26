@@ -1,0 +1,25 @@
+// Metadata only. Does not open shipment records or execute business methods.
+const fs = require('node:fs');
+const ts = require('typescript');
+require.extensions['.ts'] = (m, f) => m._compile(ts.transpileModule(fs.readFileSync(f, 'utf8'), {
+  compilerOptions: {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022},
+}).outputText, f);
+(async () => {
+  if (fs.existsSync('.env')) process.loadEnvFile('.env');
+  const connection = await require('../src/api/baseClient.ts').createEpicorClient();
+  try {
+    for (const [id, menuId] of [['Erp.UI.MiscShipEntry', 'SRGO0020'], ['Erp.UI.MasterpackEntry', 'ASGO1200'], ['Erp.UI.PartEntry', 'IMMT1102']]) {
+      const request = {id, properties: {deviceType: 'Desktop', layers: [], baseAppVersion: 0,
+        layerVersion: 0, mode: null, applicationType: 'view', ignorePersonalization: false,
+        additionalContext: {doValidation: false, menuId}, checkDuplicateIds: false, debug: false}};
+      const {response} = await connection.client.get('/Ice.LIB.MetaFXSvc/GetApp?request=' + JSON.stringify(request));
+      console.log(id, 'metadata HTTP', response.status());
+      if (response.status() !== 200) console.log(require('../src/support/datasets.ts').epicorErrorSummary(await response.json()));
+      if (response.status() === 200) {
+        fs.mkdirSync('captures/miscellaneous-master-pack', {recursive: true});
+        fs.writeFileSync(`captures/miscellaneous-master-pack/${id}.json`, JSON.stringify(await response.json()));
+      }
+    }
+  } finally { await connection.dispose(); }
+})().catch(() => { console.error('Metadata read failed; private error details withheld.'); process.exitCode = 1; });
+

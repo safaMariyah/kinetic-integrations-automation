@@ -23,7 +23,7 @@ async function act(page, action) {
 }
 async function main() {
   if (process.argv.includes('--smoke')) { const b=await chromium.launch(); try { const p=await b.newPage(); await p.goto('about:blank'); console.log('Chromium blank-page smoke PASS'); } finally { await b.close(); } return; }
-  if (!process.argv[2]) throw Error('Usage: node scripts/discover-shipment.cjs <ignored config.local.json> | --smoke');
+  if (!process.argv[2]) throw Error('Usage: node tools/discovery/discover-shipment.cjs <ignored config.local.json> login|inspect|action | --smoke');
   const mode=process.argv[3];
   if (!['login','inspect','action'].includes(mode)) throw Error('Explicit login, inspect or action mode required');
   const c=JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));

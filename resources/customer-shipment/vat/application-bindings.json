@@ -1,0 +1,236 @@
+[
+  {
+    "pointer": "/Pages/8/components/0/model/bodyComponents/0/components/1/components/0/components/0/components/11/model",
+    "model": {
+      "guid": "a019a03c-b2f1-4f7a-b2a8-983312c4455a",
+      "labelText": "VAT ID",
+      "id": "erp-text-box-a019a",
+      "epBinding": "Customer.CustomerVATNum"
+    }
+  },
+  {
+    "pointer": "/Pages/17/components/0/model/bodyComponents/0/components/2/components/1/components/0/components/8/model",
+    "model": {
+      "guid": "70754445-4b2c-42c7-b670-29db940809bc",
+      "labelText": "VAT ID",
+      "id": "txtVatID",
+      "epBinding": "ShipTo.ShipToVAT"
+    }
+  },
+  {
+    "id": "GetNewCustomer",
+    "description": "Perform a getNew for the main 'parent' view",
+    "actions": [
+      {
+        "type": "rest-erp",
+        "param": {
+          "svc": "Erp.BO.CustomerSvc",
+          "svcPath": "GetNewCustomer",
+          "requestMethod": "POST",
+          "erpRequestMethod": "ErpPostWithDataViewProcessing",
+          "methodParameters": [
+            {
+              "field": "ds",
+              "value": {}
+            }
+          ],
+          "erpRestPostArgs": {
+            "requestParamArgs": [
+              {
+                "dataset": {
+                  "systemCode": "Erp",
+                  "datasetId": "Customer"
+                }
+              }
+            ]
+          }
+        },
+        "onError": [
+          {
+            "type": "return-error"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "BeforeUpdate",
+    "actions": [
+      {
+        "type": "condition",
+        "param": {
+          "expression": "{TransView.isGridPasting} === true",
+          "onSuccess": [
+            {
+              "type": "row-update",
+              "param": [
+                {
+                  "columns": [
+                    {
+                      "epBinding": "ShipTo.IsAlternate",
+                      "value": false
+                    },
+                    {
+                      "epBinding": "ShipTo.MasterCustNum",
+                      "value": 0
+                    },
+                    {
+                      "epBinding": "ShipTo.MasterShipToNum",
+                      "value": ""
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "type": "condition",
+        "param": {
+          "expression": "%dataset.CustCnt.hasChanges% === true",
+          "onSuccess": [
+            {
+              "type": "event-next",
+              "value": "UpdateContact",
+              "onError": [
+                {
+                  "type": "return-error"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "type": "condition",
+        "param": {
+          "expression": "{TransView.NewCustomerShipTo} === true",
+          "onSuccess": [
+            {
+              "type": "condition",
+              "param": {
+                "expression": "%dataset.Customer.hasChanges% === false",
+                "onSuccess": [
+                  {
+                    "type": "return"
+                  }
+                ]
+              }
+            }
+          ],
+          "onFailure": [
+            {
+              "type": "condition",
+              "param": {
+                "expression": "%dataset.Customer.hasChanges% === false",
+                "onSuccess": [
+                  {
+                    "type": "exit"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "type": "condition",
+        "param": {
+          "expression": "%dataset.Customer.hasChanges% === false",
+          "onSuccess": [
+            {
+              "type": "exit"
+            }
+          ]
+        }
+      },
+      {
+        "type": "event-next",
+        "value": "CheckForChangeShipToAddress"
+      },
+      {
+        "type": "event-next",
+        "value": "CheckForDuplicateCustomer"
+      },
+      {
+        "type": "event-next",
+        "value": "CheckCreditHold"
+      },
+      {
+        "type": "event-next",
+        "value": "ChangeMandateReference"
+      }
+    ]
+  },
+  {
+    "id": "Update",
+    "actions": [
+      {
+        "type": "rest-erp",
+        "param": {
+          "svc": "Erp.BO.CustomerSvc",
+          "svcPath": "Update",
+          "requestMethod": "POST",
+          "erpRequestMethod": "ErpPostWithDataViewProcessing",
+          "erpRestPostArgs": {
+            "requestParamArgs": [
+              {
+                "dataset": {
+                  "systemCode": "Erp",
+                  "datasetId": "Customer"
+                }
+              }
+            ]
+          }
+        },
+        "onSuccess": [
+          {
+            "type": "event-next",
+            "value": "SysAfterUpdate"
+          }
+        ],
+        "onError": [
+          {
+            "type": "return-error"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "GetNewShipTo",
+    "actions": [
+      {
+        "type": "rest-erp",
+        "param": {
+          "svc": "Erp.BO.CustomerSvc",
+          "svcPath": "GetNewShipTo",
+          "requestMethod": "POST",
+          "erpRequestMethod": "ErpPostWithDataViewProcessing",
+          "methodParameters": [
+            {
+              "field": "custNum",
+              "epBinding": "Customer.CustNum"
+            }
+          ],
+          "erpRestPostArgs": {
+            "requestParamArgs": [
+              {
+                "dataset": {
+                  "systemCode": "Erp",
+                  "datasetId": "Customer"
+                }
+              }
+            ]
+          }
+        },
+        "onError": [
+          {
+            "type": "return-error"
+          }
+        ]
+      }
+    ]
+  }
+]

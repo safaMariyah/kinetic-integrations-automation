@@ -1,9 +1,11 @@
+import { verifyCreateOnlyResponse, stageArtifactProjection } from '../../src/integrations/quickship/artifacts';
+import { setCreateShipmentOption } from '../../src/flows/createShipment';
 import {test,expect,type APIRequestContext} from '@playwright/test';
 import {shipmentVariantPlan,FreightTransitionLedger,selectShipmentBranch,readCreatedResult,verifyCreatedReadBack,persistCreatedShipment,persistFreightedShipment,requireCreateShipmentComplete} from '../../src/flows/createShipment';
 import {FreightApi} from '../../src/api/freightApi';
 import {ShipmentApi} from '../../src/api/customerShipmentApi';
 import {BaseClient} from '../../src/api/baseClient';
-import {waitForQuickShip,type QuickShipExpected} from '../../src/support/quickShip';
+import {waitForQuickShip,type QuickShipExpected} from '../../src/integrations/quickship/artifacts';
 import {mkdtemp,writeFile,rm} from 'node:fs/promises';import {tmpdir} from 'node:os';import {join} from 'node:path';
 const warning='fixture-only observed warning'; // artificial, not a production allowlist
 const response=(status='Warning',flag=false)=>({returnObj:{FreightCartonResponse:[{ErrorStatus:status,ErrorFlag:flag,ErrorMessage:warning,TransactionNumber:'19'}],FreightCartonResponseTracking:[]}});
@@ -17,11 +19,11 @@ test('create branch is conditional; arbitrary warnings and errors cannot pass',(
  const wrong={returnObj:{...response().returnObj,FreightCartonResponseTracking:[{PackID:5,TrackingNumber:''}]}};
  expect(()=>readCreatedResult(wrong,4,warning)).toThrow();
  expect(()=>verifyCreatedReadBack({ShipHead:[{Company:'C',PackNum:4,ShipStatus:'FREIGHTED',TrackingNumber:'x',IsShipmentCreated:true}]},'C',4)).toThrow();
- expect(()=>requireCreateShipmentComplete()).toThrow('before mutation');
+ expect(()=>requireCreateShipmentComplete()).not.toThrow();
 });
 test('created and freighted handoffs preserve identifiers and both response tables',async()=>{
  const calls:{url:string;data:unknown}[]=[];
- let saved:Record<string,unknown>={Company:'C',PackNum:4,ShipStatus:'CLOSED',TrackingNumber:'',IsShipmentCreated:true};
+ let saved:Record<string,unknown>={Company:'C',PackNum:4,ShipStatus:'CLOSED',TrackingNumber:'',IsShipmentCreated:true,CreateShipment:false};
  const transport=async(url:string,options?:{data?:unknown})=>{calls.push({url,data:options?.data});return {status:()=>200,headers:()=>({'content-type':'application/json'}),json:async()=>url.includes('GetByID')?{returnObj:{ShipHead:[saved]}}:{}};};
  const client=new BaseClient({get:transport,post:transport} as unknown as APIRequestContext,{baseUrl:'https://example.test',company:'C',timeoutMs:1000});
  const f=new FreightApi(client),s=new ShipmentApi(client);
@@ -57,4 +59,41 @@ test('variant plans preserve source inputs and distinguish transitions from unsa
  const second=new FreightTransitionLedger('unchecked-direct',102);second.claim('direct-freight');
  expect(()=>second.claim('create-only')).toThrow();expect(()=>second.claim('direct-freight')).toThrow();
  expect(first.snapshot().packNum).not.toBe(second.snapshot().packNum);
+});
+
+test('existing Create Shipment option save retains before-image and verifies unchanged pack identity', async () => {
+ let header: Record<string, unknown> = {Company:'C', PackNum:4, SysRowID:'saved-row', SysRevID:123, RowMod:'', ShipStatus:'OPEN', BTCustNum:12, CreateShipment:false};
+ let writes = 0, reads = 0;
+ const context = {
+  get:async () => {reads++; return {status:()=>200, headers:()=>({'content-type':'application/json'}), json:async()=>({returnObj:{ShipHead:[{...header}], ShipDtl:[]}})};},
+  post:async (_url: string, options: {data: {ds: {ShipHead: Record<string, unknown>[]}}}) => {
+   writes++;
+   expect(options.data.ds.ShipHead).toEqual([{...header}, {...header, CreateShipment:true, RowMod:'U'}]);
+   header = {...options.data.ds.ShipHead[1], RowMod:''};
+   const parameters: Record<string, unknown> = {ds:{ShipHead:[header]}, updateComplete:true};
+   for (const key of ['opReleaseMessage','opCompleteMessage','opShippingMessage','opLotMessage','opInventoryMessage','opLockQtyMessage','opAllocationMessage','opPartListNeedsAttr','opLotListNeedsAttr','shipCreditMsg','msg','opPostUpdMessage']) parameters[key]='';
+   for (const key of ['cError','compError','checkComplianceError','changeStatusError','checkShipDtlAgain']) parameters[key]=false;
+   return {status:()=>200, headers:()=>({'content-type':'application/json'}), json:async()=>({parameters})};
+  },
+ } as unknown as APIRequestContext;
+ const client = new BaseClient(context, {baseUrl:'https://example.test', company:'C', timeoutMs:1000});
+ await setCreateShipmentOption(client, 'C', 4, true);
+ expect(writes).toBe(1); expect(reads).toBe(2);
+ await setCreateShipmentOption(client, 'C', 4, true);
+ expect(writes).toBe(1);
+});
+
+test('create-only artifact requires the exact observed code, status and transaction', () => {
+ const valid = {returnStatus:'Warning', shipmentNumber:'583', returnMessage:'EM1243: Shipment# 583 Created Successfully'};
+ verifyCreateOnlyResponse(valid,'583');
+ for (const patch of [{shipmentNumber:'584'},{returnStatus:'SUCCESS'},{returnMessage:'Other warning'}]) {
+  expect(() => verifyCreateOnlyResponse({...valid,...patch},'583')).toThrow();
+ }
+});
+
+test('report stage projections exclude integration authentication, addresses and arbitrary response payloads', () => {
+ const request = stageArtifactProjection({shipmentReference:'4',createShipment:true,authentication:{password:'private'},address:'private'},'request');
+ const response = stageArtifactProjection({returnStatus:'Warning',shipmentNumber:'19',returnMessage:'private',secret:'private'},'response');
+ expect(JSON.stringify({request,response})).not.toContain('private');
+ expect(request.createShipment).toBe(true); expect(response.shipmentNumber).toBe('19');
 });

@@ -1,0 +1,1 @@
+[{"service": "Erp.BO.CustomerSvc", "operation": "GetByCustID"}, {"service": "Erp.BO.CustomerSvc", "operation": "Get_GetByID"}, {"service": "Erp.BO.CustomerSvc", "operation": "GetNewCustomer"}, {"service": "Erp.BO.CustomerSvc", "operation": "GetNewShipTo"}, {"service": "Erp.BO.CustomerSvc", "operation": "Update"}, {"service": "Erp.BO.SalesOrderSvc", "operation": "ChangeShipToID"}]

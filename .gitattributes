@@ -1,0 +1,5 @@
+# Original prose and byte-preserved investigation snapshots are evidence.
+# Preserve bytes across Windows/Linux; their historical whitespace is intentional.
+archive/** -text whitespace=-trailing-space,-blank-at-eof
+resources/**/source-prose.txt -text whitespace=-trailing-space,-blank-at-eof
+resources/customer-shipment/coverage.md -text whitespace=-trailing-space,-blank-at-eof

@@ -2,14 +2,24 @@ import { test, expect } from '@playwright/test';
 import { mkdtemp, writeFile, rm, utimes } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { verifyQuickShip, waitForQuickShip, decodeArtifact, verifyQuickShipResponse, type QuickShipExpected } from '../../src/support/quickShip';
+import { verifyQuickShip, waitForQuickShip, decodeArtifact, verifyQuickShipResponse, type QuickShipExpected } from '../../src/integrations/quickship/artifacts';
 import { assertMasterSave } from '../../src/support/datasets';
 import { BaseClient } from '../../src/api/baseClient';
 import { ShipmentApi } from '../../src/api/customerShipmentApi';
 import * as fulfillment from '../../src/flows/fulfillment';
 import { prepareNewShipmentQuantity } from '../../src/api/customerShipmentApi';
-import { readFreightResult } from '../../src/api/freightApi';
+import { readFreightResult, sanitizedFreightResponse } from '../../src/api/freightApi';
 const operations = {...fulfillment, prepareNewShipmentQuantity, readFreightResult};
+test('freight evidence retains warning identities and withholds arbitrary response fields', () => {
+  const body = {returnObj: {secret: 'private', FreightCartonResponse: [{ErrorFlag: false, ErrorStatus: 'Warning',
+    ErrorMessage: 'Unable to obtain courtesy rates. \n ', TransactionNumber: '563', token: 'private'}],
+    FreightCartonResponseTracking: [{PackID: 335, TrackingNumber: '794913919581', address: 'private'}]}};
+  expect(sanitizedFreightResponse(body)).toEqual({FreightCartonResponse: [{ErrorFlag: false, ErrorStatus: 'Warning',
+    ErrorMessage: 'Unable to obtain courtesy rates.', TransactionNumber: '563'}],
+    FreightCartonResponseTracking: [{PackID: 335, TrackingNumber: '794913919581'}]});
+  expect(() => readFreightResult(body, 335)).toThrow('ErrorStatus=Warning');
+  expect(sanitizedFreightResponse({returnObj: null})).toMatchObject({FreightCartonResponse: '[missing/invalid]'});
+});
 // Import all orchestration modules so Playwright transpiles the complete implementation.
 import { customerShipment } from '../../src/flows/customerShipment';
 const expected: QuickShipExpected = {packNum: 900, orderNum: 9000, orderLine: 1,
@@ -98,6 +108,9 @@ test('freight handoff rejects errors and mismatched packs, retaining both return
   expect(read({returnObj: ds}, 324)).toBe(ds);
   expect(() => read({returnObj: ds}, 325)).toThrow('this pack');
   expect(() => read({returnObj: {...ds, FreightCartonResponse: [{ErrorFlag: true, ErrorStatus: 'ERROR'}]}}, 324)).toThrow('ErrorFlag');
+  const warning = {...ds, FreightCartonResponse: [{ErrorFlag: false, ErrorStatus: 'WARNING', ErrorMessage: 'Unable to obtain courtesy rates. \n ', TransactionNumber: '552'}]};
+  expect(() => read({returnObj: warning}, 324)).toThrow('expected ErrorFlag=false, ErrorStatus=SUCCESS; actual ErrorFlag=false, ErrorStatus=WARNING; Unable to obtain courtesy rates.');
+  expect(() => read({returnObj: {...warning, FreightCartonResponse: [{...warning.FreightCartonResponse[0], ErrorMessage: 'CustomerPrivateName secret@example.com'}]}}, 324)).toThrow('[withheld]');
 });
 test('carrier response decodes nested JSON and verifies transaction, pack and tracking', () => {
   const response = {ReturnStatus: 'SUCCESS', ShipmentNumber: '552', ReturnedContainers: [{PackID: '324', TrackingNumber: 'track'}]};

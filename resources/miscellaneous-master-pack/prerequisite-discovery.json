@@ -1,0 +1,69 @@
+{
+  "reason": {
+    "http": 200,
+    "morePages": false,
+    "rows": [
+      {
+        "Company": "EPIC06",
+        "ReasonType": "M",
+        "ReasonCode": "ADD",
+        "Description": "Add New Part"
+      }
+    ]
+  },
+  "recipient": {
+    "http": 200,
+    "morePages": false,
+    "rows": [
+      {
+        "Company": "EPIC06",
+        "RecordType": "",
+        "CustNum": 14,
+        "ID": "",
+        "ShipToNum": "",
+        "Name": "East Coast Distribiution - Albany"
+      },
+      {
+        "Company": "EPIC06",
+        "RecordType": "",
+        "CustNum": 14,
+        "ID": "",
+        "ShipToNum": "001",
+        "Name": "West Coast Distribiution - Albany"
+      }
+    ]
+  },
+  "carrier": {
+    "http": 200,
+    "morePages": false,
+    "rows": [
+      {
+        "Company": "EPIC06",
+        "ShipViaCode": "F92",
+        "Description": "FedEx Ground"
+      }
+    ]
+  },
+  "part": {
+    "http": 404
+  },
+  "customer": {
+    "http": 200,
+    "identities": [
+      {
+        "CustID": "ECD",
+        "CustNum": 12
+      }
+    ],
+    "shipTos": [
+      {
+        "ShipToNum": "",
+        "Name": "East Coast Distribution"
+      },
+      {
+        "ShipToNum": "EDA-A",
+        "Name": "East Coast Distribution"
+      }
+    ]
+  }
+}

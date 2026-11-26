@@ -1,0 +1,162 @@
+{
+  "executionDate": "2026-11-19",
+  "result": "PASS",
+  "executionCount": 1,
+  "workers": 1,
+  "retries": 0,
+  "command": "npm.cmd run test:live -- tests/customer-shipment/customer-vat.spec.ts",
+  "privateEvidenceDirectory": "captures\\vat-live-2026-11-19T13-43-37-899Z-66e0c189-fd2b-4c22-9240-5a5a3fc47907",
+  "reports": [
+    {
+      "html": "captures\\runs\\2026-11-19T13-43-47-352Z-07e7e7f3-7ea2-4fb3-b64d-e4858d183171\\html\\index.html",
+      "junit": "captures\\runs\\2026-11-19T13-43-47-352Z-07e7e7f3-7ea2-4fb3-b64d-e4858d183171\\results.xml",
+      "tests": 1,
+      "errors": 0,
+      "failures": 0
+    }
+  ],
+  "earlierFailure": {
+    "result": "FAIL",
+    "preservedSeparately": true,
+    "originalReportsAndEvidenceHashesUnchanged": true,
+    "reference": "vat-original-live-outcome.json"
+  },
+  "gates": {
+    "readiness": "PASS after login-only refresh; before any scenario mutation",
+    "source8to10": "PASS purchased part, price1, tariff2222.22, inventory200 and read-back",
+    "source11": "PASS separate VAT Update calls and independent persisted reads",
+    "source12to13": "PASS saved order/line/release, EDA-A, quantity100 and order customer-part propagation",
+    "source14to19": "PASS exact allocation 1/0/1/1; UI screen/print navigation N/A to API regression",
+    "source20to21": "PASS exact picking/movement to SHP/SHP-1 and independent queue disappearance",
+    "source22to24": "PASS new pack, F92/BOX/today,100EA,3LB and persisted CLOSED",
+    "source25": "PASS Freight once, persisted FREIGHTED and tracking",
+    "source26": "PASS correlated QuickShip shipment plus EPIC06/MfgSys/PACK scope evidence chain",
+    "source27": "PASS actual correlated request VAT mappings and carrier SUCCESS; artifact hashes retained",
+    "setupAndUI": "Steps1-7 remain existing installation/setup prerequisites with implemented reads; browser visuals not asserted"
+  },
+  "postRunVerification": {
+    "diagnosticAt": "2026-11-19T13:44:39.294Z",
+    "freshExecutionOutcome": "PASS",
+    "verificationKind": "read-only persisted verification after newly authorized full execution",
+    "identifiers": {
+      "stage": "completed: Build, freight and persist this shipment once",
+      "partNum": "APIPOC-6c2494a8269c4b668e77c6626961c978",
+      "inventoryTransactions": "11/19/26~31429~9617",
+      "orderNum": 8147,
+      "orderLine": 1,
+      "orderRelease": 1,
+      "queueSeq": 2706,
+      "movementTransactions": "11/19/26~31430~9618|11/19/26~31430~9619",
+      "packNum": 333,
+      "freightTransaction": "558"
+    },
+    "mutationsDuringDiagnostics": 0,
+    "persistedVat": {
+      "customer": "ECD",
+      "customerNum": 12,
+      "shipTo": "EDA-A",
+      "billingVat": "BillingVAT",
+      "shipToVat": "SHIPTOVAT"
+    },
+    "persistedShipment": {
+      "Company": "EPIC06",
+      "Plant": "MfgSys",
+      "PackNum": 333,
+      "OrderNum": 0,
+      "CustNum": 12,
+      "ShipToNum": "EDA-A",
+      "ShipStatus": "FREIGHTED",
+      "TrackingNumber": "794912123667",
+      "MFTransNum": "558",
+      "Weight": 3,
+      "WeightUOM": "LB",
+      "ShipDate": "2026-11-19T00:00:00"
+    },
+    "shipmentLine": [
+      {
+        "OrderNum": 8147,
+        "OrderLine": 1,
+        "OrderRelNum": 1,
+        "PartNum": "APIPOC-6c2494a8269c4b668e77c6626961c978",
+        "WarehouseCode": "SHP",
+        "BinNum": "SHP-1",
+        "OurInventoryShipQty": 100,
+        "SellingInventoryShipQty": 100,
+        "XPartNum": ""
+      }
+    ],
+    "persistedOrder": {
+      "Company": "EPIC06",
+      "OrderNum": 8147,
+      "CustNum": 12,
+      "ShipToNum": "EDA-A",
+      "NeedByDate": "2026-11-19T00:00:00"
+    },
+    "actualRequest": {
+      "file": "shipmentRequest_558.Json",
+      "sha256": "7e42cca8edd7e5985b9450d0c211c13960cb38c74f3d2fa5221c54cc56d9ffce",
+      "shipmentReference": "333",
+      "orderReference": "8147",
+      "parentCustomer": {
+        "customerCode": "12",
+        "vat": "BillingVAT"
+      },
+      "shipTo": {
+        "customerCode": "12",
+        "shipToCode": "EDA-A",
+        "vat": "SHIPTOVAT"
+      },
+      "vatMappings": "PASS both equal independent persisted master reads"
+    },
+    "actualResponse": {
+      "file": "shipmentResponse_558.json",
+      "sha256": "72cc8e4812713c2e063cde63178b0e14c6282d17358b3c13b83e1e0e32ccf0f6",
+      "ReturnStatus": "SUCCESS",
+      "ShipmentNumber": "558",
+      "containers": [
+        {
+          "PackID": "333",
+          "TrackingNumber": "794912123667"
+        }
+      ]
+    },
+    "quickShip": {
+      "freshSessionScope": "PASS EPIC06 with configured GUID",
+      "expectedCompanyId": "5691a760-6017-421d-b544-c8ebbd1850c2",
+      "shipment": {
+        "shipmentId": "5c291f5f-d4db-4376-c62b-08df46336333",
+        "shipmentNumber": 558,
+        "orderNumber": "8147",
+        "trackingNumber": "794912123667",
+        "companyId": "00000000-0000-0000-0000-000000000000",
+        "status": "Shipped"
+      },
+      "shipmentCompanyProjectionMatches": false,
+      "shipmentCompanyProjectionAuthoritative": false,
+      "scopeVerification": "PASS: correlated Kinetic pack/company/site + actual workstation request + carrier transaction/pack/tracking + QuickShip ERP/order/tracking + company/facility/workstation relation"
+    },
+    "result": "PASS"
+  },
+  "retainedEffects": {
+    "sharedMasterVat": {
+      "ECD": "BillingVAT",
+      "EDA-A": "SHIPTOVAT"
+    },
+    "partNum": "APIPOC-6c2494a8269c4b668e77c6626961c978",
+    "stockAdded": 200,
+    "shippedQuantity": 100,
+    "orderNum": 8147,
+    "orderLine": 1,
+    "orderRelease": 1,
+    "packNum": 333,
+    "quickShipShipmentNumber": 558,
+    "tracking": "794912123667",
+    "inventoryTransactions": "11/19/26~31429~9617",
+    "movementTransactions": "11/19/26~31430~9618|11/19/26~31430~9619",
+    "carrierOperation": "SUCCESS; carrier effects retained"
+  },
+  "automaticRerun": false,
+  "refreight": false,
+  "cleanup": false,
+  "vatRestoration": false
+}

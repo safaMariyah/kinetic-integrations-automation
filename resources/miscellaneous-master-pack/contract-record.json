@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "operation_id": "master-detail-initialization",
+  "service": "Erp.BO.MasterPackSvc",
+  "operation": "GetNewMasterPackDtl",
+  "method": "POST",
+  "path": "/{currentCompany}/Erp.BO.MasterPackSvc/GetNewMasterPackDtl",
+  "environment": {
+    "profile_ref": "existing configured EPIC06 target",
+    "version": "Kinetic2027_100 route; original spec version applicability unconfirmed"
+  },
+  "request": {
+    "content_type": "application/json",
+    "schema_required_fields": [
+      "ds",
+      "mpackLine"
+    ],
+    "minimum_payload": "Complete current dataset retained; not minimized",
+    "fields": [
+      {
+        "name": "mpackLine",
+        "type": "integer",
+        "requirement_basis": "documented and fresh metadata",
+        "constraints": "Pass parent Masterpack.PackNum, not detail line index"
+      },
+      {
+        "name": "ds",
+        "type": "MasterPackTableset",
+        "requirement_basis": "documented",
+        "constraints": "Carry returned dataset and RowMod without dropping tables"
+      }
+    ]
+  },
+  "response": {
+    "success_statuses": [
+      200
+    ],
+    "status_basis": "documented",
+    "dataset_path": "parameters.ds",
+    "tables": [
+      "MasterPack",
+      "MasterPackDtl"
+    ],
+    "business_outputs": "Defaulted added detail; assigned MPackLine is system-derived"
+  },
+  "authentication_context": "target-specific; credentials via approved configuration only",
+  "dataset_handoff": {
+    "input": "Saved parent GetByID returnObj",
+    "output": "parameters.ds",
+    "identity": "Master PackNum and constituent DtlPackNum remain distinct",
+    "concurrency": "Carry SysRevID and RowMod; new detail A and header U for GetShipDetails"
+  },
+  "effects": {
+    "classification": "dataset-initialization",
+    "description": "Future script initializes new detail; no live business call executed",
+    "verification_reader": "Separate MiscShipSvc/GetByID and MasterPackSvc/GetByID"
+  },
+  "branches": [
+    "Existing unsaved A detail would be reused by UI; script requires newly saved empty master instead",
+    "CheckCartonInShip is called only for more than one detail; source contains one",
+    "CheckShipStatus must return CLOSED; CartonExists must return false"
+  ],
+  "evidence": [
+    "contracts.json: selected original operation and references",
+    "application-contracts.json: GetNewMasterpackDtl and DtlPackNum event chain",
+    "User explicitly approved closing this new miscellaneous constituent"
+  ],
+  "confidence": "supported documented shapes and inspected fresh client sequence; live success unverified",
+  "limitations": [
+    "Single new miscellaneous constituent, no multi-pack compatibility branch",
+    "No live ERP mutation authorized or executed"
+  ],
+  "unresolved": [],
+  "review": {
+    "status": "needs-target-validation",
+    "reviewer_ref": null,
+    "supersedes": []
+  },
+  "sequence": {
+    "preconditions": [
+      "Saved new Misc master with zero details",
+      "Constituent from source step 9 CLOSED and unassigned"
+    ],
+    "ordered_operations": [
+      "GetNewMasterPack",
+      "GetPackaging",
+      "Update",
+      "GetByID",
+      "GetNewMasterPackDtl(parent PackNum)",
+      "CheckShipStatus(CLOSED)",
+      "CartonExists(false)",
+      "GetShipDetails(parent PackNum, constituent PackNum, Misc, dataset)",
+      "Update",
+      "GetByID"
+    ],
+    "dataset_and_identity_handoffs": [
+      "Carry each returned dataset; retain parent and detail pack IDs separately"
+    ],
+    "branch_gates": [
+      "Existing unsaved A detail would be reused by UI; script requires newly saved empty master instead",
+      "CheckCartonInShip is called only for more than one detail; source contains one",
+      "CheckShipStatus must return CLOSED; CartonExists must return false"
+    ],
+    "independent_readers": [
+      "MiscShipSvc/GetByID",
+      "MasterPackSvc/GetByID"
+    ],
+    "evidence_refs": [
+      "contracts.json: selected original operation and references",
+      "application-contracts.json: GetNewMasterpackDtl and DtlPackNum event chain",
+      "User explicitly approved closing this new miscellaneous constituent"
+    ],
+    "limitations": [
+      "Single new miscellaneous constituent, no multi-pack compatibility branch",
+      "No live ERP mutation authorized or executed"
+    ]
+  }
+}

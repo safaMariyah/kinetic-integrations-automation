@@ -1,0 +1,142 @@
+[
+  {
+    "service": "Erp.BO.MiscShipSvc",
+    "operation": "GetNewMscShpHd"
+  },
+  {
+    "service": "Erp.BO.MiscShipSvc",
+    "operation": "GetAddrInfo"
+  },
+  {
+    "service": "Erp.BO.MiscShipSvc",
+    "operation": "GetNewMscShpDt"
+  },
+  {
+    "service": "Erp.BO.MiscShipSvc",
+    "operation": "OnChangePartNum"
+  },
+  {
+    "service": "Erp.BO.MiscShipSvc",
+    "operation": "OnChangeQuantity"
+  },
+  {
+    "service": "Erp.BO.MiscShipSvc",
+    "operation": "GetPackaging"
+  },
+  {
+    "service": "Erp.BO.MiscShipSvc",
+    "operation": "Update"
+  },
+  {
+    "service": "Erp.BO.MiscShipSvc",
+    "operation": "GetByID"
+  },
+  {
+    "service": "Erp.BO.MasterPackSvc",
+    "operation": "GetNewMasterPack"
+  },
+  {
+    "service": "Erp.BO.MasterPackSvc",
+    "operation": "GetNewMasterPackDtl"
+  },
+  {
+    "service": "Erp.BO.MasterPackSvc",
+    "operation": "GetPackaging"
+  },
+  {
+    "service": "Erp.BO.MasterPackSvc",
+    "operation": "GetByID"
+  },
+  {
+    "service": "Erp.BO.MasterPackSvc",
+    "operation": "Update"
+  },
+  {
+    "service": "Erp.BO.MasterPackSvc",
+    "operation": "CheckCartonInShip"
+  },
+  {
+    "service": "Erp.BO.MasterPackSvc",
+    "operation": "CartonExists"
+  },
+  {
+    "service": "Erp.BO.PartSvc",
+    "operation": "GetByID"
+  },
+  {
+    "service": "Erp.BO.PartSvc",
+    "operation": "Update"
+  },
+  {
+    "service": "Erp.BO.PartSvc",
+    "operation": "GetNewPart"
+  },
+  {
+    "service": "Erp.BO.PartSvc",
+    "operation": "GetNewPartWhse"
+  },
+  {
+    "service": "Erp.BO.MiscShipSvc",
+    "operation": "GetCallInfo"
+  },
+  {
+    "service": "Erp.BO.MiscShipSvc",
+    "operation": "CloseCarton"
+  },
+  {
+    "service": "Erp.BO.MasterPackSvc",
+    "operation": "GetShipDetails"
+  },
+  {
+    "service": "Erp.BO.MasterPackSvc",
+    "operation": "CheckShipStatus"
+  },
+  {
+    "service": "Erp.BO.PartSvc",
+    "operation": "ChangePartNum"
+  },
+  {
+    "service": "Erp.BO.MiscShipSvc",
+    "operation": "CalculateWeight"
+  },
+  {
+    "service": "Erp.BO.ReasonSvc",
+    "operation": "Get_GetList"
+  },
+  {
+    "service": "Erp.BO.MiscShipToSearchSvc",
+    "operation": "Get_GetList"
+  },
+  {
+    "service": "Erp.BO.ShipViaSvc",
+    "operation": "Get_GetList"
+  },
+  {
+    "service": "Erp.BO.WhseBinSvc",
+    "operation": "Get_GetByID"
+  },
+  {
+    "service": "Erp.BO.WarehseSvc",
+    "operation": "Get_GetByID"
+  },
+  {
+    "service": "Erp.BO.EmpBasicSvc",
+    "operation": "Get_GetByID"
+  },
+  {
+    "service": "Erp.BO.UOMSvc",
+    "operation": "Get_GetByID"
+  },
+  {
+    "service": "Erp.BO.PackingSvc",
+    "operation": "Get_GetByID"
+  },
+  {
+    "service": "Erp.BO.CustomerSvc",
+    "operation": "Get_GetByID"
+  },
+  {
+    "service": "Erp.BO.CustomerSvc",
+    "operation": "GetByCustID"
+  }
+]

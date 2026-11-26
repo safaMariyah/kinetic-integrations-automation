@@ -1,4 +1,3 @@
-import type { APIResponse } from '@playwright/test';
 export type Row = Record<string, unknown>;
 export type Dataset = Record<string, unknown>;
 export function record(value: unknown, context = 'object'): Row {
@@ -18,9 +17,24 @@ export function positive(value: unknown, name: string): number {
   if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) throw new Error(`Invalid ${name}.`);
   return value;
 }
-export function identity(row: Row, expected: Row): void {
+const diagnosticNumbers = new Set(['PackNum', 'PackID', 'OrderNum', 'OrderLine', 'OrderRelNum', 'Quantity',
+  'OrderQty', 'SellingQuantity', 'OurInventoryShipQty', 'SellingInventoryShipQty', 'QtyOnHand',
+  'OurReqQty', 'Weight', 'NetWeight', 'qtyPacked', 'unitPrice', 'orderPrice']);
+const diagnosticStates = new Set(['OPEN', 'CLOSED', 'FREIGHTED', 'RELEASED', 'SUCCESS', 'Warning']);
+function safeFieldValue(field: string, value: unknown): string {
+  if (value === undefined) return '<missing>';
+  if (value === null) return 'null';
+  if (typeof value === 'boolean') return String(value);
+  if (typeof value === 'number' && Number.isFinite(value) && diagnosticNumbers.has(field)) return String(value);
+  if (['ShipStatus', 'TranStatus', 'ErrorStatus'].includes(field) && typeof value === 'string' && diagnosticStates.has(value)) return value;
+  if (value === '') return '<empty string>';
+  return `<${Array.isArray(value) ? 'array' : typeof value} withheld>`;
+}
+
+/** Show approved business scalars only; never dump arbitrary compared payload values. */
+export function identity(row: Row, expected: Row, context = 'Business verification'): void {
   for (const [key, value] of Object.entries(expected)) {
-    if (row[key] !== value) throw new Error(`Business field mismatch: ${key}.`);
+    if (row[key] !== value) throw new Error(`Business field mismatch: ${key}. ${context}; expected ${safeFieldValue(key, value)}, received ${safeFieldValue(key, row[key])}. Inspect the named step and retained identities before recovery.`);
   }
 }
 export function stringsEmpty(p: Row, names: string[]): void {
@@ -28,14 +42,8 @@ export function stringsEmpty(p: Row, names: string[]): void {
     if (typeof p[name] !== 'string' || (p[name] as string).trim()) throw new Error(`Review business output ${name}; operation stopped.`);
   }
 }
-export async function json(result: Promise<{response: APIResponse; elapsedMs: number}>, operation: string, status = 200): Promise<Row> {
-  let response: APIResponse;
-  try { ({response} = await result); }
-  catch { throw new Error(`${operation}: transport failure; inspect persisted state before retrying.`); }
-  if (response.status() !== status) throw new Error(`${operation}: HTTP ${response.status()}; inspect persisted state before retrying.`);
-  if (!/application\/json/i.test(response.headers()['content-type'] ?? '')) throw new Error(`${operation}: expected JSON.`);
-  return record(await response.json(), `${operation} response`);
-}
+// Compatibility exports for existing flows and diagnostic tools.
+export { json, epicorErrorSummary } from '../api/response';
 export function parameters(body: Row): Row { return record(body.parameters, 'parameters'); }
 export function dataset(body: Row): Dataset { return record(parameters(body).ds, 'parameters.ds'); }
 export function returned(body: Row): Dataset { return record(body.returnObj, 'returnObj'); }
@@ -44,14 +52,4 @@ export function changed(ds: Dataset, table: string, patch: Row, beforeImage = fa
   const updated = {...row, ...patch, RowMod: row.RowMod === 'A' ? 'A' : 'U'};
   return {...ds, [table]: beforeImage ? [{...row, RowMod: ''}, updated] : [updated]};
 }
-export function assertMasterSave(body: Row): Dataset {
-  const p = parameters(body);
-  stringsEmpty(p, ['opReleaseMessage','opCompleteMessage','opShippingMessage','opLotMessage',
-    'opInventoryMessage','opLockQtyMessage','opAllocationMessage','opPartListNeedsAttr',
-    'opLotListNeedsAttr','shipCreditMsg','msg','opPostUpdMessage']);
-  for (const key of ['cError','compError','checkComplianceError','changeStatusError','checkShipDtlAgain']) {
-    if (p[key] !== false) throw new Error(`Shipment save requires review: ${key}. Inspect saved state; do not repeat save.`);
-  }
-  if (p.updateComplete !== true) throw new Error('Shipment update incomplete. Inspect saved state; do not repeat save.');
-  return record(p.ds);
-}
+export { assertMasterSave } from '../api/shipmentSave';

@@ -3,6 +3,12 @@ import { BaseClient } from './baseClient';
 import type { CreatePartPayload } from '../flows/purchasedPart';
 export class PartApi {
   constructor(private readonly client: BaseClient, private readonly company: string) {}
+  getNewPart(ds: Record<string, unknown>) { return this.client.post('/Erp.BO.PartSvc/GetNewPart', {ds}); }
+  getNewWarehouse(partNum: string, plant: string, ds: Record<string, unknown>) {
+    return this.client.post('/Erp.BO.PartSvc/GetNewPartWhse', {partNum, plant, ds});
+  }
+  update(ds: Record<string, unknown>) { return this.client.post('/Erp.BO.PartSvc/Update', {ds}); }
+  getById(partNum: string) { return this.client.get('/Erp.BO.PartSvc/GetByID?partNum=' + encodeURIComponent(partNum)); }
   createPart(payload: CreatePartPayload) { return this.client.post('/Erp.BO.PartSvc/Parts', payload); }
   getPart(partNum: string) {
     const key = (v: string) => encodeURIComponent(v.replace(/'/g, "''")).replace(/'/g, '%27');

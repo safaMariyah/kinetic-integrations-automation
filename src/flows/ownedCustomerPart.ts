@@ -1,6 +1,7 @@
 import {BaseClient} from '../api/baseClient';
 import {CustomerPartXRefApi} from '../api/customerPartXRefApi';
-import {dataset,json,one,identity,returned,changed} from '../support/datasets';
+import { dataset, one, identity, returned, changed } from '../support/datasets';
+import { json } from '../api/response';
 export async function createOwnedCustomerPart(client:BaseClient,company:string,custNum:number,partNum:string,code:string,revision:string,internalRevision:string) {
  const api=new CustomerPartXRefApi(client);
  let ds=dataset(await json(api.getNew({},custNum,partNum,code),'Initialize scenario-owned customer mapping'));

@@ -371,3 +371,108 @@ QuickShip existing authenticated configuration GET company/getCompany and Workst
 Removed superseded company/facility decision from Product Code completeness gaps; active artifact-output/read-access gate remains. Accessible local web.config/directory evidence is exhausted. Exact external dependency: administrator confirmation of quickshipweb active IIS site/application physical path, effective resolved request/response CarrierXMLFile output path including overrides, and approved read-only route from this agent (UNC/server-local execution/existing read API), including whether configured local directory is that active output. No more target/session information is requested. New-data outcomes remain runtime verification, not historical-record matching requirements.
 
 Scope verifier saves sanitized summary only under ignored captures; credentials/authentication/certificates/local settings remain ignored. Reviewed source scripts contain no supplied password literals or saved tokens. Local checkpoint preserves accumulated implementation/discovery work; no remote push. Checks below reflect offline validation, not live business success.
+
+## User-confirmed artifact provenance and authorization-ready command — 2026-11-18
+
+User confirms Kinetic/QuickShip builds run locally on laptop and C:/inetpub/wwwroot/QuickShip/CarrierXMLFile is ACTIVE request/response output. Provenance status=user-confirmed, not independent IIS inspection. Agent verified directory exists,is directory,readable and enumerable without opening shipment contents or changing permissions/configuration. Resolved artifact-access gap; ignored discovery.local.json records exact configured path and provenance. Scenario requires matching confirmed path plus filesystem access before mutation; actual request files still correlate unique run pack/order/part/code/quantities and response transaction/tracking/freshness, never unrelated latest file.
+
+Removed unconditional failure barrier now that all recorded scope/access decisions resolved; retained affirmative provenance/config/session preflight. Required QuickShip reader settings now validated and company/getCompany read checked before ERP client/mutations. Expired cookie returned401 during readiness, so refreshed via established login-ONLY path (no record opening/applyBestWay) and configuration GETs now200. Kinetic company/workstation/master reads200: EPIC06 REST integration quickshipweb approved registration, PACK manifest/logging; F92=FedEx Ground,BOX,CHI,SHP. QuickShip scope EPIC06/MfgSys/PACK again confirmed. No ERP creation,save,mapping mutation,close,Freight or carrier operation executed. Login/session activity only; credentials remain private/temporary and saved state ignored.
+
+Exact authorization proposal command, not executed: set process NODE_EXTRA_CA_CERTS to resolved .auth/kinetic-ca.pem BEFORE Node startup, then npx.cmd --no-install playwright test tests/customer-shipment/customer-product-code.spec.ts --project=erp-orchestration --workers=1 --retries=0. This selects ONLY Product Code, not blind/Create cases. Restore prior trust environment afterward. Existing .env holds target/master inputs and explicit QuickShip origin/registration/session/company scope; no secret values documented. User-approved unique part substitutes illustrative EP1; customer code EP1Testing; internal/customer revisions explicitly '';200EA stock,100EA order/pick/pack,price1.00,tariff2222.22,BOX3LB,F92,EPIC06/MfgSys/PACK,ECD,employee105,CHI/00-00-00 -> SHP/SHP-1.
+
+Retained effects if authorized: unique purchased part, owned cross-reference and revisions, inventory adjustment, order/release/allocation/selection/movement transactions, pack/line/close/freight transaction/tracking, QuickShip request/response artifacts and shipment/carrier/label records. No automatic cleanup/unship/rollback; carrier charges/labels possible. Zero mutation retries/redirects; uncertain writes preserve IDs and stop, never refreight automatically. Fresh-run runtime assertions may expose contract/master differences; authorization-ready does not mean live-verified. Existing blind/Create tests unchanged.
+
+Checks: typecheck PASS;22 local tests PASS;five live tests discovered only;diff check PASS. Prior administrator artifact request superseded by explicit user provenance plus local access verification. No remaining external artifact dependency; final live execution authorization still required.
+
+## Single authorized Product Code live run — 2026-11-18
+
+Executed only customer-product-code.spec.ts once,erp-orchestration,workers1,retries0,approved process-scoped TLS trust. One test FAILED at final Source25 independent QuickShip orderNumber assertion. No rerun,refreight,cleanup or dependent mutation after failure. Offline checks not rerun afterward to preserve live HTML/JUnit report.
+
+Verified stages completed: unique purchased part and price/tariff read;200EA adjustment/source balance; order/owned mapping/100EA line-release with exact customer code and blank revisions; allocation exact counts; selection/existence/locking/movement; authoritative queue1712 disappearance;100EA shipping balance; pack326 header and line/code/blank revision read; CLOSED read; single Freight/persist; FREIGHTED/tracking/transaction read; actual correlated outgoing request and response files. Final independent QuickShip lookup failed, so end-to-end acceptance is FAIL despite verified ERP/freight/artifact stages.
+
+Retained identities: part APIPOC-c247c113ef1140af90a7558f8167a9a8; mapping519904a1-0148-4e9d-9229-07789268051b;order8139,line1,release1;queue1712;pack326;freight554. Inventory transaction11/17/26~86052~8623;movement11/17/26~86060~8624|11/17/26~86060~8625 (returned business-date strings preserved, not converted).
+
+Post-failure supported GETs only: Kinetic326 HTTP200 =>EPIC06,FREIGHTED,MFTransNum554,tracking794911263851,order8139,quantity100,ShipDtl.XPartNum EP1Testing,RevisionNum='',XRevisionNum=''. QuickShip GET326 HTTP200,isSuccess=true but orderNumber='6060',trackingNumber='',companyId zero GUID,internal shipmentId baaabb8d-8a9c-4992-0792-08dd1abcc66d. Pack number alone matches; required order/tracking do NOT. Cause (stale/colliding lookup/routing/server implementation) unverified; do not label success or weaken matcher.
+
+Actual active output shipmentRequest_554.Json matches shipmentReference326/orderReference8139,unique part,customerProductCode EP1Testing,qty100,price1,tariff2222.22. Test also passed transaction554 response-file correlation to pack/tracking before final lookup. Files remain in user-confirmed active CarrierXMLFile directory. Retained effects include created part/mapping/order/inventory movement,freighted pack,integration outputs and possible carrier/label/charges; no rollback or unship.
+
+Evidence: playwright-report/index.html;test-results/results.xml and scenario error-context.md;ignored captures/product-code-live-result.json with sanitized post-failure summary and actual request path. Playwright retained-run-identities attachment is in report. Scripts/inspect-product-code-run.cjs performs only scoped read inspection; no mutations. Future mutation/rerun requires new authorization; original one-run allowance consumed.
+
+## Retained-run reader defect proven and read-only verification — 2026-11-18
+
+Reader previously called GET shipments/326 using Kinetic pack as QuickShip external shipment number. Client code fetchShipment(packId) accepts the UI external number; search grid selects internal GUID but maps back to shipmentNumber before fetch. Internal GUID is distinct and used for containers/applyBestWay. Names alone had obscured cross-system identity. Actual response554: ShipmentNumber='554',ReturnedContainers.PackID='326',TrackingNumber794911263851; request554:shipmentReference326/orderReference8139. Therefore QuickShip external number for THIS retained run is554, not326.
+
+Evidenced read-only POST shipments/search body shipmentNumber,fromDate,toDate,isInternationalShipment from local client service; no shipment-open UI/automatic POST involved. Exact326 search identifies conflicting Ready shipment with internal GUID baaabb8d-8a9c-4992-0792-08dd1abcc66d/order6060. Date-window search17–19Nov2026 without number returns one Shipped result:external554,order8139,internal61e09b63-6fae-43a0-8d37-08df453005eb. GET554 returns order8139/tracking794911263851. Container GET for this internal ID confirms same tracking. Conflict not discarded:326 is another actual record, not our run. Search respects external shipment-number identity; server implementation/date semantics not generalized beyond observed result.
+
+Proven reader defect fixed: expected quickShipShipmentNumber separate from kinetic pack; scenario supplies verified freight/response transaction554, whose actual response-artifact ShipmentNumber and PackID/tracking have already been asserted. Scope verified via company/getCompany against expected EPIC06 GUID, not shipment.companyId (all-zero even on newly created correct shipment). Removed that invalid row-field scope assumption with evidence; pack/order/tracking correlation retained via actual request/response plus reader, not weakened. Focused test covers external554 versus pack4 identity collision, wrong order/tracking/type and zero nonauthoritative row companyId while configuration scope remains explicit.
+
+Subsequent READ-ONLY verification PASS: actual response554 links pack326,scopeGET verifies EPIC06,corrected readerGET554 verifies order8139 and tracking794911263851. No preparation/Freight/applyBestWay/cleanup or record-page opening. This does NOT change original live FAIL or constitute new end-to-end execution. Saved captures/product-code-readonly-verification.json separately from original captures/product-code-live-result.json. Original failure also recorded resources/customer-shipment/run-evidence/product-code-original-live-failure.json. Offline tests replaced default HTML/JUnit outputs; original failed report bytes not retained, so use dedicated failure evidence and prior recorded live output rather than calling current HTML the original report.
+
+Checks:typecheckPASS,22localtestsPASS,diffcheckPASS. Cause established as wrong cross-system lookup key and invalid shipment-level scope-field assumption, not proven stale-data/integration failure. Retained effects unchanged. Runtime carrier outcomes beyond verified artifacts/tracking remain limited to available evidence.
+
+## Blind-shipping true variant diagnosis — retained order8143/pack330
+
+Preserved original live report/test-results BEFORE checks in ignored captures/blind-failure-reports-20261118-105112 (HTML,JUnit,error context/attachments). Original failure remains FAIL; no live variants rerun. Read-only diagnostic summary captures/blind330-diagnosis.json.
+
+Original report reaches completed CLOSED for330 then fails identity(pack,{SoldToUseBlindShipping:false}) at customerShipment.ts303. FreightCarton call follows this synchronous assertion and was not reached by this execution. Persisted330 read confirms CLOSED,empty MFTransNum/tracking; no claim about unrelated actors, but no Freight was sent by failed test. BuildCustFreightRequest repeated only as documented dataset construction, not FreightCarton; no state saves.
+
+Fresh supported reads: ECD customer12.UseBlindShipping=false boolean for both packs. Pack329 (false variant/order8142) saved UseBlindShipping=false,Freighted,transaction555,tracking794911272786; rebuilt PackInfo.SoldToUseBlindShipping=false boolean. Pack330/order8143 saved UseBlindShipping=true,CLOSED,empty transaction/tracking; rebuilt PackInfo.SoldToUseBlindShipping=true boolean. Actual original failure response dataset was not retained, so current rebuilt values are separately timestamped observation, not falsely attributed raw original capture. Customer configuration change is not supported by these reads.
+
+Original schemas: CustomerRow.UseBlindShipping explicitly means sold-to customer's default; ShipHeadRow.UseBlindShipping is shipment setting; PackInfoRow.SoldToUseBlindShipping only declares boolean without semantic description. Both variants use same customer12 and identical shared setup; independently generated data and shipment override differ. The code incorrectly equated built request field with saved customer default. Current two-variant observations establish effective shipment value in customer=false branch only; no rule for customer=true precedence is inferred. Strict outgoing boolean validation remains unchanged.
+
+Smallest correction: independently GET saved customer using persisted shipment.CustNum and assert exact Company/CustNum/UseBlindShipping=false; assert built PackInfo.SoldToUseBlindShipping equals requested shipment flag. Thus changed customer configuration still fails; wrong effective request flag still fails. Full mock variants now model observed effective values and include persisted CustNum for authoritative customer read. Initial offline fixtures lacked CustNum; corrected fixture, not relaxed runtime check. Final typecheckPASS and22localtestsPASS with list reporter and isolated output. Default test-results were touched by first offline attempt, but original complete live archive remains intact. No Freight/preparation/customer changes performed. Runtime success of true variant remains UNVERIFIED; no rerun authorization inferred.
+
+## Authorized fresh blindShipping=true live execution — 2026-11-18
+
+Discovery explicitly selected one exact title customer=false; shipment-level blindShipping=true. Ran only blind-shipping.spec.ts matching that title,one worker,zero retries,unique report/output config. One test PASS12.2s; no false/ProductCode/Create scenario,no resume/Freight of330,no automatic refreight. Unique run captures/blind-true-live-20261118T052429034Z contains html/index.html,results.xml,console.txt,test-results,verified-summary.json. Prior live reports remain archived separately; no offline rerun afterward.
+
+Created part APIPOC-1920072c027e4ba0918f1a494647a49f;order8144,line1,release1;queue1717;pack331;freight556. Inventory11/18/26~1473~8638;movement11/18/26~1474~8639|11/18/26~1474~8640. Existing approved blind inputs10/8EA,price0,historical tariff profile preserved for THIS scenario,not substituted into ProductCode.
+
+Verified live prerequisite customer12 ECD.UseBlindShipping=false boolean via independent read; shipment331.UseBlindShipping=true boolean. Built PackInfo.SoldToUseBlindShipping=true boolean passed strict pre-Freight assertion. Actual shipmentRequest_556.Json pack331/order8144 has blindShipping=true boolean. Actual shipmentResponse_556.Json SUCCESS,ShipmentNumber556,PackID331,tracking794911273646. Independent post-run Kinetic read confirms FREIGHTED,MFTransNum556,same tracking and true shipment flag;customer remains false. No shared configuration changed. All test stages through actual request/response verification completed. Retained created part,stock/order/allocation/movement/pack and integration/carrier effects;no rollback/cleanup assumed. This is fresh PASS for scoped true variant only; no claim about customer=true variants or independent QuickShip UI listing.
+
+
+## Source cleanup 2026-11-19
+Retired hard-coded probes: check-run-target, diagnose-blind330, inspect-blind331, inspect-product-code-run, read-retained-quickship-shipment, reverify-product-code-reader, search-retained-product-shipment and correlate-quickship-read. Historical script mentions above identify retired evidence producers. Findings and evidence references above remain authoritative within their recorded limits. Shared baseClient, quickShip and quickShipReader retain reusable logic. Source checkpoint: ignored captures/source-checkpoint (including untracked source). No live verification performed. Fixed blind-true report config replaced by unique normal-config output directories.
+## QuickShip scope correction (2026-11-19)
+
+Reusable reader contract: verifyQuickShipShipment checks identity correlation only. createQuickShipReader.read now always requires independent scope evidence and calls verifyScopedQuickShipShipment; callers must not add shipment.companyId equality as a replacement. VAT and Product Code both supply the independently persisted Kinetic shipment and their already-correlated actual outgoing request/carrier response. No business scenario was rerun for this correction.
+
+Evidence inspected before changing the assertion: the 2026-11-17 scope investigation and effective-target sections above; captures/qs-scope-company.json, qs-scope-workstations.json, product-code-correct-lookup.json; and the existing local test accepting the observed zero projection. Fresh GET shipments/557 independently confirms erpSystem=Epicor10, erpNumber=CS332, shipmentNumber=557, orderNumber=8146, tracking=794912053358 and zero companyId. The VAT-specific equality assertion was invalid; session readiness alone would also be insufficient.
+
+Supported chain for this CS integration:
+
+1. Independently read Kinetic ShipHead: Company=EPIC06, Plant=MfgSys, PackNum=332, MFTransNum=557, tracking=794912053358; ShipDtl links pack332 to order8146. ShipHead.OrderNum=0 is observed; use persisted lines for the order relation.
+2. Actual request shipmentRequest_557.Json links shipmentReference332/orderReference8146 to workstation PACK and the configured registration label. Compare registration labels with the narrowly evidenced case equivalence used by Kinetic configuration (quickshipdemo) and QuickShip selection (QuickShipDemo); no global value/casing normalization.
+3. Actual carrier response557 reports SUCCESS, PackID332 and the same tracking. It links the ERP pack to returned QuickShip shipment number557; internal shipmentId remains a separate GUID.
+4. QuickShip GET shipment557 must independently match shipmentNumber557/order8146/tracking plus Epicor10/CS332. Matching the external shipment number to the Kinetic pack number is incorrect.
+5. Fresh company/getCompany resolves EPIC06 to 5691a760-6017-421d-b544-c8ebbd1850c2. Fresh Workstation/getAll links currentFacility MfgSys/companyName EPIC06/facilityId 5524116a-ac56-483d-ae7d-b6f7f8f43a54 to currentWorkstation PACK/workstationId 1c2aabdb-e37f-4d7b-3144-08df2dcdacf2 with the same facilityId. Codes and GUIDs are distinct types of identity.
+
+This establishes scope through correlated persisted records and integration artifacts plus authoritative configuration relationships. It does not claim the lookup endpoint enforces tenant isolation or exposes a shipment-level facility foreign key. Billing-method option lists are not selected-shipment company ownership evidence. Zero shipment.companyId supplies no positive scope evidence and cannot pass without the full chain. Conflicting company/configuration/site/workstation, ERP/order/pack, request/response/transaction or tracking evidence fails. A conflicting nonzero shipment company projection also stops verification for review; matching that projection alone never establishes scope.
+
+Validation: npm.cmd run check PASS; npm.cmd run test:local PASS (34 tests). Focused fixtures cover the observed zero projection, missing independent evidence, conflicting company/facility/workstation relations, registration mismatch, and unchanged strict pack/order/tracking/carrier correlation. Separate read-only verification of existing557 passes; actual VAT mappings are BillingVAT -> parentCustomer.vat and SHIPTOVAT -> shipTo.vat, and original request/response hashes are unchanged. Original live execution and HTML/JUnit reports remain FAIL; no end-to-end rerun, Freight, master change or cleanup occurred. See run-evidence/vat-corrected-readonly-verification.json for separate evidence.
+
+
+## Create Shipment acceptance update - 26 November 2026
+
+Supersedes earlier completeness barriers; historical failures remain failures.
+The implemented spec independently prepares checked-then-freight and unchecked-
+direct source variants24-32 (stock200, quantity100, price1, tariff2222.22).
+Existing header updates preserve unchanged before-image + changed row, then
+independently verify pack identity, checkbox and retained shipment detail.
+Create-only requires exact ERP Warning/message 'Shipment is created in QuickShip',
+actual true outgoing flag, lower-camel response Warning and transaction-matched
+EM1243 creation message. UpdateCreatedShipment is independently verified CLOSED,
+empty tracking, IsShipmentCreated=true and CreateShipment=false. QuickShip Ready
+state requires complete company/facility/workstation/ERP/artifact correlation.
+Subsequent Freight uses the refreshed flag, requires SUCCESS, FREIGHTED/tracking
+write-back and actual false outgoing flag. No generic Warning exception or retry.
+
+Fresh automated live PASS, both variants:
+captures/runs/2026-11-26T12-21-09-899Z-123f9d48-5dab-4adc-920d-1d778f349a73.
+Checked order8174/pack360/transaction584 completed both stages. Independent direct
+order8175/pack361/transaction585 passed. Live source remained unchanged.
+Later evidence-only hardening stores raw stage originals under ignored .runtime/
+stage-artifacts; reports get whitelisted projections and source SHA256 hashes.
+Windows manifest sharing-denial fallback was added. Those final evidence changes
+were verified offline: typecheck/architecture and69 tests PASS. Earlier68-test
+invocation had a reporter EPERM error and remains a failed invocation. No cleanup.

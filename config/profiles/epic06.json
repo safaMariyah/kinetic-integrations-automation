@@ -1,0 +1,8 @@
+{
+  "name": "epic06-kinetic2027-100",
+  "erpBaseUrl": "https://inb-512369.epicor.net/kinetic2027_100/api/v2/odata",
+  "company": "EPIC06",
+  "plant": "MfgSys",
+  "sourceWarehouse": "CHI",
+  "allocationProfile": "epic06-mfgsys-chi"
+}
