@@ -51,6 +51,27 @@ function targetURL(value: string | undefined): string | null {
   try { const url = new URL(value ?? ''); return url.origin + url.pathname; } catch { return null; }
 }
 
+/** Expose only known recovery IDs from checkpoint attachments, never arbitrary payload fields. */
+export function checkpointIdentities(name: string, body: Buffer): Record<string, string | number> {
+  if (!['retained-run-identities', 'retained-identities-and-checkpoint', 'retained-run-identities-and-transitions'].includes(name)) return {};
+  let parsed: unknown;
+  try { parsed = JSON.parse(body.toString('utf8')); } catch { return {}; }
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
+  let source = parsed as Record<string, unknown>;
+  if (name === 'retained-run-identities-and-transitions') {
+    if (!source.progress || typeof source.progress !== 'object' || Array.isArray(source.progress)) return {};
+    source = source.progress as Record<string, unknown>;
+  }
+  const identities: Record<string, string | number> = {};
+  for (const field of ['orderNum', 'orderLine', 'orderRelease', 'queueSeq', 'packNum', 'miscPackNum', 'masterPackNum']) {
+    const value = source[field];
+    if (typeof value === 'number' && Number.isSafeInteger(value) && value > 0) identities[field] = value;
+  }
+  if (typeof source.freightTransaction === 'string' && /^[1-9]\d{0,19}$/.test(source.freightTransaction)) identities.freightTransaction = source.freightTransaction;
+  if (typeof source.partNum === 'string' && /^(?:APIPOC-[a-f0-9]{32}|M1)$/i.test(source.partNum)) identities.partNum = source.partNum;
+  return identities;
+}
+
 /** Windows readers can deny rename/delete sharing while still allowing file replacement. */
 export function replaceManifestFile(temporary: string, destination: string,
   operations = {rename:renameSync, copy:copyFileSync, unlink:unlinkSync}): boolean {
@@ -121,7 +142,10 @@ export default class RunEvidenceReporter implements Reporter {
     this.event('test-finished', {testId: test.id, status: result.status, retry: result.retry});
     this.results.push({testId: test.id, title: test.titlePath(), file: relative(process.cwd(), test.location.file),
       line: test.location.line, expectedStatus: test.expectedStatus, status: result.status, retry: result.retry,
-      attachments: result.attachments.map(a => ({name: a.name, contentType: a.contentType, path: a.path ? relative(this.directory, a.path) : null}))});
+      attachments: result.attachments.map(a => ({name: a.name, contentType: a.contentType, path: a.path ? relative(this.directory, a.path) : null,
+        ...(a.body ? {bodyBytes: a.body.length, bodySha256: createHash('sha256').update(a.body).digest('hex'),
+          recoveryIdentities: checkpointIdentities(a.name, a.body)} : {}),
+      }))});
     this.save();
   }
   onEnd(result: FullResult) {

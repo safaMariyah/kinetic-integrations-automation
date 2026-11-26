@@ -4,7 +4,24 @@ import { test } from '../fixtures';
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync, copyFileSync, unlinkSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { fingerprintSources, fingerprintCoverage, replaceManifestFile } from '../../src/support/runEvidence';
+import { fingerprintSources, fingerprintCoverage, replaceManifestFile, checkpointIdentities } from '../../src/support/runEvidence';
+
+test('checkpoint summaries retain recovery IDs while withholding arbitrary payloads and malformed data', async ({}, testInfo) => {
+  const progress = {orderNum:12,packNum:34,miscPackNum:56,masterPackNum:78,freightTransaction:'90',
+    partNum:'APIPOC-1234567890abcdef1234567890abcdef',stage:'private stage',password:'private password',
+    freightResponse:{token:'private token'},customerPartCode:'private code'};
+  const body = Buffer.from(JSON.stringify(progress));
+  // Exercise the real reporter too; these are synthetic identifiers, not an ERP run.
+  await testInfo.attach('retained-run-identities', {body, contentType:'application/json'});
+  const summary = checkpointIdentities('retained-identities-and-checkpoint', body);
+  expect(summary).toEqual({orderNum:12,packNum:34,miscPackNum:56,masterPackNum:78,freightTransaction:'90',partNum:progress.partNum});
+  expect(JSON.stringify(summary)).not.toContain('private');
+  expect(checkpointIdentities('retained-run-identities-and-transitions', Buffer.from(JSON.stringify({progress})))).toEqual(summary);
+  expect(checkpointIdentities('vat-run-intent-and-before-image', body)).toEqual({});
+  for (const raw of ['not JSON','null','[]','{"orderNum":-1,"packNum":"34","freightTransaction":"secret","partNum":"private part"}']) {
+    expect(checkpointIdentities('retained-run-identities', Buffer.from(raw))).toEqual({});
+  }
+});
 
 test('source fingerprint includes untracked execution code and excludes private runtime material', () => {
   const root = mkdtempSync(join(tmpdir(), 'kinetic-fingerprint-'));
