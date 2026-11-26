@@ -90,6 +90,7 @@ the business step and retained checkpoint while preserving the original cause.
 Maintained developer commands:
 
 - `npm run doctor`: configuration and local file access only; no network calls.
+- `node tools/cli.cjs erp-readiness "--target=<EPICOR_BASE_URL>|<EPICOR_COMPANY>|<POC_PLANT>" --family=customer`: explicitly scoped live reads of customer, warehouse/site, active bins, employee and packaging prerequisites. Use `--family=miscellaneous` for its fixed ECD/EDA-A, BOX and source-bin requirements.
 - `npm run check`: TypeScript plus enforced module boundaries.
 - `npm run test:local`: offline workflow/contract regression suite.
 - `npm run list:live`: discovery only; no ERP requests.
@@ -98,6 +99,14 @@ The offline CI workflow runs on Windows and Linux with Node 22 and locked npm
 installation. CI portability remains unverified until the hosted jobs run.
 The doctor does not prove credentials are accepted, saved sessions are current,
 master prerequisites exist, or a scenario can execute successfully.
+
+ERP readiness requires approved certificate trust before Node starts and makes no
+business writes. Customer lookup uses the existing read-only `GetByCustID` POST;
+the remaining readers use `GetByID` GET. It never initializes datasets, allocates,
+adjusts stock, creates records or invokes freight. A pass describes current common
+prerequisites only; scenario-specific preflights, QuickShip readiness and actual
+integration/business verification remain required. Each invocation retains a
+separate sanitized `erp-readiness.json` with its outcome and failed check stage.
 
 Create temporary diagnostics in `.runtime/scratch/`. Promote a diagnostic into
 `tools/` only when it has an ongoing supported use; reuse configuration and API
@@ -222,7 +231,7 @@ for live evidence and the limits of subsequent evidence-only changes.
 Existing QuickShip sessions can now be renewed using the maintained command:
 
 ```text
-npm run auth:quickship -- "--target=<QUICKSHIP_BASE_URL>|<EPICOR_COMPANY>|<QUICKSHIP_COMPANY_ID>"
+node tools/cli.cjs quickship-refresh "--target=<QUICKSHIP_BASE_URL>|<EPICOR_COMPANY>|<QUICKSHIP_COMPANY_ID>"
 ```
 
 This makes one authentication refresh POST using the configured saved session,
@@ -233,6 +242,11 @@ It never opens shipments or refreshes automatically during business execution.
 If refresh is rejected, provision an interactive login through the existing
 scoped login script. The historical captures refresh script is not a supported
 entry point; retained investigation evidence has not been deleted.
+
+For target arguments containing `|`, use the direct Node commands above in
+PowerShell. This avoids npm.cmd passing the argument through another shell that
+can reinterpret the separators as pipelines. The npm aliases remain available
+where shell quoting preserves the complete target argument.
 
 ## Data ownership and evidence retention
 
