@@ -3,6 +3,12 @@ import { readQuickShipSettings } from '../src/config/quickship';
 import { readFile } from 'node:fs/promises';
 import { createEpicorClient, readEpicorSettings, type BaseClient, type EpicorSettings } from '../src/api/baseClient';
 import { createQuickShipReader } from '../src/integrations/quickship/reader';
+import { MasterDataApi } from '../src/api/masterDataApi';
+import { json } from '../src/api/response';
+import { identity, one, returned } from '../src/support/datasets';
+import { required } from '../src/config/values';
+import { getCACertificates } from 'node:tls';
+import { createHash } from 'node:crypto';
 
 type QuickShipReader = Awaited<ReturnType<typeof createQuickShipReader>>;
 type Fixtures = {
@@ -25,8 +31,25 @@ export const test = base.extend<Fixtures>({
   }, {auto: true}],
   epicorSettings: async ({}, use) => use(readEpicorSettings()),
   epicor: async ({epicorSettings}, use) => {
+    const ca = process.env.NODE_EXTRA_CA_CERTS;
+    console.log('Worker trust:', JSON.stringify({
+      node: process.version,
+      explicitCaConfigured: Boolean(ca),
+      explicitCaSha256: ca ? createHash('sha256').update(await readFile(ca)).digest('hex') : null,
+      loadedExtraCaCount: typeof getCACertificates === 'function' ? getCACertificates('extra').length : null,
+      remotePlaywrightConfigured: Boolean(process.env.PW_TEST_CONNECT_WS_ENDPOINT),
+    }));
     const session = await createEpicorClient(epicorSettings);
-    try { await use(session.client); }
+    try {
+      // A read in the actual worker verifies TLS, authentication and target
+      // before a scenario can send its first business mutation.
+      const warehouse = required('POC_FROM_WHSE');
+      identity(one(returned(await json(new MasterDataApi(session.client).warehouse(warehouse),
+        'Worker readiness: read configured source warehouse before business writes')), 'Warehse'),
+        {Company: epicorSettings.company, Plant: required('POC_PLANT'), WarehouseCode: warehouse},
+        'Worker ERP target scope');
+      await use(session.client);
+    }
     finally { await session.dispose(); }
   },
   quickShip: async ({epicorSettings}, use) => {

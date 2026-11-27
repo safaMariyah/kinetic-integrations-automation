@@ -9,6 +9,7 @@
     "doctor": "node tools/cli.cjs doctor",
     "check:architecture": "node tools/cli.cjs architecture",
     "readiness:quickship": "node tools/cli.cjs quickship-readiness",
+    "readiness:connection": "node tools/cli.cjs connection-readiness",
     "readiness:erp": "node tools/cli.cjs erp-readiness",
     "auth:quickship": "node tools/cli.cjs quickship-refresh",
     "test:discovery": "node --test tools/discovery/test-discover-shipment.cjs"

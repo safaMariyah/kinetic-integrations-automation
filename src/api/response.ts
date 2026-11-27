@@ -5,8 +5,18 @@ import type { Row } from '../support/datasets';
 export class EpicorTransportError extends Error {
   constructor(method: 'GET' | 'POST', failure: unknown) {
     const text = failure instanceof Error ? failure.message : '';
+    const certificateDetail = [
+      ['ERR_TLS_CERT_ALTNAME_INVALID', /ERR_TLS_CERT_ALTNAME_INVALID|Hostname\/IP does not match/i],
+      ['CERT_HAS_EXPIRED', /CERT_HAS_EXPIRED|certificate has expired/i],
+      ['CERT_NOT_YET_VALID', /CERT_NOT_YET_VALID|certificate is not yet valid/i],
+      ['SELF_SIGNED_CERT_IN_CHAIN', /SELF_SIGNED_CERT_IN_CHAIN|self.signed certificate in certificate chain/i],
+      ['DEPTH_ZERO_SELF_SIGNED_CERT', /DEPTH_ZERO_SELF_SIGNED_CERT|self.signed certificate/i],
+      ['UNABLE_TO_VERIFY_LEAF_SIGNATURE', /UNABLE_TO_VERIFY_LEAF_SIGNATURE|unable to verify the first certificate/i],
+      ['UNABLE_TO_GET_ISSUER_CERT_LOCALLY', /UNABLE_TO_GET_ISSUER_CERT_LOCALLY|unable to get local issuer certificate/i],
+    ] as const;
+    const certificateCode = certificateDetail.find(([, pattern]) => pattern.test(text))?.[0];
     const reason = /certificate|CERT_|self.signed|unable to verify/i.test(text)
-      ? 'Certificate trust was rejected. Configure NODE_EXTRA_CA_CERTS with the approved CA before starting Node.'
+      ? `Certificate trust was rejected${certificateCode ? ` (${certificateCode})` : ''}. Configure NODE_EXTRA_CA_CERTS with the approved CA before starting Node.`
       : /timeout|timed out/i.test(text)
         ? 'The request timed out.'
         : /ENOTFOUND|ECONNREFUSED|ECONNRESET|EAI_AGAIN/i.test(text)

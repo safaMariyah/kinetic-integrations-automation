@@ -2,7 +2,7 @@
 
 API-only Playwright automation. Blind shipping, Product Code and Create Shipment implementations are retained. See resources/customer-shipment/coverage.md for source-step coverage, historical outcomes and unresolved requirements. Create Shipment has separate checked-then-freight and unchecked-direct automation; blind shipping is a different scenario.
 
-Node 22+, installed dependencies. Credentials stay in ignored .env; use .env.example. Kinetic and QuickShip authentication remain separate. Preserve approved certificate trust: set NODE_EXTRA_CA_CERTS to your approved PEM before starting Node. No TLS bypass is required.
+Node 22+, installed dependencies. Credentials stay in ignored .env; use .env.example. Kinetic and QuickShip authentication remain separate. Configure NODE_EXTRA_CA_CERTS with your approved PEM in the selected environment file or process environment. CLI commands restart Node when needed to load it at startup. With an explicit CA on Windows, the runner disables system-CA mode: on this target, that mode rejects the approved self-signed ERP certificate even when it is loaded. Certificate verification and hostname checks remain enabled.
 
 ```powershell
 npm.cmd run check
@@ -90,6 +90,7 @@ the business step and retained checkpoint while preserving the original cause.
 Maintained developer commands:
 
 - `npm run doctor`: configuration and local file access only; no network calls.
+- `npm run readiness:connection`: read-only native TLS comparison and ERP warehouse read in the same Playwright worker/fixtures as live scenarios. Run this in the terminal used for the demonstration. Reports loaded CA count, certificate hashes and sanitized certificate failure codes; creates no business records. Every scenario's ERP fixture also checks the configured warehouse/company/site before yielding its client for business writes. A readiness pass does not prove scenario or carrier outcomes.
 - `node tools/cli.cjs erp-readiness "--target=<EPICOR_BASE_URL>|<EPICOR_COMPANY>|<POC_PLANT>" --family=customer`: explicitly scoped live reads of customer, warehouse/site, active bins, employee and packaging prerequisites. Use `--family=miscellaneous` for its fixed ECD/EDA-A, BOX and source-bin requirements.
 - `npm run check`: TypeScript plus enforced module boundaries.
 - `npm run test:local`: offline workflow/contract regression suite.
