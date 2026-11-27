@@ -2,6 +2,23 @@ import {test, expect, type APIResponse} from '@playwright/test';
 import {epicorErrorSummary, json, identity} from '../../src/support/datasets';
 import { BaseClient } from '../../src/api/baseClient';
 import type { APIRequestContext } from '@playwright/test';
+import { EpicorTransportError } from '../../src/api/response';
+
+test('TLS diagnostics distinguish certificate causes without retaining transport secrets', () => {
+  for (const [reason, code] of [
+    ['certificate has expired', 'CERT_HAS_EXPIRED'],
+    ['Hostname/IP does not match certificate', 'ERR_TLS_CERT_ALTNAME_INVALID'],
+    ['self-signed certificate in certificate chain', 'SELF_SIGNED_CERT_IN_CHAIN'],
+    ['self-signed certificate', 'DEPTH_ZERO_SELF_SIGNED_CERT'],
+    ['unable to verify the first certificate', 'UNABLE_TO_VERIFY_LEAF_SIGNATURE'],
+  ]) {
+    const error = new EpicorTransportError('GET', new Error(`${reason}\nAuthorization: private-auth\nbody: private-body`));
+    expect(error.message).toContain(code);
+    expect(error.message).toContain('No write was requested');
+    expect(error.message).not.toMatch(/private-auth|private-body/);
+    expect(error.cause).toBeUndefined();
+  }
+});
 // Synthetic privacy tests only; these are NOT the missing live HTTP 400 response.
 test('direct reads and uncertain writes withhold transport call logs and never retry', async () => {
   let calls = 0;

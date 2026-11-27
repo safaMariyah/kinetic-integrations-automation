@@ -15,6 +15,7 @@ export default defineConfig({
   reporter: [['./src/support/runEvidence.ts', {directory: runDirectory}], ['list'], ['html', {open: 'never', outputFolder: `${runDirectory}/html`}], ['junit', {outputFile: `${runDirectory}/results.xml`}]],
   projects: [
     {name: 'local', testMatch: '**/local/**/*.spec.ts'},
+    {name: 'readiness', testMatch: '**/readiness/**/*.spec.ts'},
     {name: 'erp-orchestration', testMatch: ['**/customer-shipment/**/*.spec.ts', '**/miscellaneous-shipment/**/*.spec.ts']},
   ],
 });

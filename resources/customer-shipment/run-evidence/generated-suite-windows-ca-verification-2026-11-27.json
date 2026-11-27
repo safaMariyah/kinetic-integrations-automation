@@ -1,0 +1,89 @@
+{
+  "kind": "normal-windows-terminal-generated-suite-verification",
+  "date": "2026-11-27",
+  "environment": {
+    "node": "24.21.0",
+    "company": "EPIC06",
+    "plant": "MfgSys",
+    "sourceWarehouse": "CHI",
+    "execution": "outside the agent tool sandbox; user terminal failure reproduced here"
+  },
+  "originalUserFailureRun": "captures/runs/2026-11-27T05-18-46-438Z-1bc5d575-c648-497c-8109-67e6dde58098",
+  "reproducedFailureRun": "captures/runs/2026-11-27T05-28-18-112Z-6d520bdb-0824-4a65-9f2a-56c6ea227fb6",
+  "correctedReadOnlyPassRun": "captures/runs/2026-11-27T05-30-18-580Z-f7648893-a517-46af-a6e7-0a072093ed24",
+  "observedCause": "In the normal Windows environment, system-CA mode rejected the explicitly loaded self-signed ERP certificate with DEPTH_ZERO_SELF_SIGNED_CERT. The same approved certificate passed native TLS and Playwright with system-CA mode disabled. Windows TLS validated the same fingerprint. This is an observed mode interaction, not a claim about its internal Node/OpenSSL cause.",
+  "fix": "Load NODE_EXTRA_CA_CERTS before Node starts and pass --no-use-system-ca for the explicit Windows CA configuration; certificate and hostname verification remain enabled.",
+  "certificateSha256": "E7:1B:17:13:C8:92:1E:9C:FE:9D:7B:AF:B8:0A:E0:7E:C4:AF:A0:23:AB:8F:B9:65:93:07:3B:3D:CA:1B:7F:3F",
+  "freshFullSuite": {
+    "run": "captures/runs/2026-11-27T05-31-42-382Z-bd61f44d-4349-4fcf-9dee-71a186dec9f3",
+    "sourceSha256": "70078b483c2bca6b53d7ad92e8c2ec40c6aa9b323eb399a8bf372240387daa79",
+    "result": "passed",
+    "tests": 7,
+    "failures": 0,
+    "skipped": 0,
+    "workers": 1,
+    "retries": 0,
+    "results": [
+      {
+        "file": "customer-shipment/blind-shipping.spec.ts",
+        "name": "customer=false; shipment-level blindShipping=false",
+        "status": "PASS",
+        "seconds": 15.881
+      },
+      {
+        "file": "customer-shipment/blind-shipping.spec.ts",
+        "name": "customer=false; shipment-level blindShipping=true",
+        "status": "PASS",
+        "seconds": 12.994
+      },
+      {
+        "file": "customer-shipment/create-shipment.spec.ts",
+        "name": "Sources 24?32: Create Shipment checked-then-freight",
+        "status": "PASS",
+        "seconds": 16.548
+      },
+      {
+        "file": "customer-shipment/create-shipment.spec.ts",
+        "name": "Sources 24?32: Create Shipment unchecked-direct",
+        "status": "PASS",
+        "seconds": 12.364
+      },
+      {
+        "file": "customer-shipment/customer-product-code.spec.ts",
+        "name": "Customer Shipment Entry - Verify the customer Product Code new field while freighting the shipment through REST API",
+        "status": "PASS",
+        "seconds": 11.978
+      },
+      {
+        "file": "customer-shipment/customer-vat.spec.ts",
+        "name": "Sources 1-27: customer billing and selected ship-to VAT through REST freight",
+        "status": "PASS",
+        "seconds": 20.696
+      },
+      {
+        "file": "miscellaneous-shipment/miscellaneous-master-pack.spec.ts",
+        "name": "S5\u2013S10: M1 miscellaneous shipment included in a master pack",
+        "status": "PASS",
+        "seconds": 8.339
+      }
+    ]
+  },
+  "offline": {
+    "typecheckAndBoundaries": "PASS",
+    "regressions": 89,
+    "status": "PASS",
+    "remoteCI": "UNVERIFIED; matrix extended to Node 22 and 24.21.0 on Windows and Linux"
+  },
+  "retainedEffects": [
+    "ERP parts, stock movements, orders and shipment records",
+    "Freight/carrier transactions and integration artifacts",
+    "Unique Product Code mapping",
+    "Source VAT values BillingVAT and SHIPTOVAT on ECD/EDA-A",
+    "Miscellaneous shipment and master pack"
+  ],
+  "limits": [
+    "Seven currently generated tests only; source coverage gaps and approved substitutions remain as recorded in scenario coverage.",
+    "One fresh full-suite pass does not guarantee future service availability or changes will not affect tests.",
+    "Original failures and earlier sandbox passes remain distinct from this normal-environment pass."
+  ]
+}
